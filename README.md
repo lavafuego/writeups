@@ -301,4 +301,5 @@ introducimos el pass: osoazul
 diego@dockerlabs:~/.local/share$ su root
 Password: 
 root@dockerlabs:/home/diego/.local/share# whoami
+root
 ```
