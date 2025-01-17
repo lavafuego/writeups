@@ -184,7 +184,8 @@ y hago fuerzabruta con este diccionario y el pass balu
 ```bash
 hydra -L user.txt  -p balu -t 16 -V -f -I ssh://172.17.0.2
 ```
-*explicación:*
+*explicación:* 
+
 -L: mayúsculas para indicar que usamos un diccionario en este caso user.txt que esta en el directorio donde trabajo
 -p: minúscula para indicar que usamos como pass esa palabra y no un diccionario
 -t 16: hilos, tareas en paralelo 16 peticiones
