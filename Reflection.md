@@ -213,12 +213,14 @@ id
 ```
 uid=1000(balu) gid=1000(balu) groups=1000(balu),100(users)
 ```
-nada fuera de lo normal
+nada fuera de lo normal 
+
 2-mirar variable de entorno:
 ```bash
 printenv
 ```
 nada interesante
+
 3- cat al /etc/passwd para saber usuarios del sistema
 ```bash
 cat /etc/passwd | grep sh$
