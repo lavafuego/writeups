@@ -30,6 +30,7 @@ PORT   STATE SERVICE REASON         VERSION
 |_http-server-header: Apache/2.4.41 (Ubuntu)
 ```
 Vemos que tiene dos puertos abiertos:
+
 -Puerto 22 ssh de versión 8.2 no vulnerable y sin user ni pass
 
 -puerto 80 http
