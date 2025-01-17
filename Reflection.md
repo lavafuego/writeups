@@ -205,6 +205,7 @@ el user y pass para el ssh, así pues nos conectamos con ssh:
 ssh balu@172.17.0.2
 ```
 suelo ir en este orden:
+
 1-listar grupos a los que pertenezco:
 ```bash
 id
