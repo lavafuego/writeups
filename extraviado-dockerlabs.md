@@ -229,7 +229,6 @@ cd .passroot/
 ```bash
 ls -la
 ```
-```bash
 ```
 drwxrwxr-x 1 diego diego 4096 Jan 11 14:29 .
 drwxr-x--- 1 diego diego 4096 Jan  9 21:11 ..
