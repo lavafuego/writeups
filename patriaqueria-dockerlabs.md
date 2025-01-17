@@ -104,7 +104,7 @@ http://172.17.0.2/icons/ubuntu-logo.png
 http://172.17.0.2/index.php
 http://172.17.0.2/index.html
 ```
-##fase de intrusión
+## fase de intrusión
 tres rutas, vamos a comprobarlas, empezamos por http://172.17.0.2/index.php:
 y vemos que nos pone esto:
 ```
