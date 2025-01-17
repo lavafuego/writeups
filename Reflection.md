@@ -173,7 +173,7 @@ http://172.17.0.2/laboratorio4/?data=<img src="x" onerror="alert(1)" />
 ```
 
 
-##LAS INYECCIONES PUEDEN OBTENERSE DESDE VARIOS SITIOS, YO RECOMIENDO 
+## LAS INYECCIONES PUEDEN OBTENERSE DESDE VARIOS SITIOS, YO RECOMIENDO 
 ```bash
 https://book.hacktricks.wiki/en/index.html
 ```
@@ -184,7 +184,7 @@ https://swisskyrepo.github.io/PayloadsAllTheThings
 ```
 en el buscador XSS y lo mismo
 
-##FASE INTRUSIÓN PARTE 2
+## FASE INTRUSIÓN PARTE 2
 
 ahora por fin podemos darle al botón:
 ```bash
