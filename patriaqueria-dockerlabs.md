@@ -171,7 +171,7 @@ sshd:x:105:65534::/run/sshd:/usr/sbin/nologin
 pinguino:x:1000:1000::/home/pinguino:/bin/bash
 mario:x:1001:1001::/home/mario:/bin/bash
 ```
-me hago un diccionario con los user, quedandome así:
+me hago un diccionario con los user,u lo guardo en un archivo llamado user.txt quedandome así:
 ```
 root
 www-data
