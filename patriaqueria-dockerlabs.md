@@ -187,10 +187,15 @@ hydra -L user.txt  -p balu -t 16 -V -f -I ssh://172.17.0.2
 *explicación:* 
 
 -L: mayúsculas para indicar que usamos un diccionario en este caso user.txt que esta en el directorio donde trabajo
+
 -p: minúscula para indicar que usamos como pass esa palabra y no un diccionario
+
 -t 16: hilos, tareas en paralelo 16 peticiones
+
 -V: modo verbose para ver por pantalla lo que está haciendo
+
 -f: detiene el ataque cuando encuentra una combinación valida
+
 -I: para desactivar el tiempo de espera inicial (creo recordar que dos segundos)
 
 ```[ATTEMPT] target 172.17.0.2 - login "root" - pass "balu" - 1 of 6 [child 0] (0/0)
