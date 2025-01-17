@@ -42,7 +42,7 @@ MAC Address: 02:42:AC:11:00:02 (Unknown)
 
 Solo tenemos el puerto 80, asi pues vamos manos a la obra (con whatweb no encontré nada interesante y en código fuente de la página tampoco)
 
-##paso 3:intrusión desde la página web
+## Paso 3:intrusión desde la página web
 realizo un fuzzing para ver de que otras rutas dispongo:
 ```bash
 feroxbuster -u "http://172.17.0.2/" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,html,txt -o feroxbuster
