@@ -1,4 +1,5 @@
 *Autor:JuanR*
+
 Levantamos el docker:
 ```bash
 sudo bash auto_deploy.sh patriaquerida.tar 
