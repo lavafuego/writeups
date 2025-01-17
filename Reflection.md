@@ -1,6 +1,6 @@
 *AUTOR:El Pingüino de Mario*
 
-** CÓMO DESPLEGAR EL DOCKER
+## CÓMO DESPLEGAR EL DOCKER
 -Descargamos el zip desde esta web:
 ```bash
 https://www.dockerlabs.es/#/
