@@ -213,7 +213,7 @@ pues ya tenemos user y pass para ssh pinguino:balu
 entramos desde ssh:
 ```bash
 ssh pinguino@172.17.0.2
-´´´
+```
 con el pass "balu", ya estamos dentro.
 
 Miramos que hay en nuestro home
