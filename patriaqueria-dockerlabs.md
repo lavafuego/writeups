@@ -4,7 +4,8 @@ Levantamos el docker:
 sudo bash auto_deploy.sh patriaquerida.tar 
 ```
 y nos levanta la maquina víctima con la IP:172.17.0.2
-##fase de enumeración
+
+## fase de enumeración
 
 Lo primero es hacer un escaneo de puertos y servicios que corren en la maquina y lo exportamos a un archivo en formato 
 nmap que se va a llamar PuertosYservicios:
