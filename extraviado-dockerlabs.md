@@ -192,6 +192,7 @@ Tiene un archivo de nombre passdiego, interesante, miramos que contiene:
 ```bash
 cat passdiego
 ```
+
 ```
 YmFsbGVuYW5lZ3Jh
 ```
