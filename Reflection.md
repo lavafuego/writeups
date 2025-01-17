@@ -59,7 +59,7 @@ sudo bash auto_deploy.sh reflection.tar
 -bash: el interprete que ejecuta el script
 -reflection.tar argumento necesario para el scrip
 
-##FASE DE RECONOCIMIENTO
+## FASE DE RECONOCIMIENTO
 
 Vamos a mirar que puertos tiene abierta la máquina, que servicio corre en elllos y su versión:
 
