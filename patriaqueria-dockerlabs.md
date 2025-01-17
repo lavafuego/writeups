@@ -252,7 +252,7 @@ aparte de pinguino que tengan shell (de ahi el  | grep sh$ de arriba) solo está
 su mario
 ```
 e introducimos la contraseña del usuario que habíamos encontrado (invitaacachopo)
-siendo, ya mario y revisando todo un poco (rl home, variable de entono, sudo -l) al final miro si tenemos permisos suid
+siendo, ya mario y revisando todo un poco (el home, variable de entono, sudo -l) al final miro si tenemos permisos suid
 ```bash
 find / -perm -4000 2>/dev/null
 ```
