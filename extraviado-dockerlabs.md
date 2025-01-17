@@ -262,15 +262,6 @@ drwxrwxr-x 1 diego diego 4096 Jan  9 20:51 ..
 drwx------ 2 diego diego 4096 Jan  9 20:51 nano
 ```
 un punto seguido de un guión?:
-```
-s -la
-total 16
-drwx------ 1 diego diego 4096 Jan 11 15:33 .
--rw-r--r-- 1 root  root   319 Jan 11 15:33 .-
-drwxrwxr-x 1 diego diego 4096 Jan  9 20:51 ..
-drwx------ 2 diego diego 4096 Jan  9 20:51 nano
-```
-
 pues nada un cat y miremos que contiene:
 ```bash
 cat ./.-
