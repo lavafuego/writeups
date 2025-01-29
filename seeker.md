@@ -207,6 +207,7 @@ lo ejecutamos :
 ```bash
 ./bs64
 ```
+```
 Ingrese el texto: sadasd
 c2FYXN
 ```
