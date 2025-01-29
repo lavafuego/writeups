@@ -95,9 +95,10 @@ un 200 ok, pues lo introduzco en el /etc/hosts de nuevo, quedándome así:
 172.17.0.2      5eEk3r www.5eEk3r 5eEk3r.dl crosswords.5eEk3r.dl
 ```
 
-hago un fuzzin su solo encuentro index.php, miro su código fuente y al final veo esto:
+hago un fuzzing su solo encuentro index.php, miro su código fuente y al final veo esto:
 ```
 http://crosswords.5eek3r.dl/index.php/
+```
 ```
 <! -- Al que contratamos para crear la web nos habló de algo llamado 'xss'... que será? -->
 ```
