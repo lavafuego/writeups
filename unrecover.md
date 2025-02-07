@@ -4,7 +4,7 @@ Después de desplegar el docker la IP de la máquina es --->172.17.0.2
 
 ## FASE DE ENUMERACIÓN
 
-Lo primero vamos a ver que puertos tieneabiertos y que servicios conrren por ellos así como sus versiones para ver si hay alguna vulnerabilidad.
+Lo primero vamos a ver que puertos tiene abiertos y que servicios conrren por ellos, así como sus versiones para ver si hay alguna vulnerabilidad.
 ```bash
 nmap -sS -sCV -Pn --min-rate 5000 -p- -vvv --open -oN PuertosYservicios 172.17.0.2
 ```
@@ -49,7 +49,7 @@ MAC Address: 02:42:AC:11:00:02 (Unknown)
 Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 vemos unos cuantos puertos abiertos, el 21 ftp, intento conectarme como anonymous y no me deja, de momento lo descartamos
-el 3306 mysql que sin credenciales no nos deja conectarnos a la base de datos y 22 ssh sin credenciales tampoco podemos hacer nada.
+el 3306 mysql, que sin credenciales no nos deja conectarnos a la base de datos y 22 ssh sin credenciales que tampoco podemos hacer nada.
 Vamos al puerto 80 protocolo http, lanzamos un whatweb por si nos reporta alguna información interesante:
 ```bash
 whatweb http://172.17.0.2
@@ -90,7 +90,7 @@ es importante poner la flag --skip-ssl para omitirse el uso de SSL, sino no nos 
 introducimos el pass cuando lo pida: password1
 
 ```
- mysql -h 172.17.0.2 -u capybara -p --skip-ssl                                                                                                                                         ░▒▓ ✔ 
+ mysql -h 172.17.0.2 -u capybara -p --skip-ssl                                                                                                                                         
 
 Enter password: 
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
@@ -121,7 +121,7 @@ MariaDB [(none)]> show databases;
 +--------------------+
 5 rows in set (0,001 sec)
 ```
-vemos una interesante llamada beta, ahora con el comando " use + nombre de la base de datos" usamos esa base de datos_
+vemos una interesante llamada beta, ahora con el comando " use + nombre de la base de datos;" usamos esa base de datos (beta en este caso):
 ```bash
 use beta;
 ```
@@ -151,7 +151,7 @@ MariaDB [beta]> select * from registraton;
 1 row in set (0,000 sec)
 ```
 
-tenemos un user y un hash, voy a probar una pagina de rainbow tables por si eexiste en sus bases la contraseña,
+tenemos un user y un hash, voy a probar una pagina de rainbow tables por si existe en sus bases la contraseña,
 me voy a :
 ```bash
 https://crackstation.net/
@@ -177,7 +177,7 @@ Remote system type is UNIX.
 Using binary mode to transfer files.
 ftp> 
 ```
-listamos el contenido y vemos un archivo backup.pdf que nos traemos a nuestra máquina:
+listamos el contenido (ls) y vemos un archivo backup.pdf que nos traemos a nuestra máquina (con get + nombre del archivo):
 
 ```
 ftp> ls
@@ -205,7 +205,7 @@ y usando este comando:
 convert imagen.jpg -brightness-contrast 10x15 imagen_mejorada.jpg
 ```
 
-se puede medi leer : 
+se puede medio leer : 
 ```
 passwordpepinaca
 ```
