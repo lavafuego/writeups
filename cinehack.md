@@ -135,25 +135,23 @@ hacemos un pequeó fuzzing para ver si hay alguna ruta interesante:
 gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u 'http://cinema.dl' -x php,html,js  | tee rutas
 ```
 *Explicación:*
-1 gobuster dir
+-1 gobuster dir Ejecuta Gobuster en modo escaneo de directorios y archivos. Este modo busca directorios o archivos en el servidor objetivo.
 
-Ejecuta Gobuster en modo escaneo de directorios y archivos. Este modo busca directorios o archivos en el servidor objetivo.
-2 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
-
+-2 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
 Especifica la wordlist que Gobuster usará para descubrir directorios y archivos.
 En este caso, se usa una lista común ubicada en /usr/share/wordlists/dirbuster.
-3 -u 'http://cinema.dl'
 
+
+-3 -u 'http://cinema.dl'
 Define la URL objetivo a escanear, en este caso, el dominio 'http://cinema.dl'.
-4 -x php,html,js
 
+-4 -x php,html,js
 Busca archivos con extensiones específicas:
 .php (archivos PHP)
 .html (archivos HTML)
 .js (archivos JavaScript)
 
-5 | tee rutas
-
+-5 | tee rutas
 El operador | redirige la salida de Gobuster a tee.
 tee rutas guarda la salida del comando en un archivo llamado rutas, mientras la muestra en pantalla.
 
