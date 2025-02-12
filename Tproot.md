@@ -132,7 +132,7 @@ y luego el pass
 ```bash
 hola123
 ```
-En teoria nos ha tenido que abrir la bacdoor en el puerto 6200 y nos vamos a intentar conectar con nc
+En teoria nos ha tenido que abrir la backdoor en el puerto 6200 y nos vamos a intentar conectar con nc
 ```bash
  nc 172.17.0.2 6200
 ```
