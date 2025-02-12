@@ -40,7 +40,7 @@ Vemos un puerto 21 que corre ftp con su versión "vsftpd 2.3.4", al ver que se h
 su respuesta  got code 500 "OOPS: cannot change directory:/var/ftp" me hace sospechar que esta versión puede ser vulnerable.
 
 
-##FASE INTRUSIÓN
+## FASE INTRUSIÓN
 
 Hago una busqueda rápida y encuentro este exploit para esa version:
 ```bash
