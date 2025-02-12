@@ -132,7 +132,7 @@ y luego el pass
 ```bash
 hola123
 ```
-hacemos de nuevo un escaneo de puertos:
+hacemos de nuevo un escaneo de puertos para ver si está el 6200 abierto:
 ```bash
 sudo nmap -sS -Pn --min-rate 5000 -p- --open 172.17.0.2
 ```
