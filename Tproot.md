@@ -132,7 +132,17 @@ y luego el pass
 ```bash
 hola123
 ```
-En teoria nos ha tenido que abrir la backdoor en el puerto 6200 y nos vamos a intentar conectar con nc
+hacemos de nuevo un escaneo de puertos:
+```bash
+sudo nmap -sS -Pn --min-rate 5000 -p- --open 172.17.0.2
+```
+```
+PORT     STATE SERVICE
+21/tcp   open  ftp
+80/tcp   open  http
+6200/tcp open  lm-x
+```
+En teoria nos ha abierto el backdoorr en el puerto 6200 y nos vamos a intentar conectar con nc
 ```bash
  nc 172.17.0.2 6200
 ```
