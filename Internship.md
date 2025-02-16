@@ -125,9 +125,11 @@ hago fuzzing y encuentro esta rutas:
 abro  http://gatekeeperhr.com/lab/employees.php y me encuentro esto:
 ```
 {"status":"success","employees":[{"id":"1","name":"Ana Garcia","department":"Ventas","startDate":"2023-05-15"},{"id":"2","name":"Carlos Rodriguez","department":"IT","startDate":"2023-06-01"},{"id":"3","name":"Maria Lopez","department":"Recursos Humanos","startDate":"2023-06-10"},{"id":"4","name":"Juan Martinez","department":"Marketing","startDate":"2023-06-15"},{"id":"5","name":"Laura Sanchez","department":"Finanzas","startDate":"2023-07-01"},{"id":"6","name":"Pedro Ramirez","department":"Pasantia IT","startDate":"2023-07-05"},{"id":"7","name":"Sofia Torres","department":"Ventas","startDate":"2023-07-10"},{"id":"8","name":"Diego Herrera","department":"IT","startDate":"2023-07-15"},{"id":"9","name":"Valentina Gomez","department":"Pasantia IT","startDate":"2023-07-20"},{"id":"10","name":"Alejandro Vargas","department":"Marketing","startDate":"2023-07-25"}]}
+
 ```
 
 así pues me creo un diccionario de nombres:
+
 ```
 anagarcia
 carlosrodriguez
