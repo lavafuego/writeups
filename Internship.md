@@ -53,7 +53,8 @@ veo esto: UncommonHeaders[x-virtual-host] , lo cual me hace pensar en virtualhos
     <title>GateKeeper HR | Tu Portal de Recursos Humanos</title>
     <link rel="dns-prefetch" href="//gatekeeperhr.com" />
 ```
-así pués lo añado en el /etc/hosts, además no me deja abrir nada de la página.
+así pués lo añado en el /etc/hosts, además no me deja abrir nada de la página. 
+
  ```bash
 sudo nano /etc/hosts
 ```
@@ -63,6 +64,7 @@ sudo nano /etc/hosts
 antes de abrir el dominio compruebo si hay más subdominios:
 ```bash
  wfuzz -c --hc=404 --hh=3861 -w /opt/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -H "Host: FUZZ.gatekeeperhr.com" http://gatekeeperhr.com/
+```
 ```
  /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
 ********************************************************
