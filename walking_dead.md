@@ -18,6 +18,7 @@ rm walking_dead.zip
 sudo bash auto_deploy.sh walking_dead.tar
 ```
   *Explicación:*
+    
     -sudo: ejecutamos los comandos con privilegios se superusuario (root)
     -bash auto_deploy.sh: ejecutamos el script auto_deploy.sh con el interprete de comandos bash
     -walking_dead.tar: un archivo comprimido en tar que se pasa como argumento al script auto_deploy.sh necesario para que se ejecute correctamente
