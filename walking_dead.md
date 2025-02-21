@@ -34,8 +34,19 @@ Lanzamos un scaneo de puertos para ver cuales tiene abiertos, que servicios corr
 sudo nmap -sS -sCV -Pn --min-rate 5000 -p- -vvv --open 172.17.0.2 -oN PuertosYservicios
 ```
   *Explicación:*
+   
     -sudo: ejecutamos los comandos con privilegios se superusuario (root), el tipo de scan sS solo puede realizarlo root
-
+    -nmap: herramienta para realizar el scan de puertos
+    -sS: Realiza un escaneo SYN (también conocido como "half-open" o "stealth scan"). Envía paquetes SYN a los puertos y, según la respuesta (SYN/ACK o RST), determina si el puerto está abierto o cerrado sin completar el handshake TCP
+    -sCV: opcion que junta -sC y -sV, sC para detectar configuraciones y servicios y sV para detectar las versiones
+    -Pn: nos saltamos el descubrimientos de host e indicamos que este está activo
+    - --min-rate 5000:Configura una tasa mínima de envío de 5000 paquetes por segundo, lo que acelera el escaneo
+    - -p-: indica todos los puertos (desde el 1 hasta el 65535).
+    - vvv: verbosidad o reporte inmediato en tasa alta
+    - --open: muestra solo los puertos abiertos en la consola
+    - 172.17.0.2: IP a la que lanzamos el escaneo de puertos
+    -oN: guardamos los resultados en formato nmap en el archivo con el nombre que vaya seguido de la opcion
+    -PuertosYservicios: salida del scan nombrado así y en formato nmpa por el comando anterior
 
 
 
