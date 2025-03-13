@@ -164,6 +164,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 ```
 podemos ver una ruta llamada "/download" y un argumento "file" que probablemente nos ayude al pathtraversal, vamos a probarlo:
+* Nota: probé con los subdominios hasta que me respondió gitea.dl
 ponemos en el buscador:
 ```bash
 http://gitea.dl/download?filename=../../../../../etc/passwd
