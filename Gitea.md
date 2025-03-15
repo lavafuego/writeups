@@ -504,8 +504,4 @@ SHOW VARIABLES LIKE 'PLUGIN_DIR';
 | plugin_dir    | /usr/lib/mysql/plugin/ |
 +---------------+-------------------------
 ```
-con esto en nuestra máquina buscamos un exploit:
-```bash
-searchsploit udf
-```
 
