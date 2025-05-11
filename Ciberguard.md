@@ -276,7 +276,7 @@ else:
     print(f"El enlace [{LINK}] no es un enlace simbólico.")
 ```
 basicamente se le pasa un archivo, verifica que termine en .jpg y sino sale, comprueba que sea un enlace simbolico, extrae el nombre, mira donde apunta, y esta parte nos va a dar problemas:
-````
+```
   if 'etc' in LINK_TARGET or 'root' in LINK_TARGET:
         print(f"¡Intentando leer archivos críticos, eliminando enlace [{LINK}]!")
         os.unlink(LINK)
