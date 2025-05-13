@@ -17,7 +17,7 @@ PORT   STATE SERVICE VERSION
 ```
 puerto 22 y puerto 80 abiertos.
 
-El puerto 22 es ssh version no vulnerable, sin credenciales ni users no podemos hacer gran cosa, asi pues no scentramos 
+El puerto 22 es ssh version no vulnerable, sin credenciales ni users no podemos hacer gran cosa, asi pues nos centramos 
 en el puerto 80
 
 Hacemos fuzzing:
