@@ -179,5 +179,43 @@ export TERM=xterm
 export SHELL=bash
 stty rows 51 columns 237
 ```
+## ESCALADA DE PRIVILEGIOS
+
+compruebo si hay permisos suid 
+```bash
+find / -perm -4000 2>/dev/null
+```
+```
+/usr/bin/chfn
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/at
+/usr/local/bin/task_manager
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+```
+veo "at" visito https://gtfobins.github.io/
+pero no puedo usarlo
+miramos los usuarios:
+```bash
+cat /etc/passwd | grep sh$
+```
+```
+root:x:0:0:root:/root:/bin/bash
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+punky:x:1001:1001:,,,:/home/punky:/bin/bash
+```
+veo algo interesante:
+```bash
+cat /usr/include/musica/.stego
+```
+```
+Descarga el fichero como insinua la web y realiza fuerza bruta para hallar el password que esconde la contraseña del usuario.
+Ten en cuenta que la salida del comando "snow" siempre devuelve datos y ha sido escondida  con el siguinete formato password:XXXXXXXXXX
+```
 
 
