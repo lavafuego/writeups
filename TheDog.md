@@ -368,7 +368,7 @@ ls -la /usr/local/bin/task_manager
 -rwsr-x--- 1 root suidgroup 16712 May 11 08:55 /usr/local/bin/task_manager
 ```
 lo ejecuto y despues de no saber que leches hace pruebo a leer el help:
-````bash
+```bash
 /usr/local/bin/task_manager -h
 ```
 ```
