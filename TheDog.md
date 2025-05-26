@@ -230,7 +230,7 @@ drwxr-xr-x 1 root     root        4096 May  3 06:08 ..
 -r-------- 1 www-data root         917 May  9 01:20 miletra.txt
 ```
 
-no puedo utilizar ni scp, ni nc, ni python ni, ni wget, ni curl...pero con la medio pista del ping, he recordado que en las trazas ICMP pero como hay que trocear el archivo y hacer mil cosas antes pruebo lo siguiente:
+no puedo utilizar ni scp, ni nc, ni python ni, ni wget, ni curl...pero con la medio pista del ping, he recordado que en las trazas ICMP de ping se puede mandar data y calturarla, pero como hay que trocear el archivo y hacer mil cosas antes pruebo lo siguiente:
 
 en la máquina victima me pongo en escucha para recibir un archivo:
 ```bash
