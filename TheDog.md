@@ -217,7 +217,7 @@ cat /usr/include/musica/.stego
 Descarga el fichero como insinua la web y realiza fuerza bruta para hallar el password que esconde la contraseña del usuario.
 Ten en cuenta que la salida del comando "snow" siempre devuelve datos y ha sido escondida  con el siguinete formato password:XXXXXXXXXX
 ```
-y veo un archivo mp3 que probablemente usando snow pueda romper y ver la data que esconde
+y veo un archivo mp3 y otro txt que probablemente usando snow pueda romper y ver la data que esconde
 ```bash
 ls -la /usr/include/musica/
 ```
