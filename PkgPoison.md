@@ -94,6 +94,9 @@ comprobamos si estamos en algún grupo extraño:
 ```bash
 id
 ```
+```
+uid=1000(dev) gid=1000(dev) groups=1000(dev)
+```
 nada extraño, ahora
 miramos si tenemos algún privilegio sudo
 ```bash
