@@ -359,7 +359,7 @@ curl -X POST http://192.168.1.45/login.php \
 📖 ¿Qué hace?
 updatexml(...): Lo expliqué...el tostón de antes
 
-concat(0x7e, ..., 0x7e): junta el nombre de la base de datos entre ~ para que sea fácil de ver.
+concat(0x7e, ..., 0x7e): junta la salida de la consulta, en este caso el nombre de la base de datos entre ~ para que sea fácil de ver.
 
 SELECT schema_name FROM information_schema.schemata LIMIT 0,1: saca el primer nombre de base de datos, aquí itineraremos 0,1...1,1...2,1...
 
