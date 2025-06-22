@@ -581,7 +581,7 @@ Recorre posibles nombres de bases de datos (schema_name) uno a uno.
 
 Letra por letra, comprueba si el carácter coincide.
 
-Si el servidor tarda >2s, considera que ha acertado y guarda la letra.
+Si el servidor tarda >0.5s, considera que ha acertado y guarda la letra.
 
 
 ```
