@@ -112,6 +112,10 @@ este diccionario pertenece al repositorio de SecList (ftp-betterdefaultpasslist.
 git clone https://github.com/danielmiessler/SecLists.git
 ```
 
+```bash
+hydra -C RUTA_AL_DICCIONARIO/ftp-betterdefaultpasslist.txt http-get://172.17.0.2/
+```
+
 Resultado:
 
 ```
