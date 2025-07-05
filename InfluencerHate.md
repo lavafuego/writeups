@@ -106,6 +106,11 @@ Sabemos que se concatena `usuario:contraseña` y se codifica en Base64. Usaremos
 ```bash
 hydra -C RUTA_AL_DICCIONARIO/ftp-betterdefaultpasslist.txt http-get://172.17.0.2/
 ```
+este diccionario pertenece al repositorio de SecList (ftp-betterdefaultpasslist.txt), si no lo teneis, ubicaros en donde querais el archivo (recomiento /opt por ejemplo o ese tipo de rutas) y:
+
+```bash
+git clone https://github.com/danielmiessler/SecLists.git
+```
 
 Resultado:
 
