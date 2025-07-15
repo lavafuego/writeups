@@ -254,7 +254,7 @@ LFILE=file_to_read
 sudo grep '' $LFILE
 ```
 
-pues al lio, en vez de guardar la ruta al file lo meto directo:
+pues al lio, en vez de guardar la ruta en una variable LFILE y luego reclamarla lo hago directo:
 
 ```bash
 sudo -u root /bin/grep '' /root/secretitomaximo.txt
