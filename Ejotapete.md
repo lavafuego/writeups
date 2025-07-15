@@ -210,9 +210,12 @@ en algún sitio podemos leer:
 --
 $databases = array();
 ```
-
+```
 usuario:ballenita
+
 password:ballenitafeliz
+```
+
 Además ese comentario de "Cuidadito cuidadín pillin" me da buena vibra xD
 
 intentamos pivotar al user ballenita:
