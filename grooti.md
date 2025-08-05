@@ -210,7 +210,7 @@ YoSoYgRoOt
 
 Ya estamos dentro
 
-##ESCALADA DE PRIVILEGIOS
+## ESCALADA DE PRIVILEGIOS
 
 Miro si estoy en algún grupo privilegiado con "id" y nada, si tengo algun privilegio sudo con "sudo -l" y nada, busco SUID y tampoco nada, listo usuarios y estamos root y yo xD
 
