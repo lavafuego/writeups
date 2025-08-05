@@ -118,4 +118,108 @@ select * from rutas;
 ```
 ![Nmap Scan](images/grooti/grooti12.png)
 
-  
+## FASE INTRUSIÓN
+Encontrada una nueva ruta en la base de datos nos dirigimos a ella:
+
+```
+http://172.17.0.2/unprivate/secret/
+```
+
+vemos un panel donde podemos poner una frease y un numero del 1 al 100:
+![Nmap Scan](images/grooti/grooti13.png)
+
+Despues de mirar el código fuente, intentar inyectar cosas en el panel y no viendo nada raro, vamos a pasar la petición por burpsuite, dado que lo único que hace es descargar un archivo con el nombre password1.txt
+el 1 varía y es el número que ponemos del 1 al 100. 
+
+Capturamos la petición y vamos a lanzar un ataque de fuerza bruta a los numeros que introducimos
+1- mandamos la petición al intruder:
+
+![Nmap Scan](images/grooti/grooti14.png)
+
+2-Seleccionamos dónde poner nuestro payload, concretamente en el número que metemos en el panael y le damos a "add"
+![Nmap Scan](images/grooti/grooti15.png)
+
+3-Cambiamos el payload type a Numers y from 1 to 100 para indicar que queremos solo numeros del 1 al 100
+![Nmap Scan](images/grooti/grooti16.png)
+
+y lanzamos el ataque con start attack
+
+Cuando termina el ataque vamos a ordenar por el tamaño:
+![Nmap Scan](images/grooti/grooti17.png)
+
+Vemos que al poner el número 16 se dispara el tamaño de la respuesta y si miramos en ese número la respuesta vemos:
+
+![Nmap Scan](images/grooti/grooti18.png)
+
+
+Pues vamos a lanzar una petición con el número 16 y vemos que pasa, y nos descarga un zip protegido por cntraseña, vamos a romperla con 
+john, lo primero usamos:
+
+```bash
+zip2john password16.zip > hash.txt
+```
+para generar el hash a romper del zip
+
+y ahora intentamos romperlo con john:
+```bash
+ john --wordlist=/usr/share/wordlists/rockyou.txt  hash.txt
+```
+y rompe el hash:
+![Nmap Scan](images/grooti/grooti19.png)
+
+hacemos un unzip, metemos el password y nos descarga un txt:
+![Nmap Scan](images/grooti/grooti20.png)
+
+pues parece una lista de passwords, con esto vamos a probar fuerzabruta por ssh, antes hacemos una lista de users, os acordais de la página "http://172.17.0.2/secret/"
+ahí teniamos tres usuarios: 
+```
+grooti
+rocket
+naia
+```
+
+vamos a meterlo en un archivo con el nombre users.txt y lanzamos un ataque con hidra, con esos usuarios y el archivo con los passwords que sacamos del zip:
+
+![Nmap Scan](images/grooti/grooti21.png)
+
+Nos conectamos por SSH como el usuario grooti a la IP victima:
+```bash
+ssh grooti@172.17.02
+```
+y cuando nos pide el password metemos
+```
+YoSoYgRoOt
+```
+
+Ya estamos dentro
+
+##ESCALADA DE PRIVILEGIOS
+
+Miro si estoy en algún grupo privilegiado con "id" y nada, si tengo algun privilegio sudo con "sudo -l" y nada, busco SUID y tampoco nada, listo usuarios y estamos root y yo xD
+![Nmap Scan](images/grooti/grooti22.png)
+
+Voy a detectar si hay algún proceso, copio en la victima en un archivo con nano este script:
+```bash
+https://github.com/lavafuego/herramientas/blob/main/detectar%20procesos%20en%20bash/procesos.sh
+```
+doy permisos de ejecución con chmod +x <nombre del archivo>
+lo ejecuto:
+![Nmap Scan](images/grooti/grooti23.png)
+
+Veo que se ejecuta este proceso:
+```
+ /tmp/malicious.sh
+```
+miro los permisos que tengo sobre él, propietario root y puedo modificarlo
+le añado una linea para modificar los permisos de la /bin/bash:
+```bash
+echo "chmod u+s /bin/bash" >>/tmp/malicious.sh
+```
+y espero a que vuelva a ejecutarse el proceso, cuando se ha ejecutado cambia los permisos de la /bin/bash y si lo ejecuto con la flag -p me convierto en root:
+```bash
+/bin/bash -p
+```
+
+![Nmap Scan](images/grooti/grooti24.png)
+
+
