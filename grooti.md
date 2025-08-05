@@ -33,7 +33,9 @@ sudo nmap -sS -sCV -Pn --min-rate 5000 -p- -vvv --open 172.17.0.2
 Vemos:
 
   -Puerto 22 con SSH versión 9.6p1 no vulnerable
+  
   -Puerto 80 HTTP
+  
   -Puerto 3306 mysql
 
 Dado que no tenemos credenciales vamos a centrarno en el puerto 80 http, vamos a lanzar un 'whatweb' para saber que está utilizando la página:
