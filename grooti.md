@@ -55,6 +55,7 @@ con Ctrl+u abrimos el código fuente y vemos dos cosas interesantes:
 ![Nmap Scan](images/grooti/grooti7.png)
 
 1-que un usuario rocket ha entrado en la base de datos, recordad que el puerto 3306 corre con mysql
+
 2-tres rutas:"imagenes","documentos","archives"
 
 No obstante vamos a hacer un fuzzing para ver que más rutas podemos encontrar:
