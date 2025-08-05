@@ -140,6 +140,8 @@ Despues de mirar el código fuente, intentar inyectar cosas en el panel y no vie
 el 1 varía y es el número que ponemos del 1 al 100. 
 
 Capturamos la petición y vamos a lanzar un ataque de fuerza bruta a los numeros que introducimos
+
+
 1- mandamos la petición al intruder:
 
 ![Nmap Scan](images/grooti/grooti14.png)
