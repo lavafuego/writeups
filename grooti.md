@@ -133,6 +133,7 @@ http://172.17.0.2/unprivate/secret/
 ```
 
 vemos un panel donde podemos poner una frease y un numero del 1 al 100:
+
 ![Nmap Scan](images/grooti/grooti13.png)
 
 Despues de mirar el código fuente, intentar inyectar cosas en el panel y no viendo nada raro, vamos a pasar la petición por burpsuite, dado que lo único que hace es descargar un archivo con el nombre password1.txt
@@ -144,14 +145,17 @@ Capturamos la petición y vamos a lanzar un ataque de fuerza bruta a los numeros
 ![Nmap Scan](images/grooti/grooti14.png)
 
 2-Seleccionamos dónde poner nuestro payload, concretamente en el número que metemos en el panael y le damos a "add"
+
 ![Nmap Scan](images/grooti/grooti15.png)
 
 3-Cambiamos el payload type a Numers y from 1 to 100 para indicar que queremos solo numeros del 1 al 100
+
 ![Nmap Scan](images/grooti/grooti16.png)
 
 y lanzamos el ataque con start attack
 
 Cuando termina el ataque vamos a ordenar por el tamaño:
+
 ![Nmap Scan](images/grooti/grooti17.png)
 
 Vemos que al poner el número 16 se dispara el tamaño de la respuesta y si miramos en ese número la respuesta vemos:
