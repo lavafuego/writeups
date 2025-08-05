@@ -74,6 +74,7 @@ http://172.17.0.2/imagenes/ ----->http://172.17.0.2/imagenes/README.txt
 ```
 
 Con un README.txt muy interesante:
+
 ![Nmap Scan](images/grooti/grooti9.png)
 
 Ya tenemos un password: password1
@@ -81,6 +82,7 @@ Ya tenemos un password: password1
 ```
 http://172.17.0.2/archives/
 ```
+
 Sin nada interesante
 
 
@@ -88,6 +90,7 @@ Sin nada interesante
 http://172.17.0.2/secret/
 ```
 Con un listado de posibles usuarios:
+
 ![Nmap Scan](images/grooti/grooti10.png)
 
 ## INTRUSION EN BASE DE DATOS
