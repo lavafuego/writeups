@@ -178,9 +178,11 @@ y ahora intentamos romperlo con john:
  john --wordlist=/usr/share/wordlists/rockyou.txt  hash.txt
 ```
 y rompe el hash:
+
 ![Nmap Scan](images/grooti/grooti19.png)
 
 hacemos un unzip, metemos el password y nos descarga un txt:
+
 ![Nmap Scan](images/grooti/grooti20.png)
 
 pues parece una lista de passwords, con esto vamos a probar fuerzabruta por ssh, antes hacemos una lista de users, os acordais de la página "http://172.17.0.2/secret/"
@@ -209,6 +211,7 @@ Ya estamos dentro
 ##ESCALADA DE PRIVILEGIOS
 
 Miro si estoy en algún grupo privilegiado con "id" y nada, si tengo algun privilegio sudo con "sudo -l" y nada, busco SUID y tampoco nada, listo usuarios y estamos root y yo xD
+
 ![Nmap Scan](images/grooti/grooti22.png)
 
 Voy a detectar si hay algún proceso, copio en la victima en un archivo con nano este script:
@@ -217,6 +220,7 @@ https://github.com/lavafuego/herramientas/blob/main/detectar%20procesos%20en%20b
 ```
 doy permisos de ejecución con chmod +x <nombre del archivo>
 lo ejecuto:
+
 ![Nmap Scan](images/grooti/grooti23.png)
 
 Veo que se ejecuta este proceso:
