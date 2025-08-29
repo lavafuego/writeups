@@ -9,4 +9,4 @@ IP-->`172.17.0.2`
  sudo nmap -sS -sCV -Pn --min-rate 5000 -p- -v --open 172.17.0.2 -oN puertosYservicios
 ```
 
-![Nmap Scan](images/Waffy/Captura de pantalla (172).png)
+![Nmap Scan](images/Waffy/1.png)
