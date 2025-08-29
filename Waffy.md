@@ -36,3 +36,5 @@ Sin credenciales ni usuarios nos vamos a centrar en el puerto 80, vamos a lanzar
 whatweb 172.17.0.2 | tee whatweb
 ```
 
+
+![Nmap Scan](images/Waffy/2.png)
