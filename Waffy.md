@@ -38,3 +38,13 @@ whatweb 172.17.0.2 | tee whatweb
 
 
 ![Nmap Scan](images/Waffy/2.png)
+
+
+Lo más relevante es ese 403, vamos a visitar la página
+
+
+![Nmap Scan](images/Waffy/3.png)
+
+Un panel, miramos el código fuente y no vemos nada, vamos a fuzzear
+
+
