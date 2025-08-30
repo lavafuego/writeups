@@ -175,7 +175,7 @@ Así pues vamos a explotar la vulnerabilidad:
 /usr/bin/env /bin/bash -p
 ```
 
-![Nmap Scan](images/Waffy/13.png)
+![Nmap Scan](images/Waffy/fin.png)
 
 
 
