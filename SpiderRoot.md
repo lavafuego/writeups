@@ -313,6 +313,17 @@ Hacemos tratamiento de la TTY
 
 
 
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+
+
 
 
 
