@@ -372,6 +372,9 @@ vamos a ver el script con `cat /opt/spidy.py`
 Es un script en python y se me ocurre hacer un Path Hijacking y Library Hijacking
 
 1- cambiamos el PATH `export PATH=$(pwd):$PATH`
+
+
+
 2- el path lee primero en el directorio actual y creo un script con el nombre json.py que contenga:
 
 ```
