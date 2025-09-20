@@ -254,10 +254,15 @@ ssh -L 9000:127.0.0.1:8080 peter@172.17.0.2
 ```
 
 explico el comando:
+
 ssh-->protocolo
+
 -L --> port forwarding
+
 9000:127.0.0.1:8080 --> mi puerto 9000 es el 8080 del localhost (victima)
+
 peter@172.17.0.2 --> como quien nos conectamos por ssh
+
 puse el puerto 9000 en vez del mismo de la máquina (8080) por si tengo que usar burp suite que utiliza ese puerto y crea conflicto
 
 
