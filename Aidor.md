@@ -140,7 +140,8 @@ john --format=raw-sha256 --wordlist=/usr/share/wordlists/rockyou.txt
 
 y logro decodear esto:
 
-``password
+```bash
+password
 chocolate
 pingu  
 pepe
