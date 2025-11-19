@@ -201,11 +201,30 @@ scp linpeas.sh aidor@172.17.0.2:/tmp
 ```
 
 
-![Nmap Scan](images/aidor/aidor16.png)
+![Nmap Scan](images/aidor/aidor17.png)
+
+
+y ya lo tenemos en /tmp
+
+
+![Nmap Scan](images/aidor/aidor18.png)
 
 
 
+lo ejecutamos con:
+```bash
+./linpeas.sh
+```
 
+Por una parte veo que root ha ejecutado `app.py`:
+
+
+![Nmap Scan](images/aidor/aidor19.png)
+
+
+por otra su ubicacion y otras cosas interesantes:
+
+![Nmap Scan](images/aidor/aidor20.png)
 
 
 
