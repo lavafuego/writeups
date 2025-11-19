@@ -31,3 +31,19 @@ sudo bash auto_deploy.sh aidor.tar
 
 
 ![Nmap Scan](images/aidor/aidor2.png)
+
+
+## FASE DE ENUMERACIÓN
+
+Vamos a escanear los puertos de la máquina que tiene la IP--->172.17.0.2 para ver que puerto tiene abiertos y que servicios corren por ellos:
+
+```bash
+sudo nmap -sS -sCV --open -p- --min-rate 5000 172.17.0.2 -vvv -oN nmap
+```
+
+![Nmap Scan](images/aidor/aidor3.png)
+
+
+
+
+![Nmap Scan](images/aidor/aidor4.png)
