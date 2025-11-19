@@ -227,5 +227,61 @@ por otra su ubicacion y otras cosas interesantes:
 ![Nmap Scan](images/aidor/aidor20.png)
 
 
+la base de datos contiene los user y pass etc que logré sacar al principio y no se reusan password así pues me centro en app.py, miro los permisos:
+
+![Nmap Scan](images/aidor/aidor21.png)
+
+tengo permisos de lectura, busco por root y una lina por encima y una por debajo 
+
+```bash
+cat app.py | grep -C 1 "root"
+```
+
+
+![Nmap Scan](images/aidor/aidor22.png)
+
+
+
+vemos un hash:
+
+```
+aa87ddc5b4c24406d26ddad771ef44b0
+```
+
+vamos a la pagina `https://crackstation.net/` e intentamos decodearlo:
+
+
+
+![Nmap Scan](images/aidor/aidor23.png)
+
+
+
+tenemos un password decodeado:
+```
+estrella
+```
+
+nos intentamos hacer usuario root con el nuevo password:
+
+```
+su root
+```
+
+
+![Nmap Scan](images/aidor/aidor24.png)
+
+
+y hasta aquí esta máquina...
+
+
+
+
+
+
+
+
+
+
+
 
 
