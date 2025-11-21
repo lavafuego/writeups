@@ -64,7 +64,7 @@ whatweb http://172.17.0.2:5000 | tee whatweb
 ```
 
 
-![Nmap Scan](images/aidor/aidor5.png)
+![Nmap Scan](images/aidor/Captura de pantalla (215)~2.png)
 
 
 
