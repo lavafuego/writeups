@@ -219,6 +219,8 @@ sudo /usr/bin/nano
 
 ![Nmap Scan](images/perrito/21.png)
 
+Salimos con ctrl+x de nano
+
 ![Nmap Scan](images/perrito/22.png)
 
 
