@@ -106,6 +106,68 @@ vamos a trastear un poco más por si vemos algo que nos ayude:
 podemos ver que la id de la máquina es un intiger, que el origen puede ser  `docker` o `bunker` y el logo una imagen que subamos, repaso un poco curl antes de ponerme al lio y mi primer intento:
 
 
+![Nmap Scan](images/perrito/12.png)
+
+Vale cosas a tener en cuenta la imagen debe estar en tu ruta actual de trabajo...no es que me pasara... bueno si, hasta que me di cuenta que la tenia en descargas y no lo había indicado xD
+Por lo visto necesitamos un csrf token... vamos al navegador haber que vemos:
+
+![Nmap Scan](images/perrito/13.png)
+
+
+por ahi tenemos un token, esta en flask asique podemos ver que contiene online o bajarnos script para decodear etc:
+
+si quereis hacerlo por script:
+
+
+```bash
+import base64
+import zlib
+import json
+
+cookie = "eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g"
+
+data = base64.urlsafe_b64decode(cookie + "==")
+print(zlib.decompress(data))
+```
+
+se ejecuta con python y listo o decodearlo online:
+
+![Nmap Scan](images/perrito/14.png)
+
+
+el caso tenemos un csrf_token, vamos a nuestra peticion de nuevo:
+
+```bash
+curl -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" -F "machine_id=0" -F "origen=bunker" -F "logo=@gatito.jpeg" -b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" -F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
+```
+
+aunque la respuesta la vi...corta así que le metí un -v para que hiciera verbose:
+
+```bash
+curl -v -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" -F "machine_id=0" -F "origen=bunker" -F "logo=@gatito.jpeg" -b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" -F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
+```
+
+![Nmap Scan](images/perrito/15.png)
+
+
+Cosas a tener en cuenta, `-b` es para el envio de cookies. `-F` es para enviar un formulario y en el formulario en logo ponemos un `@` para que lea el archivo local y lo envíe, el `-X POST` el método de envío y el `-v` es un verbose para ver mas información.
+
+
+El caso en la respuesta podemos leer:
+
+```
+Ahora puedes entrar por SSH con las credenciales: balulerobalulito:megapassword"
+```
+
+pues ya tenemos credeciales para SSH
+
+
+
+
+
+
+
+
 
 
 
