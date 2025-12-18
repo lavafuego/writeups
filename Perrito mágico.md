@@ -69,6 +69,9 @@ Reviso por encima el código fuente veo alguna cosa pero me centro en buscar rut
 
 veo una ruta interesante `http://172.17.0.2:5000/api/]`
 
+
+## FASE DE INTRUSIÓN
+
 la abro en el navegador:
 
 
@@ -162,6 +165,63 @@ Ahora puedes entrar por SSH con las credenciales: balulerobalulito:megapassword"
 pues ya tenemos credeciales para SSH
 
 
+## FASE ESCALADA DE PRIVILEGIOS
+
+Nos conectamos por SSH:
+
+```bash
+ssh balulerobalulito@172.17.0.2
+```
+![Nmap Scan](images/perrito/16.png)
+
+Empezamos a enumerar, grupos a los que pertenecemos con
+```bash
+id
+```
+```
+uid=1001(balulerobalulito) gid=1001(balulerobalulito) groups=1001(balulerobalulito)
+```
+
+nada interesante, miramos si tenemosprivilegios sudo con algun binario
+
+```bash
+sudo -l
+```
+
+....anda nano jejeje
+
+
+![Nmap Scan](images/perrito/17.png)
+
+Vamos a `https://gtfobins.github.io/` y buscamos nano
+
+![Nmap Scan](images/perrito/18.png)
+
+
+pues nada, hay que ejecutar nano, ctrl+r, despues ctrl+x y ejecutar un comando por lo visto
+
+pues al lio
+
+```bash
+sudo /usr/bin/nano
+```
+ ctrl+r
+
+ ctrl+x
+
+![Nmap Scan](images/perrito/19.png)
+
+
+![Nmap Scan](images/perrito/20.png)
+
+
+![Nmap Scan](images/perrito/21.png)
+
+![Nmap Scan](images/perrito/22.png)
+
+
+ y ya somos root
+ 
 
 
 
