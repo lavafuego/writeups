@@ -182,7 +182,7 @@ id
 uid=1001(balulerobalulito) gid=1001(balulerobalulito) groups=1001(balulerobalulito)
 ```
 
-nada interesante, miramos si tenemosprivilegios sudo con algun binario
+nada interesante, miramos si tenemos privilegios sudo con algun binario
 
 ```bash
 sudo -l
@@ -205,11 +205,13 @@ pues al lio
 ```bash
 sudo /usr/bin/nano
 ```
+
+
+![Nmap Scan](images/perrito/19.png)
+
  ctrl+r
 
  ctrl+x
-
-![Nmap Scan](images/perrito/19.png)
 
 
 ![Nmap Scan](images/perrito/20.png)
