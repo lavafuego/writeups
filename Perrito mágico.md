@@ -149,7 +149,7 @@ curl -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" \
 -F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
 ```
 
-aunque la respuesta la vi...corta así que le metí un -v para que hiciera verbose:
+La respuesta la vi...con poca información xD así que le metí un -v para que hiciera verbose:
 
 ```bash
 curl -v -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" \
