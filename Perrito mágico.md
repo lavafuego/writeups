@@ -51,3 +51,62 @@ whatweb http://172.17.0.2:5000 | tee whatweb
 
 ![Nmap Scan](images/perrito/4.png)
 
+Vemos una cookie, una redirección... vamos a abrir el navegador:
+
+
+
+![Nmap Scan](images/perrito/5.png)
+
+
+Reviso por encima el código fuente veo alguna cosa pero me centro en buscar rutas:
+
+```bash
+ gobuster dir -u "http://172.17.0.2:5000/" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php, ,html
+```
+
+![Nmap Scan](images/perrito/6.png)
+
+
+veo una ruta interesante `http://172.17.0.2:5000/api/]`
+
+la abro en el navegador:
+
+
+![Nmap Scan](images/perrito/7.png)
+
+
+Por lo visto aquí tenemos la forma de cambiar la foto de la máquina
+
+
+![Nmap Scan](images/perrito/8.png)
+
+Ya que tenemos la ruta, la visitamos en la web y:
+
+
+![Nmap Scan](images/perrito/9.png)
+
+
+error...si miramos la descripcion de como funciona esto en ´http://172.17.0.2:5000/api/´, concretamente desplegando el panel vemos que es obligatorio enviar tres campos:
+
+```
+machine_id 
+origen 
+logo 
+```
+![Nmap Scan](images/perrito/8.png)
+
+vamos a trastear un poco más por si vemos algo que nos ayude:
+
+![Nmap Scan](images/perrito/10.png)
+
+
+![Nmap Scan](images/perrito/11.png)
+
+
+podemos ver que la id de la máquina es un intiger, que el origen puede ser  `docker` o `bunker` y el logo una imagen que subamos, repaso un poco curl antes de ponerme al lio y mi primer intento:
+
+
+
+
+
+
