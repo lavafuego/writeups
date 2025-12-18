@@ -141,13 +141,23 @@ se ejecuta con python y listo o decodearlo online:
 el caso tenemos un csrf_token, vamos a nuestra peticion de nuevo:
 
 ```bash
-curl -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" -F "machine_id=0" -F "origen=bunker" -F "logo=@gatito.jpeg" -b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" -F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
+curl -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" \
+-F "machine_id=0" \
+-F "origen=bunker" \
+-F "logo=@gatito.jpeg" \
+-b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" \
+-F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
 ```
 
 aunque la respuesta la vi...corta así que le metí un -v para que hiciera verbose:
 
 ```bash
-curl -v -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" -F "machine_id=0" -F "origen=bunker" -F "logo=@gatito.jpeg" -b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" -F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
+curl -v -X POST "http://172.17.0.2:5000/gestion-maquinas/upload-logo" \
+-F "machine_id=0" \
+-F "origen=bunker" \
+-F "logo=@gatito.jpeg" \
+-b "session=.eJwlzDsOgzAMANC7eO5gp3HscBmUGIMi1FDxmVDv3kod3_JusGOfx3NbvcMAiTXmZM_KIaNpEiJUpEkjOXOJVdA9i2BJmEKJwiqeqyHNIZsaPOA6fB_bBAMp_9XLy3_3u_Xlar2dG3y-3HUi8g.aUQ5BQ.dkux7lKnABsNynnZVfYrUr7HlW4" \
+-F "csrf_token=658496c3b5290c867110801d841e55a4b70ee9770a6062a47587e9bc01f29c8c"
 ```
 
 ![Nmap Scan](images/perrito/15.png)
