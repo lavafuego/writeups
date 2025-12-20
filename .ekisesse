@@ -1,0 +1,142 @@
+# 🧠 XSS lógico → Credenciales hardcodeadas (Análisis de código)
+
+## 📌 Contexto
+
+Durante el análisis de una aplicación web (entorno local `172.17.0.2:5000`) se planteaba la existencia de un **XSS en el dashboard** como pista principal del reto.
+
+Tras múltiples pruebas, el XSS **no se ejecutaba**, lo que indicaba que el objetivo real no era un XSS clásico, sino algo distinto relacionado con la lógica del frontend.
+
+---
+
+## 🔍 Pruebas iniciales de XSS
+
+Payloads probados en campos como la biografía y enlaces sociales:
+
+```html
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<svg onload=alert(1)>
+${alert(1)}
+```
+
+📌 Resultado:
+- Ningún payload se ejecuta
+- El input se refleja pero no evalúa JavaScript
+
+Conclusión inicial:
+- El XSS está filtrado **o**
+- El XSS es solo una **pista narrativa**
+
+---
+
+## 🧭 Cambio de enfoque: análisis del frontend
+
+Ante la falta de ejecución real, se decidió analizar el código JavaScript accesible públicamente.
+
+### Enumeración de rutas
+Se utilizó `feroxbuster` para descubrir rutas y archivos estáticos:
+
+- `/static/js/dashboard.js`
+- `/static/js/writeups.js`
+- `/static/js/presentacionmaquina.js`
+- `/static/js/ranking.js` ⬅️ archivo clave
+
+---
+
+## 🔎 ¿Por qué mirar `ranking.js`?
+
+Porque:
+- Es un JS público
+- Contiene lógica relacionada con rankings, recompensas y eventos
+- En CTFs, este tipo de archivos suele ocultar lógica sensible
+
+Además, al buscar referencias a XSS en el código frontend, se detectó código relacionado con **detección de payloads XSS**.
+
+---
+
+## 🔑 Hallazgo crítico en `ranking.js`
+
+Dentro del archivo aparece la función:
+
+```js
+function detectXSSPayload(url) {
+    const xssPatterns = [
+        'javascript:',
+        'data:text/html',
+        '<script',
+        'onerror=',
+        'alert('
+    ];
+    return xssPatterns.some(pattern => url.includes(pattern));
+}
+```
+
+Esto confirma que:
+- El frontend **detecta** XSS
+- No lo ejecuta
+- Solo comprueba si el usuario *intentó* usarlo
+
+Justo después, aparece la función de recompensa:
+
+```js
+function showXSSCongratulationsModal() {
+    ...
+    chocolate:chocolatito123
+}
+```
+
+---
+
+## ❗ Punto clave del reto
+
+- La clave **NO aparece tras explotar un XSS**
+- La clave **NO se genera dinámicamente**
+- La clave **SIEMPRE ha estado en `ranking.js`**
+- El XSS solo sirve para justificar la aparición de una “ventanita” (modal)
+
+👉 El exploit real es **leer el código fuente**.
+
+---
+
+## 🧠 Conclusión final
+
+Este reto no consiste en ejecutar JavaScript malicioso, sino en:
+
+1. Detectar que el XSS no funciona
+2. Analizar el frontend
+3. Leer archivos JS públicos
+4. Encontrar secretos hardcodeados
+
+> **El XSS no era el exploit.  
+> Era la excusa.**
+
+---
+
+## 🏁 Impacto de seguridad
+
+- Credenciales SSH expuestas en JavaScript público
+- Accesibles por cualquier usuario
+- Vulnerabilidad crítica si se replica en un entorno real
+
+---
+
+## 🔐 Credenciales obtenidas
+
+```text
+usuario: chocolate
+password: chocolatito123
+```
+
+---
+
+## 📚 Lección aprendida
+
+> En seguridad ofensiva, muchas veces no hay que ejecutar nada.
+>  
+> **Solo leer.**
+
+---
+
+## 👤 Autor
+
+Writeup realizado por **[tu nick aquí]**
