@@ -129,7 +129,7 @@ Cookie: PHPSESSID=7qlqa62lran92ssjhon9l1lqv5; admin_token=UEBzc3cwcmQhVXNlcjRkbT
 quien tenga un poco de ojo se dará cuenta que %3D es lo mismo que = o lo que es lo mismo:
 
 ```
-=UEBzc3cwcmQhVXNlcjRkbTFuMjAyNSEjLQ==
+UEBzc3cwcmQhVXNlcjRkbTFuMjAyNSEjLQ==
 ```
 
 un base64!!!!
