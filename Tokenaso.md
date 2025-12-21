@@ -60,7 +60,9 @@ diseo:hacker
 ![Nmap Scan](images/tokenaso/3.png)
 
 
+
 Entramos en el panel, investigandoun poco vemos que podemos cambiar la contraseña:
+
 
 
 ![Nmap Scan](images/tokenaso/4.png)
@@ -72,13 +74,17 @@ Entramos en el panel, investigandoun poco vemos que podemos cambiar la contrase�
 
 
 
+
 aqui ponemos el usuario y nos mandan un codigo al correo para cambiarl la contraseña:
+
 
 
 ![Nmap Scan](images/tokenaso/6.png)
 
 
+
 miramos los email simulados:
+
 
 
 ![Nmap Scan](images/tokenaso/7.png)
