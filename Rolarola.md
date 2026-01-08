@@ -61,9 +61,11 @@ Introduzco una frase simple `Hola hola cara cola`
 
 ![imagen_CTF](images/Rolarola/5.png)
 
+
 Le doy a enviar y veo como se comporta y reporta la frase
 
 ![imagen_CTF](images/Rolarola/6.png)
+
 
 
 Compruebo que pasa si le doy a `no tocar` y tambien nos reporta la frase
@@ -76,6 +78,7 @@ En un principio pensé en alguna inyeccion xss y no tuvieron exito
 ![imagen_CTF](images/Rolarola/8.png)
 
 
+
 Así pues intenté inyecciones con `;` `&` ` `` ` y funcionaron:
 
 ```bash
@@ -86,21 +89,34 @@ hola`id`
 
 dando al botón no tocar nos reporta la salida:
 
+
 ![imagen_CTF](images/Rolarola/9.png)
+
 
 ![imagen_CTF](images/Rolarola/10.png)
 
+
 ![imagen_CTF](images/Rolarola/11.png)
+
 
 Por lo que veo se puede escapar el texto y se ejecutan los comandos, entonces vuelvo al `names.txt` y veo que la salida se imprime en ese archivo.
 
+
 ![imagen_CTF](images/Rolarola/11.png)
+
+
 
 Utilicé este método para enumerar la máquina sin exito así pues decidí probar a lanzar una revershell.
 
 1-Compruebo si dispone de wget:
+
+
 ![imagen_CTF](images/Rolarola/12-1.png)
+
+
 ![imagen_CTF](images/Rolarola/12-2.png)
+
+
 ![imagen_CTF](images/Rolarola/13.png)
 
 
