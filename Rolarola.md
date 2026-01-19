@@ -307,8 +307,43 @@ ahora si podemos ver el historial, al mirarlo solo vemos una rama, vemos una sol
 ![imagen_CTF](images/Rolarola/29.png)
 
 
-vemos un /app.py 
+vemos un /app.py y que ha tenido cambios y su autor
 
+
+![imagen_CTF](images/Rolarola/30.png)
+
+Nos vamos a la máquina victima y miramos los procesos que se estan ejecutando en el sistema
+
+```
+ps aux
+```
+
+![imagen_CTF](images/Rolarola/31.png)
+
+
+Vemos a matsi ejecutando `/home/matsi/proyect/app.py` 
+
+vamos a hacer una consulta rápida con:
+
+```bash
+watch -n 1 "ps aux | grep app.py | grep -v grep"
+```
+hay tres opciones:
+
+1-Si sale y entra → se ejecuta a intervalos
+
+2-Si siempre está → daemon/servicio
+
+3-Si desaparece y vuelve → cron o loop externo
+
+Al ver que siempre está hay un servicio que lo ejecuta
+
+
+![imagen_CTF](images/Rolarola/32.png)
+
+
+Así pues ahora si que nos vamos a centrar en el script, como ando algo flojo es el momento de tirar de chatgpt y descubro que tiene una vuln
+con pickle.loads()
 
 
 
