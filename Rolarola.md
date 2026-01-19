@@ -254,7 +254,60 @@ stty rows 54 columns 235 en mi caso son estas las dimensiones con stty -a en una
 ```
 
 
+Después de buscar bits SUId, capabilities, variables de entorno etc no veo nada, pero en la carpeta `/opt` veo un archivo interesante
 
+
+
+
+![imagen_CTF](images/Rolarola/25.png)
+
+
+
+lo traigo a mi máquina atacante, primero busco si dispone de python y al ver que dispone de python 3 monto un servidor para poder bajar el archivo:
+
+
+```bash
+which python3
+python3 -m http.server 2222
+```
+
+
+![imagen_CTF](images/Rolarola/26.png)
+
+
+desde mi máquina atacante me bajo los archivos:
+
+
+```bash
+wget -r http://172.17.0.2:2222/.git/
+```
+
+
+![imagen_CTF](images/Rolarola/27.png)
+
+
+
+Ahora me dispongo a mirar que contiene el git, vamos a mirar el historial de todas las ramas con `git log --all` pero
+nos da un error que solucionamos con el siguiente comando:
+
+```
+find .git -name "index.html*" -delete
+```
+
+
+![imagen_CTF](images/Rolarola/28.png)
+
+
+
+ahora si podemos ver el historial, al mirarlo solo vemos una rama, vemos una sola rama y vamos a ver los cambios que ha tenido:
+```
+ git log -p "119ed670ec345e6e9fa326a239b77b5ea81b11ba"
+```
+
+![imagen_CTF](images/Rolarola/29.png)
+
+
+vemos un /app.py 
 
 
 
