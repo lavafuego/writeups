@@ -355,7 +355,7 @@ y paree que todo cuadra
 
 
 Así pues ahora si que nos vamos a centrar en el script, despues de investigar como un perro porque ando flojo descubro que tiene una vuln
-con pickle.loads(), la cosa es que al deserializar, python hace algo como `funcion(*argumentos)` entonces si en __reduce__ tú devuelves `return os.system, ("comando",)`
+con pickle.loads(), la cosa es que al deserializar, python hace algo como `funcion(*argumentos)` entonces si en `__reduce__` tú devuelves `return os.system, ("comando",)`
 python ejecuta `os.system("comando")` ...nada peligroso xD
 
 ```
