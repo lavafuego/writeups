@@ -342,12 +342,70 @@ Al ver que siempre está hay un servicio que lo ejecuta
 ![imagen_CTF](images/Rolarola/32.png)
 
 
-Así pues ahora si que nos vamos a centrar en el script, como ando algo flojo es el momento de tirar de chatgpt y descubro que tiene una vuln
-con pickle.loads()
+Así pues ahora si que nos vamos a centrar en el script, despues de investigar como un perro porque ando flojo descubro que tiene una vuln
+con pickle.loads(), la cosa es que al deserializar, python hace algo como `funcion(*argumentos)` entonces si en __reduce__ tú devuelves `return os.system, ("comando",)`
+python ejecuta `os.system("comando")` ...nada peligroso xD
+
+```
+https://github.com/miguelgrinberg/python-socketio/security/advisories/GHSA-g8c6-8fjj-2r4m
+```
+y utilizando esto como base:
+
+```
+https://www.hackingarticles.in/python-serialization-vulnerabilities-pickle/
+```
+ me monto un script, lo  primero es entender el flujo de app.py
+
+1-app.py es un servicio TCP que:
+
+ Escucha en 127.0.0.1:6969
+
+ Acepta conexiones (por ejemplo con nc)
+
+ Ofrece un menú con dos opciones:
+
+ 1) Leer objetivos
+
+ 2) Escribir nuevo objetivo
+
+ Los datos se guardan en un archivo: `objetivos.bin`
 
 
+ 2-El servidor arranca y se queda esperando
+  ```
+ s.bind((HOST, PORT))
+ s.listen(1)
+ ```
+ Esto significa:
 
+ El programa queda escuchando
 
+ Acepta conexiones una por una
+
+ No se cierra nunca (while True)
+
+Cuando haces `nc 127.0.0.1 6969` Te conectas a este socket.
+
+3-Al conectarte, siempre te muestra el menú
+```
+ send(conn, "1) Leer objetivos\n2) Escribir nuevo objetivo\n> ")
+ opcion = recv_text(conn)
+```
+ El servidor te pregunta y tu respondes 1 o 2, te pide nombre, edad, pero es de relleno porque no guarda nada
+
+ Aquí pasa algo crítico `recv_bytes()` recibe bytes crudos sin validar ni nada y guarda los bytes tal cual `guardar_objetivo(blob)`
+ Dentro de guardar_objetivo
+ ```
+size = len(blob).to_bytes(4, "big")
+f.write(size + blob)
+```
+y aqui es donde se puede guardar un pickle malicioso
+
+aqui viene la madre del cordero, con la opcion 1 lee objetivos.bin en binario. exacatamente lee exactamente esos bytes 
+```
+data = f.read(size)
+```
+y pickle.loads() lo ejecuta sin más
 
 
 
