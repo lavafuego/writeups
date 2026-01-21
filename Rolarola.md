@@ -356,6 +356,8 @@ https://www.hackingarticles.in/python-serialization-vulnerabilities-pickle/
 ```
  me monto un script, lo  primero es entender el flujo de app.py
 
+
+
 **Explicación de alguien que esta flojo en el tema**
 
 1-app.py es un servicio TCP que:
@@ -423,6 +425,14 @@ Resumen del flujo completo (en una frase):
 5-Tu comando se ejecuta como el usuario del servicio (matsi)
 
 **fin explicación**
+
+
+Después de hacer unas pruebas y darme de cabezazos utilizando como base esta página 
+```
+https://www.hackingarticles.in/python-serialization-vulnerabilities-pickle/
+```
+
+
 
 
 
