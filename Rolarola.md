@@ -356,6 +356,8 @@ https://www.hackingarticles.in/python-serialization-vulnerabilities-pickle/
 ```
  me monto un script, lo  primero es entender el flujo de app.py
 
+**Explicación de alguien que esta flojo en el tema**
+
 1-app.py es un servicio TCP que:
 
  Escucha en 127.0.0.1:6969
@@ -408,6 +410,19 @@ data = f.read(size)
 y pickle.loads() lo ejecuta sin más
 
 
+Resumen del flujo completo (en una frase):
+
+1-Opción 2 guarda bytes controlados por ti
+
+2-Se escriben en disco sin validación
+
+3-Opción 1 los lee
+
+4-pickle.loads() los ejecuta
+
+5-Tu comando se ejecuta como el usuario del servicio (matsi)
+
+**fin explicación**
 
 
 
