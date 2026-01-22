@@ -417,14 +417,14 @@ f.write(size + blob)
 ```
 y aqui es donde se puede guardar un pickle malicioso
 
-aqui viene la madre del cordero, con la opcion 1 lee objetivos.bin en binario. exacatamente lee exactamente esos bytes 
+aqui viene la madre del cordero, con la opcion 1 lee objetivos.bin en binario, repito lee exactamente esos bytes 
 ```
 data = f.read(size)
 ```
 y pickle.loads() lo ejecuta sin más
 
 
-Resumen del flujo completo (en una frase):
+Resumen del flujo completo:
 
 1-Opción 2 guarda bytes controlados por ti
 
