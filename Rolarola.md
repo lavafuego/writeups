@@ -299,7 +299,7 @@ find .git -name "index.html*" -delete
 
 
 
-ahora si podemos ver el historial, al mirarlo solo vemos una rama, vemos una sola rama y vamos a ver los cambios que ha tenido:
+ahora si podemos ver el historial, al mirarlo solo vemos una rama, y vamos a ver los cambios que ha tenido:
 ```
  git log -p "119ed670ec345e6e9fa326a239b77b5ea81b11ba"
 ```
