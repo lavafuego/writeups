@@ -117,7 +117,85 @@ en `type=email` `borramos email` y ponemos el user `notadmin` y en el password u
 
 ![Imagen](images/Profetas/12.png)
 
-con eso tenemos accedo a 
+con eso tenemos accedo a `http://172.17.0.2/dashboard.php`
+
+![Imagen](images/Profetas/13.png)
+
+
+
+# SEGUNDA FORMA
+
+
+rellenamos los campos con un correo inventado y un password inventado
+
+![Imagen](images/Profetas/14.png)
+
+
+hacemos una captura con burpsuite
+
+![Imagen](images/Profetas/15.png)
+
+la mandamos al repeater y en usuario ponemos `notadmin` y en password `%27or%201%3D1--%20-` que es `'or 1=1-- -` urlencodeado
+
+![Imagen](images/Profetas/16.png)
+
+
+Vemos que podemos hacer una redireción y la hacemos:
+
+![Imagen](images/Profetas/17.png)
+
+
+Y llegamos a una pagina con una cookie nueva:
+
+![Imagen](images/Profetas/17.png)
+
+
+Guardamos la cookie y nos vamos a la página web, cambiamos la cookie `PHPSESSID` por el nuevo valor y cambiamos en la barra a http://172.17.0.2/dashboard.php al recargar estamos dentro... y no mireis en la url el user y el pass
+que os da algo xD
+
+![Imagen](images/Profetas/18.png)
+
+
+![Imagen](images/Profetas/19.png)
+
+![Imagen](images/Profetas/20.png)
+
+
+Todo esto ocurre porque la validación de email es por parte del cliente y no del servidor a groso modo.
+
+bueno lo que vemos ahora es que podemos pinchar en `acceso al portal 2` y si miramos el codigo fuente `externalentitiinjection.php` toda una revelacion para un XML External Entity Injection:
+
+
+![Imagen](images/Profetas/21.png)
+
+
+Probamos una inyeccion básica para leer un archivo:
+
+```bash
+<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<data>
+    <contenido>&xxe;</contenido>
+</data>
+```
+
+y vemos que da resultado:
+
+![Imagen](images/Profetas/22.png)
+
+
+
+![Imagen](images/Profetas/23.png)
+
+
+
+
+
+
+
+
 
 
 
