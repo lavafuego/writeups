@@ -73,6 +73,26 @@ No se si servirá de algo pero hay que apuntarlo, la página `http://172.17.0.2/
 Y el cóidigo fuente no nos revela ada interesante, con esto, vamos a fuzzear un poco.
 
 
+```bash
+gobuster dir -u "http://172.17.0.2/" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt, ,html | tee gobuster
+```
+
+
+![Imagen](images/Profetas/8.png)
+
+
+
+Vemos unas cuantas rutas y redirecciones, comenzamos por `view-source:http://172.17.0.2/index.php` al inspeccionar el código fuente vemos:`cmVjdWVyZGEuLi4gdHUgY29udHJhc2XxYSBlcyB0dSB1c3Vhcmlv` que parece 
+un base64, lo decodeamos:
+```bash
+echo "cmVjdWVyZGEuLi4gdHUgY29udHJhc2XxYSBlcyB0dSB1c3Vhcmlv" | base64 -d; echo
+```
+y vemos algo interesante
+
+![Imagen](images/Profetas/9.png)
+
+
+![Imagen](images/Profetas/10.png)
 
 
 
