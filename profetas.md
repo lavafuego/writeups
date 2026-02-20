@@ -191,6 +191,23 @@ y vemos que da resultado:
 
 
 
+Ahora copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamos un diccionario de usuarios
+```bash
+ awk -F ":" '{print$1}' passwd > users.txt
+```
+
+
+![Imagen](images/Profetas/23.png)
+
+
+ahora que tenemos una lista de usuarios y acordandonos de que decia que en la repetición no se qué vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
+
+
+```bash
+
+
+
+
 
 
 
