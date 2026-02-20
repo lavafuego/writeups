@@ -97,7 +97,27 @@ y vemos algo interesante
 
 
 
+Con todo esto nos vamos a `http://172.17.0.2/admin.php`
 
+
+![Imagen](images/Profetas/11.png)
+
+
+vemos `la repetición tiene significado` y `notadmin` un posible usuario?
+
+el caso que al intentar hacer login tiene que ser un correo y un usuario...provamos diversos correos con el user notadmin y aquí logré romperlo de dos formas:
+
+
+# primera forma:
+
+
+Nos saltamos a la torera que sea un correo (ya que probé ataques con diccionarios y nada):
+en `type=email` `borramos email` y ponemos el user `notadmin` y en el password una inyeccion sql `'or 1=1-- -`
+
+
+![Imagen](images/Profetas/12.png)
+
+con eso tenemos accedo a 
 
 
 
