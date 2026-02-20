@@ -16,6 +16,9 @@
 sudo bash auto_deploy.sh profetas.tar
 ```
 
+![Imagen](images/Profetas/1.png)
+
+
 5- una vez montada nos dice que la IP del la máquina vulnerable es `172.17.0.2`
 
 ![Imagen](images/Profetas/2.png)
