@@ -24,7 +24,7 @@ sudo bash auto_deploy.sh profetas.tar
 ![Imagen](images/Profetas/2.png)
 
 
-## FASE DE ENUMERACIÓN
+## FASE DE ENUMERACIÓN E INTRUSIÓN
 
 Vamos a enumerar a la máquina, comenzamos viendo que puertos tiene abiertos y que servicios corren por ellos, así como sus versiones por si son vulnerables:
 
@@ -197,16 +197,30 @@ Ahora copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamo
 ```
 
 
-![Imagen](images/Profetas/23.png)
+![Imagen](images/Profetas/24.png)
 
 
 ahora que tenemos una lista de usuarios y acordandonos de que decia que en la repetición no se qué vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
 
 
 ```bash
+hydra -L users.txt  -P users.txt -t 16 -V -f -I ssh://172.17.0.2
+```
+
+![Imagen](images/Profetas/25.png)
+
+
+![Imagen](images/Profetas/26.png)
+
+
+Bueno pues ya tenemos un user y un pass para entrar por SSH `jeremias:jeremias`
 
 
 
+
+
+
+## FASE ESCALADA DE PRIVILEGIOS
 
 
 
