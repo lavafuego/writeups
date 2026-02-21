@@ -322,5 +322,7 @@ Ahora con `sudo su` ya somos root
 ![Imagen](images/Profetas/34.png)
 
 
+La idea era poder escribir en un archivo importante de la máquina, puedes sobreescribir el passwd, el shadow, crear una id_rsa esas cosas hay que probarlas, yo me incliné por estas porque debes recibir en la ruta, y las opciones eran passwd o sudoers...pero el método sencillo, era mandarnos a la máquina atacante el archivo de la ruta del archivo que leimos en la home de ezequiel que contiene el password de root xD
+
 
 
