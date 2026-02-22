@@ -1,6 +1,6 @@
 ## MONTAMOS MÁQUINA VULNERABLE
 
-1-Vamos a la página `https://dockerlabs.es/` y buscamos la máquina ´Profetas´ nivel medio y su autor `mikisbd`
+1-Vamos a la página `https://dockerlabs.es/` y buscamos la máquina ´Profetas´ de nivel medio y su autor `mikisbd`
 
 2- descargamos el zip
 
@@ -10,7 +10,7 @@
  unzip profetas.zip
 ```
 
-4- montamos la máquina vulnerable en docker con los archivos descomprimidos en el zip:
+4- montamos la máquina vulnerable en docker con los archivos que hemos descomprimido en el zip:
 
 ```bash
 sudo bash auto_deploy.sh profetas.tar
@@ -19,14 +19,14 @@ sudo bash auto_deploy.sh profetas.tar
 ![Imagen](images/Profetas/1.png)
 
 
-5- una vez montada nos dice que la IP del la máquina vulnerable es `172.17.0.2`
+5- una vez montada, nos dice que la IP del la máquina vulnerable es `172.17.0.2`
 
 ![Imagen](images/Profetas/2.png)
 
 
 ## FASE DE ENUMERACIÓN E INTRUSIÓN
 
-Vamos a enumerar a la máquina, comenzamos viendo que puertos tiene abiertos y que servicios corren por ellos, así como sus versiones por si son vulnerables:
+Vamos a enumerar a la máquina. Comenzamos viendo que puertos tiene abiertos y que servicios corren por ellos, así como sus versiones por si son vulnerables:
 
 ```bash
  sudo nmap -sS -sCV --open -p- --min-rate 5000 172.17.0.2 -vvv -oN nmap
@@ -39,10 +39,11 @@ Encontramos dos puertos abiertos:
 ![Imagen](images/Profetas/3.png)
 
 
-Dado que no tenemos usuarios ni credenciales para SSH vamos a centrarnos en la página web que corre por el puerto 80.
+Dado que no tenemos usuarios ni credenciales para SSH, vamos a centrarnos en la página web que corre por el puerto 80.
 
 
-Antes de ir a la página vamos a ver que tecnologias utiliza la página con:
+Antes de ir a la página, vamos a ver que tecnologías utiliza la página con:
+
 ```bash
 whatweb http://172.17.0.2 | tee whatweb
 ```
@@ -50,11 +51,11 @@ whatweb http://172.17.0.2 | tee whatweb
 ![Imagen](images/Profetas/4.png)
 
 
-Vemos un apache...una cookie, vamos a ver la página.
+Vemos un apache...una cookie, nada raro y decidimos ir a ver la página.
 
 
-Vemos una página con un login en el cual vemos la dirección  `http://172.17.0.2/dashboard.php` y si en el password damos botón derecho y revelar contraseña vemos un password `@Pssw0rd!User4dm1n2025!#` para poder copiar
-el password, click derecho,reveal password
+Vemos una página con un login, en el cual vemos la dirección  `http://172.17.0.2/dashboard.php`. Y si en el password damos botón derecho y revelar contraseña, vemos un password `@Pssw0rd!User4dm1n2025!#` . Para poder copiar
+el password, click derecho, y picamos en  reveal password
 
 ![Imagen](images/Profetas/5.png)
 
@@ -69,8 +70,8 @@ Ahora para copiarlo, cambiamos `type=password` por `type=text`
 ![Imagen](images/Profetas/7.png)
 
 
-No se si servirá de algo pero hay que apuntarlo, la página `http://172.17.0.2/dashboard.php` nos redirecciona a `http://172.17.0.2/index.php`
-Y el cóidigo fuente no nos revela ada interesante, con esto, vamos a fuzzear un poco.
+No se si servirá de algo, pero hay que apuntarlo. La página `http://172.17.0.2/dashboard.php` nos redirecciona a `http://172.17.0.2/index.php`
+Y el cóidigo fuente no nos revela nada interesante. Con esto, vamos a fuzzear un poco.
 
 
 ```bash
@@ -82,12 +83,13 @@ gobuster dir -u "http://172.17.0.2/" -w /usr/share/wordlists/dirbuster/directory
 
 
 
-Vemos unas cuantas rutas y redirecciones, comenzamos por `view-source:http://172.17.0.2/index.php` al inspeccionar el código fuente vemos:`cmVjdWVyZGEuLi4gdHUgY29udHJhc2XxYSBlcyB0dSB1c3Vhcmlv` que parece 
+Vemos unas cuantas rutas y redirecciones. Comenzamos por `view-source:http://172.17.0.2/index.php` , al inspeccionar su código fuente vemos:`cmVjdWVyZGEuLi4gdHUgY29udHJhc2XxYSBlcyB0dSB1c3Vhcmlv` que parece 
 un base64, lo decodeamos:
+
 ```bash
 echo "cmVjdWVyZGEuLi4gdHUgY29udHJhc2XxYSBlcyB0dSB1c3Vhcmlv" | base64 -d; echo
 ```
-y vemos algo interesante
+y vemos algo interesante:
 
 ![Imagen](images/Profetas/9.png)
 
@@ -103,21 +105,21 @@ Con todo esto nos vamos a `http://172.17.0.2/admin.php`
 ![Imagen](images/Profetas/11.png)
 
 
-vemos `la repetición tiene significado` y `notadmin` un posible usuario?
+vemos `la repetición tiene significado` y `notadmin` , un ¿posible usuario?
 
-el caso que al intentar hacer login tiene que ser un correo y un usuario...provamos diversos correos con el user notadmin y aquí logré romperlo de dos formas:
+el caso que al intentar hacer login, tiene que ser un correo y un usuario...provamos diversos correos con el user notadmin y aquí logré romperlo de tres formas:
 
 
 # PRIMERA FORMA:
 
 
-Nos saltamos a la torera que sea un correo (ya que probé ataques con diccionarios y nada):
-en `type=email` `borramos email` y ponemos el user `notadmin` y en el password una inyeccion sql `'or 1=1-- -`
+Nos saltamos a la torera que sea un correo (ya que probé antes ataques con diccionarios para generar correos etc y nada), en el inspector de elementos buscamos
+ `type=email` `borramos email`, y ponemos el panel user `notadmin` (ya que no nos valida que sea email) y en el password una inyeccion sql `'or 1=1-- -`
 
 
 ![Imagen](images/Profetas/12.png)
 
-con eso tenemos accedo a `http://172.17.0.2/dashboard.php`
+con eso tenemos acceso a `http://172.17.0.2/dashboard.php`
 
 ![Imagen](images/Profetas/13.png)
 
@@ -126,7 +128,7 @@ con eso tenemos accedo a `http://172.17.0.2/dashboard.php`
 # SEGUNDA FORMA
 
 
-rellenamos los campos con un correo inventado y un password inventado
+Rellenamos los campos con un correo inventado y un password inventado
 
 ![Imagen](images/Profetas/14.png)
 
@@ -135,7 +137,7 @@ hacemos una captura con burpsuite
 
 ![Imagen](images/Profetas/15.png)
 
-la mandamos al repeater y en usuario ponemos `notadmin` y en password `%27or%201%3D1--%20-` que es `'or 1=1-- -` urlencodeado
+la mandamos al repeater y en usuario ponemos `notadmin`, y en password `%27or%201%3D1--%20-` que es `'or 1=1-- -` urlencodeado
 
 ![Imagen](images/Profetas/16.png)
 
@@ -150,8 +152,7 @@ Y llegamos a una pagina con una cookie nueva:
 ![Imagen](images/Profetas/18.png)
 
 
-Guardamos la cookie y nos vamos a la página web, cambiamos la cookie `PHPSESSID` por el nuevo valor y cambiamos en la barra a http://172.17.0.2/dashboard.php al recargar estamos dentro... y no mireis en la url el user y el pass
-que os da algo xD
+Guardamos la cookie y nos vamos a la página web, cambiamos la cookie `PHPSESSID` por el nuevo valor y cambiamos en la barra de URL del navegador a http://172.17.0.2/dashboard.php , al recargar estamos dentro... y no mireis en la url el user y el pass que nos va a sonar.
 
 
 
@@ -181,14 +182,14 @@ Qué significa cada cosa
 
 -c cookies.txt → guarda las cookies que mande el servidor
 
--d → estamos haciendo POST automáticamente
+-d → estamos haciendo POST automáticamente porque estamos enviando data, si no se especifica toma ese parámetro
 
-Content-Type → porque el formulario es normal
+-Content-Type → porque el formulario es normal
 
 
 ![Imagen](images/Profetas/35.png)
 
-Comprobamos si ha guardado la nueva cookie de sesion y mandamos una nueva petición para autenticarnos pero esta vez a `dashboard.php`:
+Comprobamos si ha guardado la nueva cookie de sesion y mandamos una nueva petición para autenticarnos, pero esta vez a `dashboard.php`:
 
 
 
@@ -208,7 +209,7 @@ curl -L -b cookies.txt \
 ![Imagen](images/Profetas/37.png)
 
 
-pot último accedemos  con la nueva cookie y la sesion abierta a externalentitiinjection.php que vemos en la página de dashboard.php
+pot último, accedemos con la nueva cookie y la sesion abierta a externalentitiinjection.php que vemos en la página de dashboard.php
 
 ```bash
 curl -L -b cookies.txt \
@@ -217,7 +218,9 @@ curl -L -b cookies.txt \
 
 ![Imagen](images/Profetas/38.png)
 
-o si lo quereís resumido, que se puede saltar el paso final que es solo para saber si la cookie funciona:
+Vemos que con la nueva cookie podemos iniciar sesdion e ir a mas rutas logeado.
+
+O si lo quereís resumido, que se puede saltar el paso final, que es solo para saber si la cookie funcionaba más allá del dashboard.php:
 
 
 ```bash
@@ -232,23 +235,23 @@ curl -L -b cookies.txt http://172.17.0.2/dashboard.php
 ```
 
 
-lo único que queda ya que hemos comprobado que podemos acceder es cambiar la cookie de sesion y la url y cargar la página en el navegador:
+lo único que queda ya que hemos comprobado que podemos acceder, es cambiar la cookie de sesion, la url y cargar la página en el navegador:
 
 paso 1 - copiamos la cookie de nuestro cookie.txt:
 
 ![Imagen](images/Profetas/paso1_1.png)
 
-paso 2 - abrimos el inspector de elementos con Ctlr+shift+c y localizamos en storage la cookie que estamos utilizando, si no aparece, vamos a network y recargamos y ya podemos ver la cookie 
+paso 2 - abrimos el inspector de elementos con Ctlr+shift+c y localizamos en storage la cookie que estamos utilizando, si no aparece, vamos a network y recargamos, una vez echo y ya podemos ver la cookie 
 
 ![Imagen](images/Profetas/paso1.png)
 
 
-paso 3 - cambiamos la cookie por la del archivo cookies.txt que habíamos capturado y nos valía
+paso 3 - cambiamos la cookie por la del archivo cookies.txt que habíamos capturado y funcionaba en CURL
 
 ![Imagen](images/Profetas/paso2.png)
 
 
-paso 4 - en la barra de la URL cambiamos a `dashboard.php` que es el destino logueados y damos al intro
+paso 4 - en la barra de la URL, cambiamos a `dashboard.php` que es el destino logueados, y damos al intro
 
 
 ![Imagen](images/Profetas/paso3.png)
@@ -261,7 +264,7 @@ paso 4-  con la nueva cookie nos da acceso al nuevo destino de la URL
 
 
 
-bueno lo que vemos ahora es que podemos pinchar en `acceso al portal 2` y si miramos el codigo fuente `externalentitiinjection.php` toda una revelacion para un XML External Entity Injection:
+Bueno, lo que vemos ahora, es que podemos pinchar en `acceso al portal 2`. Y si miramos el codigo fuente podemos ver `externalentitiinjection.php` , toda una revelacion para un XML External Entity Injection:
 
 
 ![Imagen](images/Profetas/21.png)
@@ -289,7 +292,7 @@ y vemos que da resultado:
 
 
 
-Ahora copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamos un diccionario de usuarios
+Ahora, copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamos un diccionario de usuarios
 ```bash
  awk -F ":" '{print$1}' passwd > users.txt
 ```
@@ -298,7 +301,7 @@ Ahora copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamo
 ![Imagen](images/Profetas/24.png)
 
 
-ahora que tenemos una lista de usuarios, y acordandonos de que decia que en la repetición no se qué, vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
+Ahora que tenemos una lista de usuarios, y acordandonos de que decia que en la repetición no se qué, vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
 
 
 ```bash
@@ -311,7 +314,7 @@ hydra -L users.txt  -P users.txt -t 16 -V -f -I ssh://172.17.0.2
 ![Imagen](images/Profetas/26.png)
 
 
-Bueno pues ya tenemos un user y un pass para entrar por SSH `jeremias:jeremias`
+Bueno, pues ya tenemos un user y un pass para entrar por SSH `jeremias:jeremias`
 
 
 
@@ -326,7 +329,7 @@ Probamos:
 - `find / -perm -4000 2>/dev/null` para binarios SUID
 - intentamos acceder a la base de datos sin exito ya que tenia el puerto 3306 abierto, lo vi con este comando `ss -tulnp`
 
-Lo único raro que veo es un archivo .pyc en su carpeta, asi que me lo traigo a mi máquina para verlo más detenidamente:
+Lo único raro que veo es un archivo .pyc en su carpeta, asi que me lo traigo a mi máquina para verlo más detenidamente con scp:
 
 ```bash
 scp jeremias@172.17.0.2:/home/jeremias/ezequiel.pyc .
@@ -337,9 +340,9 @@ scp jeremias@172.17.0.2:/home/jeremias/ezequiel.pyc .
 ![Imagen](images/Profetas/27.png)
 
 
-Ya tenemos el python compiled en nuestra máquina, vamos a descompilarlo a ver si vemos algo interesante:
+Ya tenemos el python compiled en nuestra máquina, vamos a descompilarlo a ver si vemos algo interesante.
 
-vamos a la página `https://pylingual.io/` subimos el archivo, y lo decompilamos
+Vamos a la página `https://pylingual.io/` ,subimos el archivo, y lo decompilamos
 
 
 ![Imagen](images/Profetas/28.png)
@@ -351,7 +354,7 @@ Revisando el código vemos una posible contraseña
 ![Imagen](images/Profetas/29.png)
 
 
-Vamos a intentar conectarnos por ssh como el usuario  ezequiel con todo lo que tenemos, me creo un diccionario de contraseñas:
+Vamos a intentar conectarnos por ssh como el usuario  ezequiel creando un diccionario de contraseñas:
 
 ```bash
 @Pssw0rd!User4dm1n2025!#
@@ -377,16 +380,16 @@ Ya siendo ezequiel, miramos los grupos a los que pertenece, la carpeta personal 
 
 ![Imagen](images/Profetas/31.png)
 
-Como no tengo ni puñetera idea de lo que es croc busco por la red que es, básicamente es una aplicacion que permite transferir archivos entre dos ordenadore, pero...
-como funciona, me toca buscar más información.
+Como no tengo ni puñetera idea de lo que es croc, busco por la red que es. Básicamente es una aplicacion que permite transferir archivos entre dos ordenadore, ¿pero...
+como funciona?, me toca buscar más información.
 
 
-Vale aquí me lié la manta a la cabeza, porque hay métodos más faciles pero si puedo mandar y recibir archivos, en mi máquina atacante hago un archivo llamado `pwn`
+Vale aquí me lié la manta a la cabeza, porque hay métodos más faciles, pero si puedo mandar y recibir archivos se puede liar. En mi máquina atacante hago un archivo llamado `pwn`
 
 ```bash
 echo 'ezequiel ALL=(ALL) NOPASSWD:ALL' > pwn
 ```
-para dar todos los permisos a mi usuario que es ezequiel, desde mi máquina atacante subo el archivo y me genera un código:
+para que mi usuario que es ezequiel pueda ejecutar todo como root, desde mi máquina atacante subo el archivo y me genera un código:
 
 ```bash
 croc send pwn
@@ -397,7 +400,7 @@ y en la máquina víctima estando en la ruta `/etc/sudoers.d` recibo el archivo 
 ```bash
 sudo /usr/local/bin/croc
 ```
-me pide el código generado en el croco de la máquina atcante lo ponemos y...¡¡¡¡¡tachán!!! acabamos de escribir permisos para mi usuario:
+me pide el código generado en el croc de la máquina atcante, lo ponemos y...¡¡¡¡¡tachán!!! acabamos de escribir permisos para mi usuario:
 
 máquina atacante:
 
@@ -420,7 +423,7 @@ Ahora con `sudo su` ya somos root
 ![Imagen](images/Profetas/34.png)
 
 
-La idea era poder escribir en un archivo importante de la máquina, puedes sobreescribir el passwd, el shadow, crear una id_rsa esas cosas hay que probarlas, yo me incliné por estas porque debes recibir en la ruta, y las opciones eran passwd o sudoers...pero el método sencillo, era mandarnos a la máquina atacante el archivo de la ruta del archivo que leimos en la home de ezequiel que contiene el password de root xD
+La idea era poder escribir en un archivo importante de la máquina victima, puedes sobreescribir el passwd, el shadow, crear una id_rsa esas cosas hay que probarlas, yo me incliné por esta porque debes recibir en la ruta, y las opciones eran passwd o sudoers...pero el método sencillo, era mandarnos a la máquina atacante el archivo de la ruta del archivo que leimos en la home de ezequiel que contiene el password de root xD
 
 
 
