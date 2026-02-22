@@ -188,7 +188,7 @@ Content-Type → porque el formulario es normal
 
 ![Imagen](images/Profetas/35.png)
 
-Comprobamos si ha guardado la nueva cookie de sesion y mandamos una nueva petición para autenticarnos:
+Comprobamos si ha guardado la nueva cookie de sesion y mandamos una nueva petición para autenticarnos pero esta vez a `dashboard.php`:
 
 
 
