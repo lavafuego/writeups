@@ -298,7 +298,7 @@ Ahora copiamos el /etc/passwd en un archivo llamado passwd y usando regex creamo
 ![Imagen](images/Profetas/24.png)
 
 
-ahora que tenemos una lista de usuarios y acordandonos de que decia que en la repetición no se qué vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
+ahora que tenemos una lista de usuarios, y acordandonos de que decia que en la repetición no se qué, vamos a hacer fuerzabruta con usuarios y contraseña los mismos:
 
 
 ```bash
@@ -326,7 +326,7 @@ Probamos:
 - `find / -perm -4000 2>/dev/null` para binarios SUID
 - intentamos acceder a la base de datos sin exito ya que tenia el puerto 3306 abierto, lo vi con este comando `ss -tulnp`
 
-Lo único raro que veo es un archivo .pyc en su carpeta, asique m,e lo traigo a mi máquina para verlo más detenidamente:
+Lo único raro que veo es un archivo .pyc en su carpeta, asi que me lo traigo a mi máquina para verlo más detenidamente:
 
 ```bash
 scp jeremias@172.17.0.2:/home/jeremias/ezequiel.pyc .
@@ -337,9 +337,9 @@ scp jeremias@172.17.0.2:/home/jeremias/ezequiel.pyc .
 ![Imagen](images/Profetas/27.png)
 
 
-Ya tenemos el python compiled en nuestra máquina vamos a descompilarlo a ver si vemos algo interesante:
+Ya tenemos el python compiled en nuestra máquina, vamos a descompilarlo a ver si vemos algo interesante:
 
-vamos a la página `https://pylingual.io/` subimos el archivo y lo descompiamos
+vamos a la página `https://pylingual.io/` subimos el archivo, y lo decompilamos
 
 
 ![Imagen](images/Profetas/28.png)
