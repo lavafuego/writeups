@@ -147,13 +147,13 @@ Vemos que podemos hacer una redireción y la hacemos:
 
 Y llegamos a una pagina con una cookie nueva:
 
-![Imagen](images/Profetas/17.png)
+![Imagen](images/Profetas/18.png)
 
 
 Guardamos la cookie y nos vamos a la página web, cambiamos la cookie `PHPSESSID` por el nuevo valor y cambiamos en la barra a http://172.17.0.2/dashboard.php al recargar estamos dentro... y no mireis en la url el user y el pass
 que os da algo xD
 
-![Imagen](images/Profetas/18.png)
+
 
 
 ![Imagen](images/Profetas/19.png)
