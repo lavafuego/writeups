@@ -217,7 +217,7 @@ curl -L -b cookies.txt \
 
 ![Imagen](images/Profetas/38.png)
 
-o si lo quereís resumido, que se puede saltar el paso intermedio:
+o si lo quereís resumido, que se puede saltar el paso final que es solo para saber si la cookie funciona:
 
 
 ```bash
