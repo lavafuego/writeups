@@ -351,7 +351,7 @@ Revisando el código vemos una posible contraseña
 ![Imagen](images/Profetas/29.png)
 
 
-Vamos a intentar conectarnos por ssh como el usuario  ezequiel con todo lo que tenmos, me creo un diccionario de contraseñas:
+Vamos a intentar conectarnos por ssh como el usuario  ezequiel con todo lo que tenemos, me creo un diccionario de contraseñas:
 
 ```bash
 @Pssw0rd!User4dm1n2025!#
