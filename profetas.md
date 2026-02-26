@@ -21,7 +21,9 @@ sudo bash auto_deploy.sh profetas.tar
 
 5- una vez montada, nos dice que la IP del la máquina vulnerable es `172.17.0.2`
 
-![Imagen](images/Profetas/2.png)
+
+
+
 
 
 ## FASE DE ENUMERACIÓN E INTRUSIÓN
@@ -31,6 +33,10 @@ Vamos a enumerar a la máquina. Comenzamos viendo que puertos tiene abiertos y q
 ```bash
  sudo nmap -sS -sCV --open -p- --min-rate 5000 172.17.0.2 -vvv -oN nmap
 ```
+
+![Imagen](images/Profetas/2.png)
+
+
 Encontramos dos puertos abiertos:
 
 -22 por el que corre SSh en versión no vulnerable
