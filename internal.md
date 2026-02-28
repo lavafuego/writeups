@@ -74,10 +74,8 @@ lo capturamos y lo mandamos al repeater
 
 
 
-![Imagen](images/internal/9.png)
 
-
-Después de p`robar varias inyecciones hay un waff corriendo por detrás o una black list, logro listar sin más el contenido de /opt y veo algo interesante:
+Después de probar varias inyecciones hay un waff corriendo por detrás o una black list, logro listar sin más el contenido de /opt y veo algo interesante:
 
 ![Imagen](images/internal/10.png)
 
@@ -89,11 +87,11 @@ Después de p`robar varias inyecciones hay un waff corriendo por detrás o una b
 
 El problema es listar el contenido y pruebo comandos que puedan listar archivos para saltar las restricciones y `strings` parece que funciona, así pues listo el `passwd` y un archivo que ví el `/opt` llamado `.vault_pass.txt`
 
-```bash
+<pre> ```
 /?action=backup&dir=/home%26strings+/etc/passwd
 
 /?action=backup&dir=/home%26strings+/opt/.vault_pass.txt
-```
+``` </pre>
 
 ![Imagen](images/internal/13.png)
 
