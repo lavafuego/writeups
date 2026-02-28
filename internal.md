@@ -87,17 +87,22 @@ Después de probar varias inyecciones hay un waff corriendo por detrás o una bl
 
 El problema es listar el contenido y pruebo comandos que puedan listar archivos para saltar las restricciones y `strings` parece que funciona, así pues listo el `passwd` y un archivo que ví el `/opt` llamado `.vault_pass.txt`
 
-<pre> ```
+<pre> 
 /?action=backup&dir=/home%26strings+/etc/passwd
 
 /?action=backup&dir=/home%26strings+/opt/.vault_pass.txt
-``` </pre>
+ </pre>
 
 ![Imagen](images/internal/13.png)
 
 
 
 ![Imagen](images/internal/12.png)
+
+
+También se puede desde la web
+
+![Imagen](images/internal/otraforma.png)
 
 
 
