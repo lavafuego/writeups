@@ -281,7 +281,7 @@ bash -p
 ```
 
 
-![Nmap Scan](images/talent/28.png)
+![Nmap Scan](images/talent/29.png)
 
 
 
