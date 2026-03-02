@@ -215,7 +215,7 @@ Ejecutamos `sudo -l` y vemos que tenemos privilegios como cualquier usuario (eso
 ![Nmap Scan](images/talent/25.png)
 
 
-en `/opt` tengo permisos de escritura y el script me me da pié a un Library Hijacking, primero miro el PAT:
+en `/opt` tengo permisos de escritura y el script me me da pié a un Library Hijacking, primero miro el PATH:
 ```bash
  echo $PATH
 ```
