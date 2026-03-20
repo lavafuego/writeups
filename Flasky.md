@@ -85,7 +85,7 @@ flask-unsign --unsign   --cookie '.eJyrViooyk_LzElVslIqLU4tUtIBU_GZKUpWxhB2XmIuS
 ```
 Si os da un error hay que aplicar la flag `--no-literal-eval`
 
-````bash
+```bash
 flask-unsign --unsign   --cookie '.eJyrViooyk_LzElVslIqLU4tUtIBU_GZKUpWxhB2XmIuSDYnsSwxrTQ1PV-pFgDoRRI7.ab2QdQ.L7UVJNNKxRpvrgsnWUN3Cqs-obQ' --wordlist /usr/share/wordlists/rockyou.txt --no-literal-eval
 ```
 
