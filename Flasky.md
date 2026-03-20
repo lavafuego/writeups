@@ -185,6 +185,7 @@ y veo algo interesante:
 ```
 (ALL : ALL) NOPASSWD: /usr/bin/mv
 ```
+![CTF](images/Flasky/19.png)
 
 puedo usar `mv` como cualquier usuario, esto incluye root. pienso en modificar el `/etc/passwd` asique copio el passwd y lo modifico quitando la "x" a root,
 dano que no puedo usar nano utilizo EOF:
