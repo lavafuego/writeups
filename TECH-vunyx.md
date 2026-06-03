@@ -66,11 +66,11 @@ Nos encontramos con esta web:
 
 y revisando el código fuente vemos algo interesante:
 
-![TECH](images/tech/8.png)
+![TECH](images/tech/7.png)
 
 si abrimos el enlace vemos que el parametro "i" nos refleja esas tres páginas
 
 
-![TECH](images/tech/7.png)
+![TECH](images/tech/9.png)
 
 
