@@ -74,3 +74,14 @@ si abrimos el enlace vemos que el parametro "i" nos refleja esas tres páginas
 ![TECH](images/tech/9.png)
 
 
+## FUZZING
+
+lanzo un ataque de fuzzing para ver si podemos leer archivos internos de la máquina:
+
+```bash
+
+ wfuzz -c --hc=404 --hh=0 -w /home/kali/Desktop/maquina/trabajo/diccionarios/rutas_windows_lfi.txt "http://192.168.1.46/page.php?i=FUZZ"
+```
+
+![TECH](images/tech/10.png)
+
