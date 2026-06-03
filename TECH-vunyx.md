@@ -85,3 +85,9 @@ lanzo un ataque de fuzzing para ver si podemos leer archivos internos de la máq
 
 ![TECH](images/tech/10.png)
 
+
+el diccionario que utilicé es:
+
+`https://github.com/lavafuego/Diccionarios/blob/main/diccionario_rutas_windows.md`
+
+
