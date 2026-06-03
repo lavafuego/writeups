@@ -52,3 +52,25 @@ rpcclient -NU "" 192.168.1.46 -c "srvinfo"
 
 ![TECH](images/tech/5.png)
 
+
+No encontrando nada nos amos a la página web y vemos si encontramos algo.
+
+
+
+## ENUMERACION DE LA WEB
+
+Nos encontramos con esta web:
+
+![TECH](images/tech/6.png)
+
+
+y revisando el código fuente vemos algo interesante:
+
+![TECH](images/tech/8.png)
+
+si abrimos el enlace vemos que el parametro "i" nos refleja esas tres páginas
+
+
+![TECH](images/tech/7.png)
+
+
