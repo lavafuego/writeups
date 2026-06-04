@@ -228,3 +228,21 @@ cmd+%2Fc+C%3A%5CWindows%5CTemp%5Cshell.exe
 
 
 ![TECH](images/tech/27.png)
+
+
+como nota los encodes basicos son estos:
+
+
+| Carácter    | Encoding    |
+| ----------- | ----------- |
+| espacio ` ` | `+` o `%20` |
+| `/`         | `%2F`       |
+| `\`         | `%5C`       |
+| `:`         | `%3A`       |
+| `?`         | `%3F`       |
+| `=`         | `%3D`       |
+| `&`         | `%26`       |
+| `#`         | `%23`       |
+
+
+
