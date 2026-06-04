@@ -76,7 +76,7 @@ si abrimos el enlace vemos que el parametro "i" nos refleja esas tres páginas
 
 ## FUZZING
 
-lanzo un ataque de fuzzing para ver si podemos leer archivos internos de la máquina:
+lanzo un ataque de fuzzing para ver si podemos leer archivos internos de la máquina a parte de los tres que sabemos que si lee:
 
 ```bash
 
