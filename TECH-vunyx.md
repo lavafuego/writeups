@@ -211,3 +211,5 @@ rlwrap nc -lvnp 446
 ```
 
 ![TECH](images/tech/24.png)
+
+a
