@@ -35,7 +35,7 @@ SMB         192.168.1.46    445    TECH             [*] Windows 10 / Server 2019
 vemos un windows arquitectura x64 y un dominio `TECH`
 
 
-Enumeracion de SHERES con null session:
+Enumeracion de SHARES con null session:
 ```bash
 smbclient -NL //192.168.1.46
 smbmap --no-banner -H 192.168.1.46 -u '' -p ''
