@@ -55,7 +55,9 @@ Tenemos un acceso denegado, vamos a intentar puentearlo, provamos con curl y la 
 curl -i -H 'X-Forwarded-For: 127.0.0.1' http://192.168.1.43/secret
 ```
 vemos un 200 OK, parece que lo hemos baypaseado, pero vamos a hacerlo en web para verelo mas bonito porque esta parte me interesa:
-``
+
+
+```
 
 section class="wrap"><div class="flagbox">
   <span class="granted">&#10003; Internal access granted (127.0.0.1)</span>
