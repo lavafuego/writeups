@@ -22,6 +22,7 @@ sudo nmap -sS -sCV -Pn --min-rate 5000 -p- -vvv --open 192.168.1.43 -oN PuertosY
 
 
 -Puerto 22 por el que corre SSH versión no vulnerable
+
 -Puerto 80 HTTP que es en lo que nos vamos a centrar
 
 lanzo un whatweb y un curl para ver si hay algo interesante, pero quitando que es un nginx nada más
