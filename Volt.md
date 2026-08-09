@@ -82,7 +82,7 @@ vale, tenemos acceso al panel de admin:
 ![VoltImage](images/volt/10.png)
 
 
-despues de probar varias inyecciones xss etc y sabiendo que el usuario es admn, vamos a lanzar un ataque de fuerzabruta con hydra, capturamos la petición y lanzamos el ataque:
+despues de probar varias inyecciones sql,xss, etc y sabiendo que el usuario es admn, vamos a lanzar un ataque de fuerza bruta con hydra. Capturamos la petición y lanzamos el ataque:
 
 ![VoltImage](images/volt/11.png)
 
