@@ -50,7 +50,7 @@ veo bastantes rutas pero /api y /secret son interesantes. secret me da un 403, v
 
 ![VoltImage](images/volt/7.png)
 
-Tenemos un acceso denegado, vamos a intentar puentearlo, provamos con curl y la cabecera `X-Forwarded-For`
+Tenemos un acceso denegado, vamos a intentar puentearlo, probamos con curl y la cabecera `X-Forwarded-For`
 
 ```bash
 curl -i -H 'X-Forwarded-For: 127.0.0.1' http://192.168.1.43/secret
