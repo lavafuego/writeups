@@ -208,7 +208,7 @@ echo $PATH
 
 Ahora solo tengo que crear un script que se llame `ps` y el binario buscará primero en `/tmp` si existe, como lo he creado va a ejecutar mi script
 
-1-creamos un script por ejmplo así:
+1-creamos un script por ejemplo así:
 
 ```bash
 echo "chmod u+s /bin/bash" > ps
