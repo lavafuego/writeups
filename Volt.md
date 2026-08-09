@@ -184,7 +184,7 @@ strings /usr/local/bin/procmon | grep -Ei 'system|exec|popen|sh|bash|cat|ps|proc
 
 ![VoltImage](images/volt/19.png)
 
-vemos `ps -e`,  probablemente el binario haga algo como `system("ps -e");` y se me viene a la mente como no es ruta absoluta hacer un PATH Hijacking con `ps'
+vemos `ps -e`,  probablemente el binario haga algo como `system("ps -e");` y se me viene a la mente que como no es ruta absoluta hacer un PATH Hijacking con `ps'
 
 me voy a /tmp y compruebo las rutas del PATH:
 ```bash
