@@ -231,3 +231,6 @@ chmod +x ps
 ```
 
 ![VoltImage](images/volt/21.png)
+nota: tuve que hacer recaptura y ya había convertido /bin/bas a SUID, cosas del directo xD
+
+Máquina muy chula, gracias a batusai por crearla ;) y vulnyx por subirla.
