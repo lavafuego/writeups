@@ -160,7 +160,7 @@ stty raw -echo; fg
 reset xterm
 stty rows 51 columns 237
 ```
-mirando binario encuentro algo interesante:
+mirando binarios vulnerables con el bit SUID encuentro algo interesante:
 
 ```bash
 find / -perm -4000 2>/dev/null
