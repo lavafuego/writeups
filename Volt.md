@@ -117,7 +117,7 @@ Pues ya tenemos user y pass para el panel `admin:chocolate3`
 
 ## FASE INTRUSIÓN
 
-Pues vemos un panel de diagnostico del sistema, haciendo una prieba facil, consigo ejecución de comandos:
+Pues vemos un panel de diagnostico del sistema, haciendo una prueba facil, consigo ejecución de comandos:
 
 
 ![VoltImage](images/volt/13.png)
