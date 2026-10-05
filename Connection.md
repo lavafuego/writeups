@@ -89,8 +89,13 @@ curl -sX POST "http://192.168.1.45/page.php?section=C:\Users\Administrator\AppDa
 
 
 -cd C:\Users\Administrator\Desktop\ --> vemos que se han movido al esritorio de admministrator
--msiexec.exe /i ".\mRemoteNG-Installer-1.76.20.24615.msi" --> msiexec.exe es el nstalador de windows para paquetes msi, con /i indica que se quiere instalar el paquete en este caso                                          -`.\mRemoteNG-Installer-1.76.20.24615.msi` --> en el directorio actual `mRemoteNG` en su versión `1.76.20.24615`
+
+-msiexec.exe /i ".\mRemoteNG-Installer-1.76.20.24615.msi" --> msiexec.exe es el nstalador de windows para paquetes msi, con /i indica que se quiere instalar el paquete
+
+-`.\mRemoteNG-Installer-1.76.20.24615.msi` --> en el directorio actual  se quiere instalar`mRemoteNG` en su versión `1.76.20.24615`
+
 -Remove-Item ".\mRemoteNG-Installer-1.76.20.24615.msi" -Force --> elimina el archivo msi de instalacion
+
 -Restart-Computer -Force --> reinicia el equipo de forma forzada
 
 
