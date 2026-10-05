@@ -7,4 +7,4 @@ sudo arp-scan -l | grep "PCS"
 ```
 
 
-![Connection](images/Connection/Captura de pantalla (564).png)
+![Nmap Scan](images/Connection/Captura de pantalla (564).png)
