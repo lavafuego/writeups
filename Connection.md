@@ -52,7 +52,7 @@ rpcclient -NU "" 192.168.1.45 -c "srvinfo"
 
 
 
-#ENUMERACION HTTP
+## ENUMERACION HTTP
 
 En el código fuente de la página vemos un php que ejecuta el paramatro `section` para hacer consultas de archivos, vamos a probar si podemos leer alguno interno.
 
@@ -99,7 +99,7 @@ curl -sX POST "http://192.168.1.45/page.php?section=C:\Users\Administrator\AppDa
 -Restart-Computer -Force --> reinicia el equipo de forma forzada
 
 
-##CREDENCIALES
+## CREDENCIALES
 
 
 Hago una consulta a San Google y pregunto la ruta dónde guarda credenciales por defecto :
