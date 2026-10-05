@@ -118,12 +118,12 @@ Para que veais que esto me dió un quebradero de cabeza:
 ![Connection](images/Connection/11.png)
 
 
-Vemos por ahí Name="administrator" y Password="RUQ0nzfeIV11g9eDodO74bdInTIu3LE0OAn3P+tWkNKEoAJWViqGx1us4kMsy4JmmY37UlrxPREoaYlTT+JY4YCnTlogYypQ"  pero esta encodeado, buscando por intyernet encuentro esta página:
+Vemos por ahí Name="administrator" y Password="RUQ0nzfeIV11g9eDodO74bdInTIu3LE0OAn3P+tWkNKEoAJWViqGx1us4kMsy4JmmY37UlrxPREoaYlTT+JY4YCnTlogYypQ"  pero esta encodeado, buscando por internet encuentro esta página:
 ```
 https://keydecryptor.com/decryption-tools/mremoteng
 ```
 
-![Connection](images/Connection/11.png)
+![Connection](images/Connection/12.png)
 
 
 y tenemos un password--->TheConnectionPassword123
