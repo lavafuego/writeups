@@ -22,9 +22,13 @@ sudo nmap -sS -sVC -p- --open -Pn --min-rate 5000 -vvv 192.168.1.45 -oN PuertosY
 
 
 Vemos varios puertos: 
+
 -80 interesante HTTP
+
 -445 samba
+
 -varios rcp
+
 -5985 winrm
 
 ## ENUMERACIÓN 445
