@@ -269,15 +269,15 @@ y vemos esto
 ```
 /bin/bash /backup.sh
 ```
+![CTF](images/bigbank/27.png)
+
 
 comprobamos los permisos que tiene:
 
 ```bash
 ls -la /backup.sh
 ```
-
-![CTF](images/bigbank/27.png)
-
+![CTF](images/bigbank/permisos.png)
 
 podemos modificar el archivo:
 
