@@ -79,7 +79,7 @@ Desde aqui sin curl ni nada podemos crear un usuario con `try it out`
 una vez registrados necesitamos saber el token:
 
 ```bash
-url -s -X POST 'http://172.17.0.2/api/auth/login' \
+curl -s -X POST 'http://172.17.0.2/api/auth/login' \
   -H 'accept: */*' \
   -H 'Content-Type: application/json' \
   -d '{
