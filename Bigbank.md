@@ -168,7 +168,7 @@ hydra -L diccionario.txt -P diccionario.txt ssh://172.17.0.2 -VI -f
 ## 2º DESCARGARNDO EL BACKUP
 
 Recordemos que hay un  IDOR, así pues vamos a cambiar la contraseña del admin que era el usuario 5 (los sabemos de cuando listamos usuarios)
-Dado que no comprueba adecuadamente que el usuario que cambia la contraseña es el mismo:
+dado que no comprueba adecuadamente quien es usuario que cambia la contraseña, pudiendo ser otro:
 
 
 1-Cambiamos el password a admin:
