@@ -121,7 +121,7 @@ curl -s 'http://172.17.0.2/api/auth/me' \
 ![CTF](images/bigbank/13.png)
 
 
-Vale, funciona, lio, listamos usuarios:
+Vale, funciona, al lío, listamos usuarios:
 
 ```bash
 curl -s 'http://172.17.0.2/api/users' \
